@@ -3,7 +3,7 @@
 #include <netinet/in.h>
 #include <vector>
 #include <fstream>
-#include "Knn.h"
+#include "algorithm/Knn.h"
 #include <unistd.h>
 
 #define TRUE 1
