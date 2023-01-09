@@ -11,7 +11,7 @@ add_executable(AdvancedProgramingPart3_Server Server.cpp Algorithms/Distance.cpp
         Algorithms/EuclideanDistance.h Algorithms/MinkowskiDistance.cpp Algorithms/MinkowskiDistance.h
         Algorithms/TaxicabGeometry.cpp Algorithms/TaxicabGeometry.h Algorithms/Knn.cpp
         Algorithms/Knn.h IOClass/IOClass.cpp
-        IOClass/IOClass.h Command.cpp Command.h UploadCommand.cpp UploadCommand.h
-        SettingsCommand.cpp SettingsCommand.h ClassifyCommand.cpp ClassifyCommand.h
-        DisplayCommand.cpp DisplayCommand.h DownloadCommand.cpp DownloadCommand.h
-        ExitCommand.cpp ExitCommand.h CLI.cpp CLI.h)
+        IOClass/IOClass.h Command_pattern/Command.cpp Command_pattern/Command.h Command_pattern/UploadCommand.cpp Command_pattern/UploadCommand.h
+        Command_pattern/SettingsCommand.cpp Command_pattern/SettingsCommand.h Command_pattern/ClassifyCommand.cpp Command_pattern/ClassifyCommand.h
+        Command_pattern/DisplayCommand.cpp Command_pattern/DisplayCommand.h Command_pattern/DownloadCommand.cpp Command_pattern/DownloadCommand.h
+        Command_pattern/ExitCommand.cpp Command_pattern/ExitCommand.h Command_pattern/CLI.cpp Command_pattern/CLI.h)
