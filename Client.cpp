@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "vector"
-#include "IOClass.h"
+#include "IOClass/IOClass.h"
 
 using namespace std;
 

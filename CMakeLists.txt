@@ -3,7 +3,7 @@ project(AdvancedProgramingPart3)
 
 set(CMAKE_BUILD_TYPE Debug)
 
-add_executable(AdvancedProgramingPart3_Client Client.cpp IOClass.cpp IOClass.h)
+add_executable(AdvancedProgramingPart3_Client Client.cpp IOClass/IOClass.cpp IOClass/IOClass.h)
 
 add_executable(AdvancedProgramingPart3_Server Server.cpp Distance.cpp Distance.h
         CanberraDistance.cpp CanberraDistance.h
