@@ -17,28 +17,28 @@ Client.o: Client.cpp
 Server.o: Server.cpp
 	g++ -c Server.cpp $(CXXFLAGS)
 
-Distance.o: algorithm/Distance.cpp algorithm/Distance.h
+Distance.o: Algorithms Algorithms
 	g++ -c Distance.cpp $(CXXFLAGS)
 
-CanberraDistance.o: algorithm/CanberraDistance.cpp algorithm/CanberraDistance.h
+CanberraDistance.o: Algorithms Algorithms
 	g++ -c CanberraDistance.cpp $(CXXFLAGS)
 
-ChebyshevDistance.o: algorithm/ChebyshevDistance.cpp algorithm/ChebyshevDistance.h
+ChebyshevDistance.o: Algorithms Algorithms
 	g++ -c ChebyshevDistance.cpp $(CXXFLAGS)
 
-EuclideanDistance.o: algorithm/EuclideanDistance.cpp algorithm/EuclideanDistance.h
+EuclideanDistance.o: Algorithms Algorithms
 	g++ -c EuclideanDistance.cpp $(CXXFLAGS)
 
 IOClass.o: IOClass/IOClass.cpp IOClass/IOClass.h
 	g++ -c IOClass.cpp $(CXXFLAGS)
 
-Knn.o: algorithm/Knn.cpp algorithm/Knn.h
+Knn.o: Algorithms Algorithms
 	g++ -c Knn.cpp $(CXXFLAGS)
 
-MinkowskiDistance.o: algorithm/MinkowskiDistance.cpp algorithm/MinkowskiDistance.h
+MinkowskiDistance.o: Algorithms Algorithms
 	g++ -c MinkowskiDistance.cpp $(CXXFLAGS)
 
-TaxicabGeometry.o: algorithm/TaxicabGeometry.cpp algorithm/TaxicabGeometry.h
+TaxicabGeometry.o: Algorithms Algorithms
 	g++ -c TaxicabGeometry.cpp $(CXXFLAGS)
 
 clean:
