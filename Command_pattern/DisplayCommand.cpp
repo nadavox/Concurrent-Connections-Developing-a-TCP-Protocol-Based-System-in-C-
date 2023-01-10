@@ -7,3 +7,7 @@ void DisplayCommand::execute()
 {
     cout << "Displaying results..." << endl;
 }
+
+string DisplayCommand::description() {
+    return "4. display results\n";
+}

@@ -6,6 +6,7 @@
 string StandardIO::readInput() {
     string s;
     cin >> s;
+    cin.clear();
     return s;
 }
 
@@ -14,5 +15,5 @@ string StandardIO::readInput() {
  * @param s - the string
  */
 void StandardIO::writeInput(std::string s) {
-    cout << s << endl;
+    cout << s;
 }

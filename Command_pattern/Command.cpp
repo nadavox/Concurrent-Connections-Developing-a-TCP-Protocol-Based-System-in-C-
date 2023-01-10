@@ -17,6 +17,7 @@ void Command::execute()
 }
 
 void Command::makeFalse() {
+    printf("%d", exist);
     exist = false;
 }
 

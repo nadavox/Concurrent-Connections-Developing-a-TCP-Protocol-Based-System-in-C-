@@ -7,3 +7,7 @@ void DownloadCommand::execute()
 {
     cout << "Downloading results..." << endl;
 }
+
+string DownloadCommand::description() {
+    return "5. download results\n";
+}

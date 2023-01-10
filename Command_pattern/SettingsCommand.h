@@ -6,6 +6,7 @@
 class SettingsCommand : public Command
 {
 public:
+    string description();
     void execute();
 };
 

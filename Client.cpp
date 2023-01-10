@@ -125,15 +125,27 @@ int main(int argc, char *argv[]) {
     sdio->writeInput(receiveData(sock));
     string input = sdio->readInput();
     sendData(sock, input);
-    sdio->writeInput(receiveData(sock));
-    string readClassifiedFilePath = sdio->readInput();
-    DefaultIO *fdio = new FileIO(readClassifiedFilePath, "");
-    string line = fdio->readInput();
-    if (line == "") {
-        //Error with opening the file
-    } else {
-        sendData(sock, line);
-    }
-    sdio->writeInput(receiveData(sock));
+
+//    sdio->writeInput(receiveData(sock));
+//    string readClassifiedFilePath = sdio->readInput();
+//    DefaultIO *fdio1 = new FileIO(readClassifiedFilePath, "");
+//    string line = fdio1->readInput();
+//    if (line == "") {
+//        //Error with opening the file
+//    } else {
+//        sendData(sock, line);
+//    }
+//    sdio->writeInput(receiveData(sock));
+//
+//    sdio->writeInput(receiveData(sock));
+//    string readUnClassifiedFilePath = sdio->readInput();
+//    DefaultIO *fdio2 = new FileIO(readUnClassifiedFilePath, "");
+//    line = fdio2->readInput();
+//    if (line == "") {
+//        //Error with opening the file
+//    } else {
+//        sendData(sock, line);
+//    }
+//    sdio->writeInput(receiveData(sock));
     return 0;
 }
