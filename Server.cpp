@@ -166,7 +166,7 @@ void classifyData(vector<pair<vector<double>, string> > *vectorsList, int new_so
  * the function gets data from the client and check if the number is valid
  * @param clientSock - the client socket number
  */
-void receiveNumber(int clientSock) {
+void receiveNumber(int clientSock, Values *value) {
     char buffer[4096];
     // make the array to zero.
     memset(buffer, 0, sizeof(buffer));
@@ -186,7 +186,7 @@ void receiveNumber(int clientSock) {
     // the user want to activate option 1
     if (number == "1"){
         // execute UploadCommand
-        Command *us = new UploadCommand(clientSock);
+        Command *us = new UploadCommand(clientSock, value);
         us->execute();
         free(us);
     }
@@ -269,15 +269,17 @@ int main(int argc, char *argv[]) {
     // create a socket for the client
     int client_socket;
     vector<double> userVector;
-    struct sockaddr_in client_sin;
+    struct sockaddr_in client_sin = {};
     unsigned int addr_len = sizeof(client_sin);
     // accept connection
     if ((client_socket = accept(master_socket, (struct sockaddr *) &client_sin, &addr_len)) < 0) {
         perror("Error while trying to accept the new client");
         return 1;
     }
+    //create value object.
+    Values *values = new Values(client_socket);
     // create CLI object that will send the menu
-    Command *us = new UploadCommand(client_socket);
+    Command *us = new UploadCommand(client_socket, values);
     Command *sc = new SettingsCommand();
     Command *cc = new ClassifyCommand();
     Command *dyc = new DisplayCommand();
@@ -287,5 +289,5 @@ int main(int argc, char *argv[]) {
     cli->start();
 
     // create a function that receives the number of the function from the client
-    receiveNumber(client_socket);
+    receiveNumber(client_socket, values);
 }
