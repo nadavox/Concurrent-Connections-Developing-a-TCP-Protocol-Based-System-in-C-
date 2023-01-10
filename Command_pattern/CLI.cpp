@@ -1,5 +1,15 @@
 #include "CLI.h"
 
+/**
+ * the constructor of CLI
+ * @param uc - the UploadCommand object
+ * @param sc - the SettingsCommand object
+ * @param cc - the ClassifyCommand object
+ * @param dyc - the DisplayCommand object
+ * @param ddc - the DownloadCommand object
+ * @param ec - the ExitCommand object
+ * @param socketNumber - the socket number to which we will send the menu to
+ */
 CLI::CLI(Command* uc, Command* sc, Command* cc, Command* dyc, Command* ddc, Command* ec, int socketNumber) {
     this->commands.insert(make_pair("1", uc));
     this->commands.insert(make_pair("2", sc));
@@ -10,9 +20,13 @@ CLI::CLI(Command* uc, Command* sc, Command* cc, Command* dyc, Command* ddc, Comm
     this->socketNumber = socketNumber;
 }
 
+/**
+ * this function creates the menu and sends it to the client socket
+ */
 void CLI::start() {
     string menu;
     menu = "Welcome to the KNN Classifier server. Please choose an option:\n";
+    // appending the strings of every command to the menu
     for (const auto& value : this->commands) {
         menu += value.second->description();
     }
@@ -25,6 +39,5 @@ void CLI::start() {
     int sent_bytes = send(socketNumber, data_addr, data_len, 0);
     if (sent_bytes < 0) {
         perror("Error sending the data to the server");
-        exit(1);
     }
 }

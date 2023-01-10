@@ -1,6 +1,11 @@
 #include "FileIO.h"
 
-FileIO::FileIO(std::string readFilePath, std::string writeFilePath) {
+/**
+ * the constructor of FileIO
+ * @param readFilePath - the path to the file we want to read from
+ * @param writeFilePath - the path to the file we want to write to
+ */
+FileIO::FileIO(string readFilePath, string writeFilePath) {
     this->readFilePath = readFilePath;
     this->writeFilePath = writeFilePath;
 }
@@ -30,16 +35,13 @@ string FileIO::readInput() {
 void FileIO::writeInput(string s) {
     // Open the file
     ofstream outputFile(writeFilePath);
-
     // Check if the file was opened successfully
     if (!outputFile) {
         perror("Error with opening the file");
         return;
     }
-
     // Write the string to the file
     outputFile << s;
-
     // Close the file
     outputFile.close();
 }
