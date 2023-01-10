@@ -100,62 +100,93 @@ void notclassfiedVector(string dataVector,  vector<pair<vector<double>, string> 
 void UploadCommand::execute()
 {
     //the socket.
-    int socket = values->getSocket();
+    int clientSocket = values->getSocket();
     char buffer[4096];
-    string dataVector;
-    string firstMessage = "Please upload your local train CSV file.\n";
-    string Upload_Complete = "Upload complete.\n";
-    //send function: classfiedVector
-    strcpy(buffer, firstMessage.c_str());
-    int bytes_sent = send(socket, buffer, strlen(buffer), 0);
-    if (bytes_sent < 0) {
-        ///error
+    string trainString = "Please upload your local train CSV file.\n";
+    string testString = "Please upload your local test CSV file.\n";
+    string uploadCompleteString = "Upload complete.\n";
+
+    // send the train string to the client
+    unsigned int data_len = trainString.length();
+    char data_addr[data_len + 1];
+    const char* str = trainString.c_str();
+    // copy the data of the vector, distance function name and k to char array
+    strcpy(data_addr, str);
+    // send the full sentence to the server
+    int sent_bytes = send(clientSocket, data_addr, data_len, 0);
+    if (sent_bytes < 0) {
+        perror("Error sending the data to the client");
+        exit(1);
     }
+
+    // clean the buffer
     memset(buffer, 0, sizeof(buffer));
-    //receive function in a while until no more data
-    while (true) {
-        //TODO: if we get line by line from the client i want to put it inside the vector.
-        int bytes_received = recv(socket, buffer, strlen(buffer), 0);
-        if (bytes_received <= 0) break;
-        //if we get line by line.
-        dataVector = buffer; // convert the vector/data from the client to string.
-        // save the data vector inside the data structure. classfiedVectorList.
-        classfiedVector(dataVector, values->getClassfiedVectorList());
+    int expected_data_len = sizeof(buffer);
+    // get the lines from the client
+    int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
+    if (read_bytes == 0) {
+        // connection is closed
+        perror("Error the connection with the server is closed");
+        exit(1);
     }
-    //saved it in data structure classfiedVectorList.
-    //send : Upload complete.
-    strcpy(buffer, Upload_Complete.c_str());
-    bytes_sent = send(socket, buffer, Upload_Complete.size(), 0);
-    if (bytes_sent < 0) {
-        ///error
+    else if (read_bytes < 0) {
+        perror("Error with reading the data from the server");
+        exit(1);
     }
+
+    // send the upload complete string to the client
+    data_len = uploadCompleteString.length();
+    data_addr[data_len + 1];
+    str = uploadCompleteString.c_str();
+    // copy the data of the vector, distance function name and k to char array
+    strcpy(data_addr, str);
+    // send the full sentence to the server
+    sent_bytes = send(clientSocket, data_addr, data_len, 0);
+    if (sent_bytes < 0) {
+        perror("Error sending the data to the client");
+        exit(1);
+    }
+
+    // send the test string to the client
+    data_len = testString.length();
+    data_addr[data_len + 1];
+    str = testString.c_str();
+    // copy the data of the vector, distance function name and k to char array
+    strcpy(data_addr, str);
+    // send the full sentence to the server
+    sent_bytes = send(clientSocket, data_addr, data_len, 0);
+    if (sent_bytes < 0) {
+        perror("Error sending the data to the client");
+        exit(1);
+    }
+
+    // clean the buffer
     memset(buffer, 0, sizeof(buffer));
-    string secondMessage = "Please upload your local test CSV file.\n";
-    //send function: notclassfiedVector
-    strcpy(buffer, secondMessage.c_str());
-    bytes_sent = send(socket, buffer, strlen(buffer), 0);
-    if (bytes_sent < 0) {
-        ///error
+    expected_data_len = sizeof(buffer);
+    // get the lines from the client
+    read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
+    if (read_bytes == 0) {
+        // connection is closed
+        perror("Error the connection with the server is closed");
+        exit(1);
     }
-    memset(buffer, 0, sizeof(buffer));
-    //receive function in a while until no more data
-    while (true) {
-        //TODO: if we get line by line from the client i want to put it inside the vector.
-        int bytes_received = recv(socket, buffer, strlen(buffer), 0);
-        if (bytes_received <= 0) break;
-        //if we get line by line.
-        dataVector = buffer; // convert the vector/data from the client to string.
-        // save the data vector inside the data structure. notClassfiedVectorList.
-        notclassfiedVector(dataVector, values->getNotClassfiedVectorList());
+    else if (read_bytes < 0) {
+        perror("Error with reading the data from the server");
+        exit(1);
     }
-    //save it in data structure notClassfiedVectorList.
-    //send : Upload complete.
-    strcpy(buffer, Upload_Complete.c_str());
-    bytes_sent = send(socket, buffer, Upload_Complete.size(), 0);
-    if (bytes_sent < 0) {
-        ///error
+
+    // send the upload complete string to the client
+    data_len = uploadCompleteString.length();
+    data_addr[data_len + 1];
+    str = uploadCompleteString.c_str();
+    // copy the data of the vector, distance function name and k to char array
+    strcpy(data_addr, str);
+    // send the full sentence to the server
+    sent_bytes = send(clientSocket, data_addr, data_len, 0);
+    if (sent_bytes < 0) {
+        perror("Error sending the data to the client");
+        exit(1);
     }
-    memset(buffer, 0, sizeof(buffer));
 }
 
 string UploadCommand::description() {

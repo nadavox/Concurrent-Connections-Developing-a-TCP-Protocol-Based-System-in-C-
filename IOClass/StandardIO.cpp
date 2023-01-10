@@ -6,7 +6,18 @@
 string StandardIO::readInput() {
     string s;
     cin >> s;
-    cin.clear();
+    string trash;
+    // clean the buffer
+    while(cin) {
+        while (cin.peek() == ' ') {
+            cin.ignore();
+        }
+        // if the input has enter key in it so ignore
+        if (cin.peek() == '\n') {
+            break;
+        }
+        cin >> trash;
+    }
     return s;
 }
 
