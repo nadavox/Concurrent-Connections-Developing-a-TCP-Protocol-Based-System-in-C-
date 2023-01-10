@@ -1,7 +1,3 @@
-//
-// Created by nadav oxenberg on 10/01/2023.
-//
-
 #ifndef ADVANCEDPROGRAMINGPART3_VALUES_H
 #define ADVANCEDPROGRAMINGPART3_VALUES_H
 #include <string>
@@ -26,7 +22,6 @@ public:
     vector<pair< vector<double>, string > > *getClassfiedVectorList();
     vector<pair< vector<double>, string > > *getNotClassfiedVectorList();
     int getSocket() const;
-
     // Setters
     void setK(int val);
     void setDistanceMetric(string val);
@@ -34,6 +29,5 @@ public:
     void setNotClassfiedVectorList(vector<pair< vector<double>, string > > *val);
     void setSocket(int val);
 };
-
 
 #endif //ADVANCEDPROGRAMINGPART3_VALUES_H

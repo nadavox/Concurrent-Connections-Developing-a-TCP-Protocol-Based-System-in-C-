@@ -1,5 +1,17 @@
 #include "Values.h"
 
+Values::Values(int socket_val) {
+    k = 5;
+    distance_metric = "EUC";
+    classfiedVectorList = new vector<pair< vector<double>, string > >;
+    notClassfiedVectorList = new vector<pair< vector<double>, string > >;
+}
+
+Values::~Values() {
+    delete notClassfiedVectorList;
+    delete classfiedVectorList;
+}
+
 // Getters
 int Values::getK() const {
     return k;
@@ -17,7 +29,6 @@ int Values::getSocket() const {
     return socket;
 }
 
-
 // Setters
 void Values::setK(int val) {
     k = val;
@@ -33,16 +44,4 @@ void Values::setNotClassfiedVectorList(vector<pair< vector<double>, string > > *
 }
 void Values::setSocket(int val) {
     socket = val;
-}
-
-Values::Values(int socket_val) {
-    k = 5;
-    distance_metric = "EUC";
-    classfiedVectorList = new vector<pair< vector<double>, string > >;
-    notClassfiedVectorList = new vector<pair< vector<double>, string > >;
-}
-
-Values::~Values() {
-    delete notClassfiedVectorList;
-    delete classfiedVectorList;
 }
