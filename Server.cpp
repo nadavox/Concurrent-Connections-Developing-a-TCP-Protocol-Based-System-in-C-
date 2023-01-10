@@ -185,27 +185,45 @@ void receiveNumber(int clientSock) {
     string number(buffer);
     // the user want to activate option 1
     if (number == "1"){
-        // call function 1
+        // execute UploadCommand
+        Command *us = new UploadCommand(clientSock);
+        us->execute();
+        free(us);
     }
     // the user want to activate option 2
     else if (number == "2") {
-        // call function 2
+        // execute SettingsCommand
+        Command *sc = new SettingsCommand();
+        sc->execute();
+        free(sc);
     }
     // the user want to activate option 3
     else if (number == "3") {
-        // call function 3
+        // execute ClassifyCommand
+        Command *cc = new ClassifyCommand();
+        cc->execute();
+        free(cc);
     }
     // the user want to activate option 4
     else if (number == "4") {
-        // call function 4
+        // execute DisplayCommand
+        Command *dyc = new DisplayCommand();
+        dyc->execute();
+        free(dyc);
     }
     // the user want to activate option 5
     else if (number == "5") {
-        // call function 5
+        // execute DownloadCommand
+        Command *ddc = new DownloadCommand();
+        ddc->execute();
+        free(ddc);
     }
     // the user want to activate option 8
     else if (number == "8") {
-        // call function 8
+        // execute ExitCommand
+        Command *ec = new ExitCommand();
+        ec->execute();
+        free(ec);
     }
     // the user didn't inset valid value
     else {
