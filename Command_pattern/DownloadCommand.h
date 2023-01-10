@@ -6,6 +6,7 @@
 class DownloadCommand : public Command
 {
 public:
+    string description();
     void execute();
 };
 

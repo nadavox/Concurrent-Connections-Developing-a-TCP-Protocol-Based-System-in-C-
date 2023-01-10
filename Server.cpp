@@ -4,16 +4,20 @@
 #include <vector>
 #include <fstream>
 #include "Algorithms/Distance.h"
-#include "IOClass/IOClass.h"
 #include "Algorithms/EuclideanDistance.h"
 #include "Algorithms/TaxicabGeometry.h"
 #include "Algorithms/ChebyshevDistance.h"
 #include "Algorithms/MinkowskiDistance.h"
 #include "Algorithms/CanberraDistance.h"
 #include "Algorithms/Knn.h"
-#include <unistd.h>
+#include "Command_pattern/CLI.h"
 #include "Command_pattern/Command.h"
 #include "Command_pattern/UploadCommand.h"
+#include "Command_pattern/SettingsCommand.h"
+#include "Command_pattern/ClassifyCommand.h"
+#include "Command_pattern/DisplayCommand.h"
+#include "Command_pattern/DownloadCommand.h"
+#include "Command_pattern/ExitCommand.h"
 
 
 #define TRUE 1
@@ -21,19 +25,6 @@
 #define MAX_CLIENTS 30 //max client for the server
 
 using namespace std;
-
-/**
- * the function creates the vector that contains all the vectors in the file
- * @param vectorsList
- * @param io
- * @return vector that contains all the vectors in the file
- */
-vector<pair<vector<double>, string> >* readfile(vector<pair<vector<double>, string> >* vectorsList, IOClass io) {
-    //read the file inside to our vector list.
-    vectorsList = io.readInput();
-    //there is a not valid vector in the classified file, so end the program
-    return vectorsList;
-}
 
 /**
  * this function classified the user vector.
@@ -51,19 +42,19 @@ string getKnnOutput(const string& kindDistance, int k, vector<double> userVector
     if (kindDistance == "AUC") {
         distanceAlgo = new EuclideanDistance;
     }
-    // we will calculate knn according to taxicab geometry
+        // we will calculate knn according to taxicab geometry
     else if (kindDistance == "MAN") {
         distanceAlgo = new TaxicabGeometry;
     }
-    // we will calculate knn according to chebyshev distance
+        // we will calculate knn according to chebyshev distance
     else if (kindDistance == "CHB") {
         distanceAlgo = new ChebyshevDistance;
     }
-    // we will calculate knn according to canberra distance
+        // we will calculate knn according to canberra distance
     else if (kindDistance == "CAN") {
         distanceAlgo = new CanberraDistance;
     }
-    // we will calculate knn according to minkowski distance
+        // we will calculate knn according to minkowski distance
     else {
         distanceAlgo = new MinkowskiDistance;
     }
@@ -172,22 +163,82 @@ void classifyData(vector<pair<vector<double>, string> > *vectorsList, int new_so
 }
 
 /**
+ * the function gets data from the client and check if the number is valid
+ * @param clientSock - the client socket number
+ */
+void receiveNumber(int clientSock) {
+    char buffer[4096];
+    // make the array to zero.
+    memset(buffer, 0, sizeof(buffer));
+    int expected_data_len = sizeof(buffer);
+    // read from the client
+    int read_bytes = recv(clientSock, buffer, expected_data_len, 0);
+    if (read_bytes == 0) {
+        // connection is closed
+        perror("Error the connection with the client is closed");
+        exit(1);
+    }
+    else if (read_bytes < 0) {
+        perror("Error with reading the data from the client");
+        exit(1);
+    }
+    string number(buffer);
+    // the user want to activate option 1
+    if (number == "1"){
+        // execute UploadCommand
+        Command *us = new UploadCommand(clientSock);
+        us->execute();
+        free(us);
+    }
+    // the user want to activate option 2
+    else if (number == "2") {
+        // execute SettingsCommand
+        Command *sc = new SettingsCommand();
+        sc->execute();
+        free(sc);
+    }
+    // the user want to activate option 3
+    else if (number == "3") {
+        // execute ClassifyCommand
+        Command *cc = new ClassifyCommand();
+        cc->execute();
+        free(cc);
+    }
+    // the user want to activate option 4
+    else if (number == "4") {
+        // execute DisplayCommand
+        Command *dyc = new DisplayCommand();
+        dyc->execute();
+        free(dyc);
+    }
+    // the user want to activate option 5
+    else if (number == "5") {
+        // execute DownloadCommand
+        Command *ddc = new DownloadCommand();
+        ddc->execute();
+        free(ddc);
+    }
+    // the user want to activate option 8
+    else if (number == "8") {
+        // execute ExitCommand
+        Command *ec = new ExitCommand();
+        ec->execute();
+        free(ec);
+    }
+    // the user didn't inset valid value
+    else {
+        // invalid number
+    }
+}
+
+/**
  * the function that handles the server
  * @param argc
  * @param argv
  * @return 0 if everything okay and 1 if there is errors
  */
 int main(int argc, char *argv[]) {
-    //flag for k not valid, and string for the output.
-    string output;
-    ifstream inputFile;
-    // open the file, doesn't matter if it relative or not.
-    inputFile.open("/Users/nadavox/CLionProjects/advancedProgramPartFour/datasets/iris/iris_classified.csv");
-    // could not open the file
-    if (!inputFile) {
-        cout << "Could not open file: '" << argv[2] << "'\n";
-        return 1;
-    }
+    //  create the server socket
     int master_socket = createSocket();
     struct sockaddr_in serverAddr = {};
     //type of socket created
@@ -197,15 +248,16 @@ int main(int argc, char *argv[]) {
     // check if port number is a number
     try {
         // port number is okay
-        int port_no = 12345;
+        int port_no = stoi(argv[1]);
         serverAddr.sin_port = htons(port_no);
     }
     // port number is not a number
-    catch (const invalid_argument&) {
+    catch (const invalid_argument &) {
         perror("Invalid port number");
         return 1;
     }
-    if (::bind(master_socket, (sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
+    // bind the server
+    if (bind(master_socket, (sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
         perror("Error while trying to bind");
         return 1;
     }
@@ -214,117 +266,26 @@ int main(int argc, char *argv[]) {
         perror("Error while trying to listen");
         return 1;
     }
-    int new_socket; vector<double> userVector;
-    //accept connection.
-    char buffer[4096]; // data buffer
+    // create a socket for the client
+    int client_socket;
+    vector<double> userVector;
     struct sockaddr_in client_sin;
     unsigned int addr_len = sizeof(client_sin);
-    if ((new_socket = accept(master_socket, (struct sockaddr *) &client_sin, &addr_len)) < 0) {
+    // accept connection
+    if ((client_socket = accept(master_socket, (struct sockaddr *) &client_sin, &addr_len)) < 0) {
         perror("Error while trying to accept the new client");
         return 1;
     }
-    // now has connection
-    //need to send menue to the client.
-    const char* message = "press 1: hahah\n press 2: nanana\n";
-    int sent = send(new_socket, message, strlen(message), 0);
-    if (sent < 0) {
-        perror("Error while trying to send message to client");
-        return 1;
-    }
-    //recive number
-    int client_number; // didnt check if it is number or not.
-    int recv_size = recv(new_socket, &client_number, sizeof(client_number), 0);
-    if (recv_size < 0) {
-        perror("Error while trying to receive number from client");
-        return 1;
-    }
-    // do the function number one
-    Command *first = UploadCommand;
-    while (true) {
-        char buffer[4096]; // data buffer
-        struct sockaddr_in client_sin;
-        unsigned int addr_len = sizeof(client_sin);
-        if ((new_socket = accept(master_socket, (struct sockaddr *) &client_sin, &addr_len)) < 0) {
-            perror("Error while trying to accept the new client");
-            return 1;
-        }
-        long bytes = recv(new_socket, buffer, sizeof(buffer), 0);
-        while (bytes > 0) {
-            classifyData(vectorsList, new_socket, buffer);
-            memset(buffer, '\0', 4096);
-            bytes = recv(new_socket, buffer, sizeof(buffer), 0);
-        }
-        close(new_socket);
-    }
+    // create CLI object that will send the menu
+    Command *us = new UploadCommand(client_socket);
+    Command *sc = new SettingsCommand();
+    Command *cc = new ClassifyCommand();
+    Command *dyc = new DisplayCommand();
+    Command *ddc = new DownloadCommand();
+    Command *ec = new ExitCommand();
+    CLI* cli = new CLI(us, sc, cc, dyc, ddc, ec, client_socket);
+    cli->start();
 
-
-//    //flag for k not valid, and string for the output.
-//    string output;
-//    ifstream inputFile;
-//    // open the file, doesn't matter if it relative or not.
-//    inputFile.open(argv[1]);
-//    // could not open the file
-//    if (!inputFile) {
-//        cout << "Could not open file: '" << argv[2] << "'\n";
-//        return 1;
-//    }
-//
-//    //pointer to a vector object will be the list of pairs of vectors (vector , string).
-//    vector<pair<vector<double>, string> > *vectorsList = nullptr;
-//    //create ioClass for input and output.
-//    IOClass io(inputFile, cout);
-//    //read the file and create the vector list.
-//    vectorsList = readfile(vectorsList, io);
-//    //there is a not valid vector in the classified file, so end the program
-//    if (vectorsList == nullptr) {
-//        io.write("Error, the vectors in the classified file is not valid");
-//        return 1;
-//    }
-//
-//    int master_socket = createSocket();
-//
-//    struct sockaddr_in serverAddr = {};
-//    //type of socket created
-//    memset(&serverAddr, 0, sizeof(serverAddr));
-//    serverAddr.sin_family = AF_INET;
-//    serverAddr.sin_addr.s_addr = INADDR_ANY;
-//    // check if port number is a number
-//    try {
-//        // port number is okay
-//        int port_no = stoi(argv[2]);
-//        serverAddr.sin_port = htons(port_no);
-//    }
-//    // port number is not a number
-//    catch (const invalid_argument&) {
-//        perror("Invalid port number");
-//        return 1;
-//    }
-//    if (::bind(master_socket, (sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
-//        perror("Error while trying to bind");
-//        return 1;
-//    }
-//    //try to specify maximum of 5 pending connections for the master socket
-//    if (listen(master_socket, 5) < 0) {
-//        perror("Error while trying to listen");
-//        return 1;
-//    }
-//
-//    int new_socket;
-//    vector<double> userVector;
-//    while (true) {
-//        char buffer[4096]; // data buffer
-//        struct sockaddr_in client_sin;
-//        unsigned int addr_len = sizeof(client_sin);
-//        if ((new_socket = accept(master_socket, (struct sockaddr *) &client_sin, &addr_len)) < 0) {
-//            perror("Error while trying to accept the new client");
-//            return 1;
-//        }
-//        long bytes = recv(new_socket, buffer, sizeof(buffer), 0);
-//        while (bytes > 0) {
-//            classifyData(vectorsList, new_socket, buffer);
-//            memset(buffer, '\0', 4096);
-//            bytes = recv(new_socket, buffer, sizeof(buffer), 0);
-//        }
-//        close(new_socket);
-//    }
+    // create a function that receives the number of the function from the client
+    receiveNumber(client_socket);
 }
