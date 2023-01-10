@@ -179,27 +179,13 @@ int main(int argc, char *argv[]) {
     string output;
     ifstream inputFile;
     // open the file, doesn't matter if it relative or not.
-    inputFile.open(argv[1]);
+    inputFile.open("/Users/nadavox/CLionProjects/advancedProgramPartFour/datasets/iris/iris_classified.csv");
     // could not open the file
     if (!inputFile) {
         cout << "Could not open file: '" << argv[2] << "'\n";
         return 1;
     }
-
-    //pointer to a vector object will be the list of pairs of vectors (vector , string).
-    vector<pair<vector<double>, string> > *vectorsList = nullptr;
-    //create ioClass for input and output.
-    IOClass io(inputFile, cout);
-    //read the file and create the vector list.
-    vectorsList = readfile(vectorsList, io);
-    //there is a not valid vector in the classified file, so end the program
-    if (vectorsList == nullptr) {
-        io.write("Error, the vectors in the classified file is not valid");
-        return 1;
-    }
-
     int master_socket = createSocket();
-
     struct sockaddr_in serverAddr = {};
     //type of socket created
     memset(&serverAddr, 0, sizeof(serverAddr));
@@ -208,7 +194,7 @@ int main(int argc, char *argv[]) {
     // check if port number is a number
     try {
         // port number is okay
-        int port_no = stoi(argv[2]);
+        int port_no = 12345;
         serverAddr.sin_port = htons(port_no);
     }
     // port number is not a number
@@ -225,9 +211,31 @@ int main(int argc, char *argv[]) {
         perror("Error while trying to listen");
         return 1;
     }
-
-    int new_socket;
-    vector<double> userVector;
+    int new_socket; vector<double> userVector;
+    //accept connection.
+    char buffer[4096]; // data buffer
+    struct sockaddr_in client_sin;
+    unsigned int addr_len = sizeof(client_sin);
+    if ((new_socket = accept(master_socket, (struct sockaddr *) &client_sin, &addr_len)) < 0) {
+        perror("Error while trying to accept the new client");
+        return 1;
+    }
+    // now has connection
+    //need to send menue to the client.
+    const char* message = "press 1: hahah\n press 2: nanana\n";
+    int sent = send(new_socket, message, strlen(message), 0);
+    if (sent < 0) {
+        perror("Error while trying to send message to client");
+        return 1;
+    }
+    //recive number
+    int client_number; // didnt check if it is number or not.
+    int recv_size = recv(new_socket, &client_number, sizeof(client_number), 0);
+    if (recv_size < 0) {
+        perror("Error while trying to receive number from client");
+        return 1;
+    }
+    // do the function number one
     while (true) {
         char buffer[4096]; // data buffer
         struct sockaddr_in client_sin;
@@ -244,4 +252,75 @@ int main(int argc, char *argv[]) {
         }
         close(new_socket);
     }
+
+
+//    //flag for k not valid, and string for the output.
+//    string output;
+//    ifstream inputFile;
+//    // open the file, doesn't matter if it relative or not.
+//    inputFile.open(argv[1]);
+//    // could not open the file
+//    if (!inputFile) {
+//        cout << "Could not open file: '" << argv[2] << "'\n";
+//        return 1;
+//    }
+//
+//    //pointer to a vector object will be the list of pairs of vectors (vector , string).
+//    vector<pair<vector<double>, string> > *vectorsList = nullptr;
+//    //create ioClass for input and output.
+//    IOClass io(inputFile, cout);
+//    //read the file and create the vector list.
+//    vectorsList = readfile(vectorsList, io);
+//    //there is a not valid vector in the classified file, so end the program
+//    if (vectorsList == nullptr) {
+//        io.write("Error, the vectors in the classified file is not valid");
+//        return 1;
+//    }
+//
+//    int master_socket = createSocket();
+//
+//    struct sockaddr_in serverAddr = {};
+//    //type of socket created
+//    memset(&serverAddr, 0, sizeof(serverAddr));
+//    serverAddr.sin_family = AF_INET;
+//    serverAddr.sin_addr.s_addr = INADDR_ANY;
+//    // check if port number is a number
+//    try {
+//        // port number is okay
+//        int port_no = stoi(argv[2]);
+//        serverAddr.sin_port = htons(port_no);
+//    }
+//    // port number is not a number
+//    catch (const invalid_argument&) {
+//        perror("Invalid port number");
+//        return 1;
+//    }
+//    if (::bind(master_socket, (sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
+//        perror("Error while trying to bind");
+//        return 1;
+//    }
+//    //try to specify maximum of 5 pending connections for the master socket
+//    if (listen(master_socket, 5) < 0) {
+//        perror("Error while trying to listen");
+//        return 1;
+//    }
+//
+//    int new_socket;
+//    vector<double> userVector;
+//    while (true) {
+//        char buffer[4096]; // data buffer
+//        struct sockaddr_in client_sin;
+//        unsigned int addr_len = sizeof(client_sin);
+//        if ((new_socket = accept(master_socket, (struct sockaddr *) &client_sin, &addr_len)) < 0) {
+//            perror("Error while trying to accept the new client");
+//            return 1;
+//        }
+//        long bytes = recv(new_socket, buffer, sizeof(buffer), 0);
+//        while (bytes > 0) {
+//            classifyData(vectorsList, new_socket, buffer);
+//            memset(buffer, '\0', 4096);
+//            bytes = recv(new_socket, buffer, sizeof(buffer), 0);
+//        }
+//        close(new_socket);
+//    }
 }
