@@ -11,18 +11,16 @@ class Command
 {
 protected:
     static int k;
-    static string distance_metric;
-    // first element is: vector of the numbers.
-    // second element is pair: the first element is the name/type of the vector
-    //                        the second element is the size of the vector.
-    static vector<pair< vector<double>, string > > classfiedVectorList;
-    static vector<pair< vector<double>, string > > notClassfiedVectorList;
-    static vector<string> tempBuffer;
-    static int socket;
+     string distance_metric;
+     vector<pair< vector<double>, string > > classfiedVectorList;
+     vector<pair< vector<double>, string > > notClassfiedVectorList;
+     int socket;
+     static bool exist;
+     void init(int number);
 public:
-    Command(int num);
     virtual string description() = 0;
     virtual void execute() = 0;
+    static void makeFalse();
 };
 
 

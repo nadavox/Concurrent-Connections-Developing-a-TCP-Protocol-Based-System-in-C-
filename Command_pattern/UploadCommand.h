@@ -6,10 +6,11 @@
 class UploadCommand : public Command
 {
 public:
-    UploadCommand(int socket) : Command(socket) {
-    }
-    string description() override;
-    void execute() override;
+    explicit UploadCommand(int socket);
+
+    string description();
+
+    void execute();
 };
 
 #endif //ADVANCEDPROGRAMINGPART3_UPLOADCOMMAND_H

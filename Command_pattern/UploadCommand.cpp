@@ -162,3 +162,7 @@ string UploadCommand::description() {
     return "1. upload an unclassified csv data file\n";
 
 }
+
+UploadCommand::UploadCommand(int socket) {
+    Command::init(socket);
+}
