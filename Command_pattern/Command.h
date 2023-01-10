@@ -11,12 +11,12 @@ class Command
 {
 protected:
     static int k;
-     string distance_metric;
-     vector<pair< vector<double>, string > > classfiedVectorList;
-     vector<pair< vector<double>, string > > notClassfiedVectorList;
-     int socket;
-     static bool exist;
-     void init(int number);
+    static string distance_metric;
+    static vector<pair< vector<double>, string > > classfiedVectorList;
+    static vector<pair< vector<double>, string > > notClassfiedVectorList;
+    static int socket;
+    static bool exist;
+    void init(int number);
 public:
     virtual string description() = 0;
     virtual void execute() = 0;
