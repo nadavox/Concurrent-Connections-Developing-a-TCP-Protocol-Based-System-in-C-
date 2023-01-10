@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "../Values.h"
 
 using namespace std;
 
@@ -10,17 +11,10 @@ using namespace std;
 class Command
 {
 protected:
-    static int k;
-    static string distance_metric;
-    vector<pair< vector<double>, string > > *classfiedVectorList;
-    vector<pair< vector<double>, string > > *notClassfiedVectorList;
-    static int socket;
-    static bool exist;
-    void init(int number);
+    Values *values;
 public:
     virtual string description() = 0;
     virtual void execute() = 0;
-    static void makeFalse();
 };
 
 
