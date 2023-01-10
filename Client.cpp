@@ -122,30 +122,57 @@ int main(int argc, char *argv[]) {
     int sock = createSocket(port_no, ip_address);
     // get menu from the server
     DefaultIO *sdio = new StandardIO;
+    // print the menu to the user
     sdio->writeInput(receiveData(sock));
+    // get number from the user
     string input = sdio->readInput();
+    // send the number to the server
     sendData(sock, input);
 
+    // print the request from the server to the user
     sdio->writeInput(receiveData(sock));
+    // get the path to the classified file from the user
     string readClassifiedFilePath = sdio->readInput();
+    // create a fileIO object with the classified file path
     DefaultIO *fdio1 = new FileIO(readClassifiedFilePath, "");
+    // read lines from the classified file
     string line = fdio1->readInput();
-    if (line == "") {
-        //Error with opening the file
-    } else {
+    // there is an error with opening the file
+    if (line == "Error with opening the file") {
+        // error
+    }
+    // we got to the end of the file
+    else if (line.empty()){
+        //empty
+    }
+    // send the line to the server
+    else {
         sendData(sock, line);
     }
+    // print the message from the server to the user
     sdio->writeInput(receiveData(sock));
 
+    // print the request from the server to the user
     sdio->writeInput(receiveData(sock));
+    // get the path to the un classified file from the user
     string readUnClassifiedFilePath = sdio->readInput();
+    // create a fileIO object with the un classified file path
     DefaultIO *fdio2 = new FileIO(readUnClassifiedFilePath, "");
+    // read lines from the un classified file
     line = fdio2->readInput();
-    if (line == "") {
-        //Error with opening the file
-    } else {
+    // there is an error with opening the file
+    if (line == "Error with opening the file") {
+        // error
+    }
+    // we got to the end of the file
+    else if (line.empty()){
+        //empty
+    }
+    // send the line to the server
+    else {
         sendData(sock, line);
     }
+    // print the message from the server to the user
     sdio->writeInput(receiveData(sock));
     return 0;
 }

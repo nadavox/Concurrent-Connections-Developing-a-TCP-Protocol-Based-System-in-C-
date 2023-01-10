@@ -186,9 +186,84 @@ void receiveNumber(int clientSock, Values *value) {
     // the user want to activate option 1
     if (number == "1"){
         // execute UploadCommand
-        Command *us = new UploadCommand(clientSock, value);
-        us->execute();
-        free(us);
+//        Command *us = new UploadCommand(clientSock, value);
+//        us->execute();
+//        free(us);
+//the socket.
+        int socket = value->getSocket();
+        char buffer[4096];
+        string dataVector;
+        string firstMessage = "Please upload your local train CSV file.\n";
+        string Upload_Complete = "Upload complete.\n";
+        //send function: classfiedVector
+        strcpy(buffer, firstMessage.c_str());
+        int bytes_sent = send(socket, buffer, strlen(buffer), 0);
+        if (bytes_sent < 0) {
+            perror("Error sending the data to the client");
+            exit(1);
+        }
+        memset(buffer, 0, sizeof(buffer));
+        //receive function in a while until no more data
+        while (true) {
+            int bytes_received = recv(socket, buffer, strlen(buffer), 0);
+            if (bytes_received == 0) {
+                // connection is closed
+                perror("Error the connection with the client is closed");
+                break;
+            }
+            else if (bytes_received < 0) {
+                perror("Error with reading the data from the client");
+                break;
+            }
+            //if we get line by line.
+            dataVector = buffer; // convert the vector/data from the client to string.
+            // save the data vector inside the data structure. classfiedVectorList.
+            //classfiedVector(dataVector, value->getClassfiedVectorList());
+        }
+        //saved it in data structure classfiedVectorList.
+        //send : Upload complete.
+        strcpy(buffer, Upload_Complete.c_str());
+        bytes_sent = send(socket, buffer, Upload_Complete.size(), 0);
+        if (bytes_sent < 0) {
+            perror("Error sending the data to the client");
+            exit(1);
+        }
+        memset(buffer, 0, sizeof(buffer));
+        string secondMessage = "Please upload your local test CSV file.\n";
+        //send function: notclassfiedVector
+        strcpy(buffer, secondMessage.c_str());
+        bytes_sent = send(socket, buffer, strlen(buffer), 0);
+        if (bytes_sent < 0) {
+            perror("Error sending the data to the client");
+            exit(1);
+        }
+        memset(buffer, 0, sizeof(buffer));
+        //receive function in a while until no more data
+        while (true) {
+            int bytes_received = recv(socket, buffer, strlen(buffer), 0);
+            if (bytes_received == 0) {
+                // connection is closed
+                perror("Error the connection with the client is closed");
+                break;
+            }
+            else if (bytes_received < 0) {
+                perror("Error with reading the data from the client");
+                break;
+            }
+            //if we get line by line.
+            dataVector = buffer; // convert the vector/data from the client to string.
+            // save the data vector inside the data structure. notClassfiedVectorList.
+            //notclassfiedVector(dataVector, value->getNotClassfiedVectorList());
+        }
+        //save it in data structure notClassfiedVectorList.
+        //send : Upload complete.
+        strcpy(buffer, Upload_Complete.c_str());
+        bytes_sent = send(socket, buffer, Upload_Complete.size(), 0);
+        if (bytes_sent < 0) {
+            perror("Error sending the data to the client");
+            exit(1);
+        }
+        memset(buffer, 0, sizeof(buffer));
     }
     // the user want to activate option 2
     else if (number == "2") {
@@ -268,7 +343,6 @@ int main(int argc, char *argv[]) {
     }
     // create a socket for the client
     int client_socket;
-    vector<double> userVector;
     struct sockaddr_in client_sin = {};
     unsigned int addr_len = sizeof(client_sin);
     // accept connection

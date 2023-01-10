@@ -101,7 +101,8 @@ void UploadCommand::execute()
 {
     //the socket.
     int socket = values->getSocket();
-    char buffer[4096]; string dataVector;
+    char buffer[4096];
+    string dataVector;
     string firstMessage = "Please upload your local train CSV file.\n";
     string Upload_Complete = "Upload complete.\n";
     //send function: classfiedVector
