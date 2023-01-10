@@ -152,27 +152,27 @@ int main(int argc, char *argv[]) {
     // print the message from the server to the user
     sdio->writeInput(receiveData(sock));
 
-    // print the request from the server to the user
-    sdio->writeInput(receiveData(sock));
-    // get the path to the un classified file from the user
-    string readUnClassifiedFilePath = sdio->readInput();
-    // create a fileIO object with the un classified file path
-    DefaultIO *fdio2 = new FileIO(readUnClassifiedFilePath, "");
-    // read lines from the un classified file
-    line = fdio2->readInput();
-    // there is an error with opening the file
-    if (line == "Error with opening the file") {
-        // error
-    }
-    // we got to the end of the file
-    else if (line.empty()){
-        //empty
-    }
-    // send the line to the server
-    else {
-        sendData(sock, line);
-    }
-    // print the message from the server to the user
-    sdio->writeInput(receiveData(sock));
+//    // print the request from the server to the user
+//    sdio->writeInput(receiveData(sock));
+//    // get the path to the un classified file from the user
+//    string readUnClassifiedFilePath = sdio->readInput();
+//    // create a fileIO object with the un classified file path
+//    DefaultIO *fdio2 = new FileIO(readUnClassifiedFilePath, "");
+//    // read lines from the un classified file
+//    line = fdio2->readInput();
+//    // there is an error with opening the file
+//    if (line == "Error with opening the file") {
+//        // error
+//    }
+//    // we got to the end of the file
+//    else if (line.empty()){
+//        //empty
+//    }
+//    // send the line to the server
+//    else {
+//        sendData(sock, line);
+//    }
+//    // print the message from the server to the user
+//    sdio->writeInput(receiveData(sock));
     return 0;
 }
