@@ -37,7 +37,7 @@ bool isNumber(const string& s)
     return hasDigit;
 }
 
-void classfiedVector(string dataVector,  vector<pair<vector<double>, string> > *classfiedVectorList) {
+void classfiedVector(const string& dataVector,  vector<pair<vector<double>, string> > *classfiedVectorList) {
     vector<double> numbers;
     istringstream iss(dataVector);
     string word; string typeVector;
@@ -58,8 +58,11 @@ void classfiedVector(string dataVector,  vector<pair<vector<double>, string> > *
         } else {
             //the string
             typeVector = word;
-            //need to check if the string is valid ?
         }
+    }
+    if (typeVector.empty()) {
+        //there is no classified string.
+        //the file is not good.
     }
     pair<vector<double>, string> temppair;
     temppair.first = numbers;
@@ -96,10 +99,10 @@ void notclassfiedVector(string dataVector,  vector<pair<vector<double>, string> 
 
 void UploadCommand::execute()
 {
-    char buffer[4096]; string received_data, dataVector;
+    char buffer[4096]; string dataVector;
     string firstMessage = "Please upload your local train CSV file.\n";
     string Upload_Complete = "Upload complete.\n";
-    //send function
+    //send function: classfiedVector
     strcpy(buffer, firstMessage.c_str());
     int bytes_sent = send(socket, buffer, strlen(buffer), 0);
     if (bytes_sent < 0) {
@@ -115,10 +118,8 @@ void UploadCommand::execute()
         dataVector = buffer; // convert the vector/data from the client to string.
         // save the data vector inside the data structure. classfiedVectorList.
         classfiedVector(dataVector, &classfiedVectorList);
-        //received again data from the client. the next line.
-        received_data.append(buffer, bytes_received);
     }
-    //save it in data structure classfiedVectorList.
+    //saved it in data structure classfiedVectorList.
     //send : Upload complete.
     strcpy(buffer, Upload_Complete.c_str());
     bytes_sent = send(socket, buffer, Upload_Complete.size(), 0);
@@ -127,7 +128,7 @@ void UploadCommand::execute()
     }
     memset(buffer, 0, sizeof(buffer));
     string secondMessage = "Please upload your local test CSV file.\n";
-    //send function
+    //send function: notclassfiedVector
     strcpy(buffer, secondMessage.c_str());
     bytes_sent = send(socket, buffer, strlen(buffer), 0);
     if (bytes_sent < 0) {
@@ -135,7 +136,6 @@ void UploadCommand::execute()
     }
     memset(buffer, 0, sizeof(buffer));
     //receive function in a while until no more data
-    received_data = ""; // restart the string.
     while (true) {
         //TODO: if we get line by line from the client i want to put it inside the vector.
         int bytes_received = recv(socket, buffer, strlen(buffer), 0);
@@ -144,8 +144,6 @@ void UploadCommand::execute()
         dataVector = buffer; // convert the vector/data from the client to string.
         // save the data vector inside the data structure. notClassfiedVectorList.
         notclassfiedVector(dataVector, &notClassfiedVectorList);
-        //received again data from the client. the next line.
-        received_data.append(buffer, bytes_received);
     }
     //save it in data structure notClassfiedVectorList.
     //send : Upload complete.
@@ -155,7 +153,6 @@ void UploadCommand::execute()
         ///error
     }
     memset(buffer, 0, sizeof(buffer));
-
 }
 
 string UploadCommand::description() {
