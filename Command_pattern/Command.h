@@ -12,8 +12,8 @@ class Command
 protected:
     static int k;
     static string distance_metric;
-    static vector<pair< vector<double>, string > > classfiedVectorList;
-    static vector<pair< vector<double>, string > > notClassfiedVectorList;
+    vector<pair< vector<double>, string > > *classfiedVectorList;
+    vector<pair< vector<double>, string > > *notClassfiedVectorList;
     static int socket;
     static bool exist;
     void init(int number);

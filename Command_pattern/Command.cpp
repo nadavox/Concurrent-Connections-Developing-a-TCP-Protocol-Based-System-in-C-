@@ -1,7 +1,10 @@
 // Command.cpp
 #include "Command.h"
+int Command::k = 5;
+string Command::distance_metric = "EUC";
+int Command::socket = 0;
 bool Command::exist = false;
-int Command::k;
+
 
 string Command::description()
 {
@@ -19,10 +22,8 @@ void Command::makeFalse() {
 
 void Command::init(int number) {
     if (!exist) {
-        k = 5;
-        distance_metric = "EUC";
-        classfiedVectorList = vector<pair< vector<double>, string > >();
-        notClassfiedVectorList = vector<pair< vector<double>, string > >();
+        classfiedVectorList = new vector<pair< vector<double>, string > >;
+        notClassfiedVectorList = new vector<pair< vector<double>, string > >;
         socket = number;
         exist = true;
     }

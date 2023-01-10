@@ -37,7 +37,7 @@ bool isNumber(const string& s)
     return hasDigit;
 }
 
-void classfiedVector(const string& dataVector,  vector<pair<vector<double>, string> > *classfiedVectorList) {
+void classfiedVector(const string& dataVector,  vector<pair<vector<double>, string> >*classfiedVectorList) {
     vector<double> numbers;
     istringstream iss(dataVector);
     string word; string typeVector;
@@ -117,7 +117,7 @@ void UploadCommand::execute()
         //if we get line by line.
         dataVector = buffer; // convert the vector/data from the client to string.
         // save the data vector inside the data structure. classfiedVectorList.
-        classfiedVector(dataVector, &classfiedVectorList);
+        classfiedVector(dataVector, classfiedVectorList);
     }
     //saved it in data structure classfiedVectorList.
     //send : Upload complete.
@@ -143,7 +143,7 @@ void UploadCommand::execute()
         //if we get line by line.
         dataVector = buffer; // convert the vector/data from the client to string.
         // save the data vector inside the data structure. notClassfiedVectorList.
-        notclassfiedVector(dataVector, &notClassfiedVectorList);
+        notclassfiedVector(dataVector, notClassfiedVectorList);
     }
     //save it in data structure notClassfiedVectorList.
     //send : Upload complete.
