@@ -12,6 +12,9 @@
 #include "Algorithms/CanberraDistance.h"
 #include "Algorithms/Knn.h"
 #include <unistd.h>
+#include "Command_pattern/Command.h"
+#include "Command_pattern/UploadCommand.h"
+
 
 #define TRUE 1
 #define ERROR 1 // if the size of the vector is not good
@@ -236,6 +239,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     // do the function number one
+    Command *first = UploadCommand;
     while (true) {
         char buffer[4096]; // data buffer
         struct sockaddr_in client_sin;
