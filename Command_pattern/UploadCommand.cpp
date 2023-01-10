@@ -99,6 +99,8 @@ void notclassfiedVector(string dataVector,  vector<pair<vector<double>, string> 
 
 void UploadCommand::execute()
 {
+    //the socket.
+    int socket = values->getSocket();
     char buffer[4096]; string dataVector;
     string firstMessage = "Please upload your local train CSV file.\n";
     string Upload_Complete = "Upload complete.\n";
@@ -117,7 +119,7 @@ void UploadCommand::execute()
         //if we get line by line.
         dataVector = buffer; // convert the vector/data from the client to string.
         // save the data vector inside the data structure. classfiedVectorList.
-        classfiedVector(dataVector, classfiedVectorList);
+        classfiedVector(dataVector, values->getClassfiedVectorList());
     }
     //saved it in data structure classfiedVectorList.
     //send : Upload complete.
@@ -143,7 +145,7 @@ void UploadCommand::execute()
         //if we get line by line.
         dataVector = buffer; // convert the vector/data from the client to string.
         // save the data vector inside the data structure. notClassfiedVectorList.
-        notclassfiedVector(dataVector, notClassfiedVectorList);
+        notclassfiedVector(dataVector, values->getNotClassfiedVectorList());
     }
     //save it in data structure notClassfiedVectorList.
     //send : Upload complete.
@@ -160,6 +162,7 @@ string UploadCommand::description() {
 
 }
 
-UploadCommand::UploadCommand(int socket) {
-    Command::init(socket);
+UploadCommand::UploadCommand(int socket, Values *valuesCopy) {
+    values = valuesCopy;
+    valuesCopy->setSocket(socket);
 }
