@@ -10,12 +10,15 @@ using namespace std;
 class Command
 {
 protected:
-    int k;
-    string distance_metric;
-    vector<pair<double, string >> classfiedVectorList;
-    vector<pair<double, string >> notClassfiedVectorList;
-    vector<string> tempBuffer;
-    int socket;
+    static int k;
+    static string distance_metric;
+    // first element is: vector of the numbers.
+    // second element is pair: the first element is the name/type of the vector
+    //                        the second element is the size of the vector.
+    static vector<pair< vector<double>, string > > classfiedVectorList;
+    static vector<pair< vector<double>, string > > notClassfiedVectorList;
+    static vector<string> tempBuffer;
+    static int socket;
 public:
     Command(int num);
     virtual string description() = 0;

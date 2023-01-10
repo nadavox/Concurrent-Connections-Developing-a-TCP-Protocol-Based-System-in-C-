@@ -3,7 +3,14 @@
 #include <netinet/in.h>
 #include <vector>
 #include <fstream>
-#include "algorithm/Knn.h"
+#include "Algorithms/Distance.h"
+#include "IOClass/IOClass.h"
+#include "Algorithms/EuclideanDistance.h"
+#include "Algorithms/TaxicabGeometry.h"
+#include "Algorithms/ChebyshevDistance.h"
+#include "Algorithms/MinkowskiDistance.h"
+#include "Algorithms/CanberraDistance.h"
+#include "Algorithms/Knn.h"
 #include <unistd.h>
 
 #define TRUE 1
