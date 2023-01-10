@@ -6,6 +6,7 @@
 class ExitCommand : public Command
 {
 public:
+    string description();
     void execute();
 };
 

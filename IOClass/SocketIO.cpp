@@ -2,6 +2,10 @@
 #include <unistd.h>
 #include <string.h>
 
+/**
+ * the constructor of SocketIO
+ * @param sockNumber - the socket number of whom we want connection
+ */
 SocketIO::SocketIO(int sockNumber) {
     this->sockNumber = sockNumber;
 }
