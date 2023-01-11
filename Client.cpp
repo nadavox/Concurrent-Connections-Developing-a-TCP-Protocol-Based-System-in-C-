@@ -155,6 +155,7 @@ int main(int argc, char *argv[]) {
         sdio->writeInput(receiveData(sock));
         // get the path to the un classified file from the user
         string readUnClassifiedFilePath = sdio->readInput();
+        cout << "after read" << endl;
         // create a fileIO object with the un classified file path
         DefaultIO *fdio2 = new FileIO(readUnClassifiedFilePath, "");
         // read lines from the un classified file
