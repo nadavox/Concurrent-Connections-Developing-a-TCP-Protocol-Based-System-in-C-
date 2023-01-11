@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 #include <string.h>
 #include "IOClass/DefaultIO.h"
 #include "IOClass/StandardIO.h"
@@ -107,6 +108,7 @@ void function1(int sock, DefaultIO* sdio) {
         cout << line << endl;
         sendData(sock, line);
     }
+    // let the server now we are done
     sendData(sock, "done");
     // print the request from the server to the user
     sdio->writeInput(receiveData(sock));
@@ -134,6 +136,87 @@ void function1(int sock, DefaultIO* sdio) {
 }
 
 /**
+ * this function get messages from the server and sends the input from the user about the parameters
+ * @param sock - the client socket
+ * @param sdio - the StandardIO object
+ */
+void function2(int sock, DefaultIO* sdio) {
+    // print the information from the server
+    sdio->writeInput(receiveData(sock));
+    // get the user response
+    string userUpdate = sdio->readInput();
+    // send the server the input from the user
+    sendData(sock, userUpdate);
+    string isNotOkay = receiveData(sock);
+    // just one of the parameters is not valid
+    if (isNotOkay == "1") {
+        // print the information from the server
+        sdio->writeInput(receiveData(sock));
+    }
+    // both parameters are not valid
+    else if(isNotOkay == "2") {
+        // print the information from the server
+        sdio->writeInput(receiveData(sock));
+        // print the information from the server
+        sdio->writeInput(receiveData(sock));
+    }
+}
+
+/**
+ * this function prints to the user the classification of the vectors
+ * @param sock - the client socket
+ * @param sdio - the StandardIO object
+ */
+void function4(int sock, DefaultIO* sdio) {
+    string s;
+    // print the classification to the user from the server until there are no more
+    while (true) {
+        s = receiveData(sock);
+        // print the information from the server
+        sdio->writeInput(s);
+        // there are no more classification or the user need to make some other function before this one
+        if (s == "Done." || s == "please upload data" || s == "please classify the data") {
+            break;
+        }
+    }
+}
+
+/**
+ * this function writes the classification of the vectors to a file
+ * @param sock - the client socket
+ * @param sdio - the StandardIO object
+ * @param fdio - the FileIO object
+ */
+void function5(int sock, DefaultIO* sdio) {
+    // get a path to a file which we will write the results to
+    string writeFilePath = sdio->readInput();
+    DefaultIO* fdio = new FileIO("", writeFilePath);
+    string s;
+    // print the classification to the user from the server until there are no more
+    while (true) {
+        s = receiveData(sock);
+        // there are no more classification
+        if (s == "Done.") {
+            break;
+        }
+        // the user need to make some other function before this one
+        else if (s == "please upload data" || s == "please classify the data") {
+            // print the information from the server
+            sdio->writeInput(s);
+            break;
+        }
+        // the string from the server is a classification of a vector
+        else {
+            // write the result to the file
+            fdio->writeInput(s);
+        }
+    }
+    // delete the allocation of fdio
+    delete(fdio);
+}
+
+
+/**
  * the function that handles the client
  * @param argc
  * @param argv
@@ -157,41 +240,52 @@ int main(int argc, char *argv[]) {
     int sock = createSocket(port_no, ip_address);
     // get menu from the server
     DefaultIO *sdio = new StandardIO;
-    // print the menu to the user
-    sdio->writeInput(receiveData(sock));
-    // get number from the user
-    string input = sdio->readInput();
-    // send the number to the server
-    sendData(sock, input);
+    // get the program to run until the user press 8
+    while(true) {
+        // print the menu to the user
+        sdio->writeInput(receiveData(sock));
+        // get number from the user
+        string input = sdio->readInput();
+        // send the number to the server
+        sendData(sock, input);
 
-    // the user want to activate option 1
-    if (input == "1"){
-        // call function1
-        function1(sock, sdio);
-    }
+        // the user want to activate option 1
+        if (input == "1"){
+            // call function1
+            function1(sock, sdio);
+        }
         // the user want to activate option 2
-    else if (input == "2") {
-        // call function2
-    }
+        else if (input == "2") {
+            // call function2
+            function2(sock, sdio);
+        }
         // the user want to activate option 3
-    else if (input == "3") {
-        // call function3
-    }
+        else if (input == "3") {
+            // print the information from the server
+            sdio->writeInput(receiveData(sock));
+        }
         // the user want to activate option 4
-    else if (input == "4") {
-        // call function4
-    }
+        else if (input == "4") {
+            // call function4
+            function4(sock, sdio);
+        }
         // the user want to activate option 5
-    else if (input == "5") {
-        // call function5
-    }
+        else if (input == "5") {
+            // call function5
+            function5(sock, sdio);
+        }
         // the user want to activate option 8
-    else if (input == "8") {
-        // call function8
-    }
+        else if (input == "8") {
+            // delete the allocation of sdio
+            delete(sdio);
+            // close the client socket
+            close(sock);
+            break;
+        }
         // the user didn't inset valid value
-    else {
-        // invalid number
+        else {
+            // invalid number
+        }
     }
     return 0;
 }

@@ -120,8 +120,7 @@ void UploadCommand::execute()
     }
 
     int expected_data_len = sizeof(buffer);
-    string s = buffer;
-    while (s != "done") {
+    while (true) {
         // clean the buffer
         memset(buffer, 0, sizeof(buffer));
         // get the lines from the client
@@ -135,8 +134,12 @@ void UploadCommand::execute()
             perror("Error with reading the data from the server");
             exit(1);
         }
-        s = buffer;
+        string s(buffer);
         cout << s << endl;
+        if (s == "done") {
+            cout << "in break" << endl;
+            break;
+        }
     }
 
     // send the upload complete string to the client
@@ -167,7 +170,7 @@ void UploadCommand::execute()
 
     // clean the buffer
     memset(buffer, 0, sizeof(buffer));
-    s = buffer;
+    string s = buffer;
     while (s != "done") {
         // clean the buffer
         memset(buffer, 0, sizeof(buffer));
