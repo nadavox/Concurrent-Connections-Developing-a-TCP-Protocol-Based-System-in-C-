@@ -120,16 +120,23 @@ void UploadCommand::execute()
     }
 
     int expected_data_len = sizeof(buffer);
-    // get the lines from the client
-    int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
-    if (read_bytes == 0) {
-        // connection is closed
-        perror("Error the connection with the server is closed");
-        exit(1);
-    }
-    else if (read_bytes < 0) {
-        perror("Error with reading the data from the server");
-        exit(1);
+    string s = buffer;
+    while (s != "done") {
+        // clean the buffer
+        memset(buffer, 0, sizeof(buffer));
+        // get the lines from the client
+        int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
+        if (read_bytes == 0) {
+            // connection is closed
+            perror("Error the connection with the server is closed");
+            exit(1);
+        }
+        else if (read_bytes < 0) {
+            perror("Error with reading the data from the server");
+            exit(1);
+        }
+        s = buffer;
+        cout << s << endl;
     }
 
     // send the upload complete string to the client
@@ -145,7 +152,6 @@ void UploadCommand::execute()
         exit(1);
     }
 
-    cout << "" << endl;
     // send the test string to the client
     data_len = testString.length();
     data_addr[data_len + 1];
@@ -161,17 +167,22 @@ void UploadCommand::execute()
 
     // clean the buffer
     memset(buffer, 0, sizeof(buffer));
-    expected_data_len = sizeof(buffer);
-    // get the lines from the client
-    read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
-    if (read_bytes == 0) {
-        // connection is closed
-        perror("Error the connection with the server is closed");
-        exit(1);
-    }
-    else if (read_bytes < 0) {
-        perror("Error with reading the data from the server");
-        exit(1);
+    s = buffer;
+    while (s != "done") {
+        // clean the buffer
+        memset(buffer, 0, sizeof(buffer));
+        // get the lines from the client
+        int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
+        if (read_bytes == 0) {
+            // connection is closed
+            perror("Error the connection with the server is closed");
+            exit(1);
+        }
+        else if (read_bytes < 0) {
+            perror("Error with reading the data from the server");
+            exit(1);
+        }
+        s = buffer;
     }
 
     // send the upload complete string to the client
