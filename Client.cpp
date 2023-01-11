@@ -155,7 +155,6 @@ int main(int argc, char *argv[]) {
         sdio->writeInput(receiveData(sock));
         // get the path to the un classified file from the user
         string readUnClassifiedFilePath = sdio->readInput();
-        cout << "after read" << endl;
         // create a fileIO object with the un classified file path
         DefaultIO *fdio2 = new FileIO(readUnClassifiedFilePath, "");
         // read lines from the un classified file
@@ -164,11 +163,11 @@ int main(int argc, char *argv[]) {
         if (line == "Error with opening the file") {
             // error
         }
-            // we got to the end of the file
+        // we got to the end of the file
         else if (line.empty()){
             //empty
         }
-            // send the line to the server
+        // send the line to the server
         else {
             sendData(sock, line);
             // print the message from the server to the user

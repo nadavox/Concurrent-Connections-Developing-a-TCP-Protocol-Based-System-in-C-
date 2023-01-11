@@ -119,8 +119,6 @@ void UploadCommand::execute()
         exit(1);
     }
 
-    // clean the buffer
-    memset(buffer, 0, sizeof(buffer));
     int expected_data_len = sizeof(buffer);
     // get the lines from the client
     int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
@@ -147,6 +145,7 @@ void UploadCommand::execute()
         exit(1);
     }
 
+    cout << "" << endl;
     // send the test string to the client
     data_len = testString.length();
     data_addr[data_len + 1];
@@ -163,7 +162,6 @@ void UploadCommand::execute()
     // clean the buffer
     memset(buffer, 0, sizeof(buffer));
     expected_data_len = sizeof(buffer);
-    cout << "before receive" << endl;
     // get the lines from the client
     read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
     if (read_bytes == 0) {
