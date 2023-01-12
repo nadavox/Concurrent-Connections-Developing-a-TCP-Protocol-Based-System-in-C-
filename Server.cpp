@@ -19,6 +19,7 @@
 #include "Command_pattern/DownloadCommand.h"
 #include "Command_pattern/ExitCommand.h"
 #include <unistd.h>
+#include <thread>
 
 #define TRUE 1
 #define ERROR 1 // if the size of the vector is not good
@@ -280,6 +281,7 @@ int main(int argc, char *argv[]) {
         // create a function that receives the number of the function from the client
         int counter = 0;
         while (number != "8") {
+            this_thread::sleep_for(chrono::milliseconds(100));
             cli->start();
             cout << "counter outside: "<< counter <<endl;
             number = receiveNumber(client_socket, cli, counter);
