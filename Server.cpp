@@ -167,7 +167,7 @@ void classifyData(vector<pair<vector<double>, string> > *vectorsList, int new_so
  * the function gets data from the client and check if the number is valid
  * @param clientSock - the client socket number
  */
-string receiveNumber(int clientSock, CLI *c, int counter) {
+string receiveNumber(int clientSock, CLI *c) {
     char buffer[4096];
     // make the array to zero.
     memset(buffer, 0, sizeof(buffer));
@@ -276,7 +276,7 @@ int main(int argc, char *argv[]) {
         while (number != "8") {
             this_thread::sleep_for(chrono::milliseconds(10));
             cli->start();
-            number = receiveNumber(client_socket, cli, counter);
+            number = receiveNumber(client_socket, cli);
         }
         delete(values);
         delete(cli);
