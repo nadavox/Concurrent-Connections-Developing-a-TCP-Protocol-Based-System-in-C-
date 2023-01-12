@@ -273,12 +273,10 @@ int main(int argc, char *argv[]) {
         Values *values = new Values(client_socket);
         CLI *cli = new CLI(client_socket, values);
         // create a function that receives the number of the function from the client
-        int counter = 0;
         while (number != "8") {
             this_thread::sleep_for(chrono::milliseconds(10));
             cli->start();
             number = receiveNumber(client_socket, cli, counter);
-            counter++;
         }
         delete(values);
         delete(cli);
