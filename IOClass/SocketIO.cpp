@@ -16,11 +16,13 @@ SocketIO::SocketIO(int sockNumber) {
 string SocketIO::readInput() {
     char buffer[4096];
     memset(buffer, 0, sizeof(buffer));
-    int n;
-    n = read(sockNumber, buffer, 4096);
+    cout << "reading input from the server." <<endl;
+    long int n = read(sockNumber, buffer, 4096);
+    cout << "finish reading the input" << endl;
     if (n < 0){
         perror("Error reading from the socket");
     }
+    cout << "reading successfully" << endl;
     return buffer;
 }
 

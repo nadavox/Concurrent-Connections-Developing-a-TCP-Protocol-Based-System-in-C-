@@ -16,7 +16,7 @@ void SettingsCommand::execute()
 {
     //the client socket
     int clientSocket = values->getSocket();
-    char buffer[4096];
+    char buffer[256];
     string currentParametersString = "The current KNN parameters are: K = " + to_string(values->getK()) +
             ", distance metric = " + values->getDistanceMetric() + "\n";
 
@@ -27,7 +27,9 @@ void SettingsCommand::execute()
     // copy the data of the vector, distance function name and k to char array
     strcpy(data_addr, str);
     // send the full sentence to the server
-    int sent_bytes = send(clientSocket, data_addr, data_len, 0);
+    cout <<"sending the option to the user" << endl;
+   long int sent_bytes = send(clientSocket, data_addr, data_len, 0);
+   cout << "send successfully" << endl;
     if (sent_bytes < 0) {
         perror("Error sending the data to the client");
         exit(1);

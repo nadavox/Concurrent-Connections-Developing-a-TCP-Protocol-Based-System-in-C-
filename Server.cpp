@@ -166,13 +166,14 @@ void classifyData(vector<pair<vector<double>, string> > *vectorsList, int new_so
  * the function gets data from the client and check if the number is valid
  * @param clientSock - the client socket number
  */
-string receiveNumber(int clientSock, CLI *c) {
+string receiveNumber(int clientSock, CLI *c, int counter) {
     char buffer[4096];
     // make the array to zero.
     memset(buffer, 0, sizeof(buffer));
     int expected_data_len = sizeof(buffer);
     // read from the client
-    int read_bytes = recv(clientSock, buffer, expected_data_len, 0);
+    cout << "now reading from the client. the number he will enter: " << endl;
+    long int read_bytes = recv(clientSock, buffer, expected_data_len, 0);
     if (read_bytes == 0) {
         // connection is closed
         perror("Error the connection with the client is closed");
@@ -182,7 +183,9 @@ string receiveNumber(int clientSock, CLI *c) {
         perror("Error with reading the data from the client");
         exit(1);
     }
+    cout <<"the buffer: " << buffer << "counter: " << counter <<endl;
     string number(buffer);
+    cout <<"the number: " << number << "counter: " << counter <<endl;
     // the user want to activate option 1
     if (number == "1"){
         // execute UploadCommand
@@ -190,32 +193,37 @@ string receiveNumber(int clientSock, CLI *c) {
     }
     // the user want to activate option 2
     else if (number == "2") {
+        cout <<"the number: " << number << "counter: " << counter <<endl;
         // execute SettingsCommand
         c->executeCommand("2");
     }
     // the user want to activate option 3
     else if (number == "3") {
+        cout <<"the number: " << number << "counter: " << counter <<endl;
         // execute ClassifyCommand
         c->executeCommand("3");
     }
     // the user want to activate option 4
     else if (number == "4") {
+        cout <<"the number: " << number << "counter: " << counter <<endl;
         // execute DisplayCommand
         c->executeCommand("4");
     }
     // the user want to activate option 5
     else if (number == "5") {
+        cout <<"the number: " << number << "counter: " << counter <<endl;
         // execute DownloadCommand
         c->executeCommand("5");
     }
     // the user want to activate option 8
     else if (number == "8") {
+        cout <<"the number: " << number << "counter: " << counter <<endl;
         // execute ExitCommand
         c->executeCommand("8");
     }
     // the user didn't inset valid value
     else {
-        // invalid number
+        cout <<"the number: " << number << "counter: " << counter <<endl;
     }
     return number;
 }
@@ -270,9 +278,12 @@ int main(int argc, char *argv[]) {
         Values *values = new Values(client_socket);
         CLI *cli = new CLI(client_socket, values);
         // create a function that receives the number of the function from the client
+        int counter = 0;
         while (number != "8") {
             cli->start();
-            number = receiveNumber(client_socket, cli);
+            cout << "counter outside: "<< counter <<endl;
+            number = receiveNumber(client_socket, cli, counter);
+            counter++;
         }
         delete(values);
         delete(cli);

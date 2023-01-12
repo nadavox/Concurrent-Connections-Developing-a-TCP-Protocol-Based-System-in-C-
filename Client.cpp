@@ -101,11 +101,12 @@ void function2(DefaultIO* sdio, DefaultIO* stdio) {
     // get the user response
     string userUpdate = sdio->readInput();
     // the user want to update the parameters
-    if (userUpdate != "") {
+    if (!userUpdate.empty()) {
         // send the server the input from the user
         stdio->writeInput(userUpdate);
         string answer = stdio->readInput();
         // one of the parameters the user have inserted is not valid
+
         if (answer != "input is valid") {
             // print the information from the server
             sdio->writeInput(answer);
@@ -198,9 +199,13 @@ int main(int argc, char *argv[]) {
     // create SocketIO object
     DefaultIO *stdio = new SocketIO(sock);
     // get the program to run until the user press 8
+    int counter = 0;
     while(true) {
+        cout << "the start of the while loop in the client"<< endl;
         // print the menu to the user
-        sdio->writeInput(stdio->readInput());
+        string menue = stdio->readInput();
+        cout << "counter: " << counter <<endl;
+        sdio->writeInput(menue);
         // get number from the user
         string input = sdio->readInput();
         // send the number to the server
@@ -215,6 +220,8 @@ int main(int argc, char *argv[]) {
         else if (input == "2") {
             // call function2
             function2(sdio, stdio);
+            counter ++;
+            cout << " if menue print efor me not good" << endl;
         }
         // the user want to activate option 3
         else if (input == "3") {
@@ -242,7 +249,7 @@ int main(int argc, char *argv[]) {
         }
         // the user didn't inset valid value
         else {
-            // invalid number
+            cout << "invalid input: " << input << endl;
         }
     }
     return 0;
