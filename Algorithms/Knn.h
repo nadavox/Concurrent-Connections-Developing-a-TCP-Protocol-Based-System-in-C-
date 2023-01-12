@@ -6,8 +6,7 @@
 #include "ChebyshevDistance.h"
 #include "MinkowskiDistance.h"
 #include "TaxicabGeometry.h"
-#include "../IOClass/IOClass.h"
-//#include <bits/stdc++.h>
+#include <bits/stdc++.h>
 
 class Knn {
 private:

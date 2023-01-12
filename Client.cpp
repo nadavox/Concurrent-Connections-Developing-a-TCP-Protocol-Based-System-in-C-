@@ -9,7 +9,7 @@
 #include "IOClass/DefaultIO.h"
 #include "IOClass/StandardIO.h"
 #include "IOClass/SocketIO.h"
-#include "IOClass/FileIO.h"
+#include "fstream"
 
 using namespace std;
 
@@ -63,7 +63,7 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     // reading lines from the first file
     while(getline(inputFileOne, line)) {
         stdio->writeInput(line);
-        this_thread::sleep_for(chrono::milliseconds(100));
+        this_thread::sleep_for(chrono::milliseconds(10));
     }
     // let the server now we are done
     stdio->writeInput("done");
@@ -83,7 +83,7 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     // reading lines from the first file
     while(getline(inputFileTwo, line)) {
         stdio->writeInput(line);
-        this_thread::sleep_for(chrono::milliseconds(100));
+        this_thread::sleep_for(chrono::milliseconds(10));
     }
     stdio->writeInput("done");
     // print the request from the server to the user
@@ -106,7 +106,6 @@ void function2(DefaultIO* sdio, DefaultIO* stdio) {
         stdio->writeInput(userUpdate);
         string answer = stdio->readInput();
         // one of the parameters the user have inserted is not valid
-
         if (answer != "input is valid") {
             // print the information from the server
             sdio->writeInput(answer);
@@ -146,7 +145,6 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
 void function5(DefaultIO* sdio, DefaultIO* stdio) {
     // get a path to a file which we will write the results to
     string writeFilePath = sdio->readInput();
-    DefaultIO* fdio = new FileIO("", writeFilePath);
     string s;
     // print the classification to the user from the server until there are no more
     while (true) {
@@ -164,11 +162,8 @@ void function5(DefaultIO* sdio, DefaultIO* stdio) {
         // the string from the server is a classification of a vector
         else {
             // write the result to the file
-            fdio->writeInput(s);
         }
     }
-    // delete the allocation of fdio
-    delete fdio;
 }
 
 
@@ -202,8 +197,8 @@ int main(int argc, char *argv[]) {
     int counter = 0;
     while(true) {
         // print the menu to the user
-        string menue = stdio->readInput();
-        sdio->writeInput(menue);
+        string menu = stdio->readInput();
+        sdio->writeInput(menu);
         // get number from the user
         string input = sdio->readInput();
         // send the number to the server
@@ -246,7 +241,7 @@ int main(int argc, char *argv[]) {
         }
         // the user didn't inset valid value
         else {
-            cout << "invalid input: " << input << endl;
+            // error
         }
     }
     return 0;
