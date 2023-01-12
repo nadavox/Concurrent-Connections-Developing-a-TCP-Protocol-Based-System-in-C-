@@ -102,15 +102,9 @@ void function2(DefaultIO* sdio, DefaultIO* stdio) {
     string userUpdate = sdio->readInput();
     // send the server the input from the user
     stdio->writeInput(userUpdate);
-    string isNotOkay = stdio->readInput();
-    if (isNotOkay == "1") {
-        // print the information from the server
-        sdio->writeInput(stdio->readInput());
-    }
-    // both parameters are not valid
-    else if(isNotOkay == "2") {
-        // print the information from the server
-        sdio->writeInput(stdio->readInput());
+    string isOkay = stdio->readInput();
+    // one of the parameters the user have inserted is not valid
+    if (isOkay != "input is valid") {
         // print the information from the server
         sdio->writeInput(stdio->readInput());
     }
