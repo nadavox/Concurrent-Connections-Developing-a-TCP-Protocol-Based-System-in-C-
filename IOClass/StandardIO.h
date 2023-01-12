@@ -7,6 +7,7 @@ class StandardIO : public DefaultIO {
 public:
     string readInput();
     void writeInput(string s);
+    ~StandardIO() {}
 };
 
 #endif //ADVANCEDPROGRAMINGPART3_STANDARDIO_H
