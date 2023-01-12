@@ -12,12 +12,6 @@
 #include "Algorithms/Knn.h"
 #include "Command_pattern/CLI.h"
 #include "Command_pattern/Command.h"
-#include "Command_pattern/UploadCommand.h"
-#include "Command_pattern/SettingsCommand.h"
-#include "Command_pattern/ClassifyCommand.h"
-#include "Command_pattern/DisplayCommand.h"
-#include "Command_pattern/DownloadCommand.h"
-#include "Command_pattern/ExitCommand.h"
 #include <unistd.h>
 #include <thread>
 
@@ -173,7 +167,6 @@ string receiveNumber(int clientSock, CLI *c) {
     memset(buffer, 0, sizeof(buffer));
     int expected_data_len = sizeof(buffer);
     // read from the client
-    cout << "now reading from the client. the number he will enter: " << endl;
     long int read_bytes = recv(clientSock, buffer, expected_data_len, 0);
     if (read_bytes == 0) {
         // connection is closed
