@@ -2,7 +2,6 @@
 #include <cstring>
 #include <netinet/in.h>
 #include <vector>
-#include <fstream>
 #include "Algorithms/Distance.h"
 #include "Algorithms/EuclideanDistance.h"
 #include "Algorithms/TaxicabGeometry.h"
