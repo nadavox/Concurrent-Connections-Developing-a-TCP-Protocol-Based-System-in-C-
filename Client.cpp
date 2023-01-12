@@ -86,14 +86,13 @@ string receiveData(int sock) {
  * the function gets messages from the server and sends the lines from the files to the server
  * @param sock - the client socket
  * @param sdio - the StandardIO object
+ * @param stdio - the SocketIO object
  */
-void function1(int sock, DefaultIO* sdio) {
+void function1(int sock, DefaultIO* sdio, DefaultIO* stdio) {
     // print the request from the server to the user
-    sdio->writeInput(receiveData(sock));
+    sdio->writeInput(stdio->readInput());
     // get the path to the classified file from the user
     string readClassifiedFilePath = sdio->readInput();
-    // create a fileIO object with the classified file path
-    DefaultIO *fdio1 = new FileIO(readClassifiedFilePath, "");
     ifstream inputFileOne;
     // open the file, doesn't matter if it relative or not.
     inputFileOne.open(readClassifiedFilePath);
@@ -104,21 +103,20 @@ void function1(int sock, DefaultIO* sdio) {
         perror("Error with opening the file");
         return;
     }
+
     // reading lines from the first file
     while(getline(inputFileOne, line)) {
-        sendData(sock, line);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        stdio->writeInput(line);
+        this_thread::sleep_for(chrono::milliseconds(100));
     }
     // let the server now we are done
-    sendData(sock, "done");
+    stdio->writeInput("done");
     // print the message from the server to the user
-    sdio->writeInput(receiveData(sock));
+    sdio->writeInput(stdio->readInput());
     // get the path to the un classified file from the user
     string readUnClassifiedFilePath = sdio->readInput();
-    // create a fileIO object with the classified file path
-    DefaultIO *fdio2 = new FileIO(readUnClassifiedFilePath, "");
-    // open the file, doesn't matter if it relative or not.
     ifstream inputFileTwo;
+    // open the file, doesn't matter if it relative or not.
     inputFileTwo.open(readUnClassifiedFilePath);
     // could not open the file
     if (!inputFileTwo)
@@ -128,12 +126,12 @@ void function1(int sock, DefaultIO* sdio) {
     }
     // reading lines from the first file
     while(getline(inputFileTwo, line)) {
-        sendData(sock, line);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        stdio->writeInput(line);
+        this_thread::sleep_for(chrono::milliseconds(100));
     }
-    sendData(sock, "done");
+    stdio->writeInput("done");
     // print the request from the server to the user
-    sdio->writeInput(receiveData(sock));
+    sdio->writeInput(stdio->readInput());
 }
 
 /**
@@ -246,17 +244,16 @@ int main(int argc, char *argv[]) {
     // get the program to run until the user press 8
     while(true) {
         // print the menu to the user
-        //->writeInput(receiveData(sock));
         sdio->writeInput(stdio->readInput());
         // get number from the user
         string input = sdio->readInput();
         // send the number to the server
-        sendData(sock, input);
+        stdio->writeInput(input);
 
         // the user want to activate option 1
         if (input == "1"){
             // call function1
-            function1(sock, sdio);
+            function1(sock, sdio, stdio);
         }
         // the user want to activate option 2
         else if (input == "2") {
