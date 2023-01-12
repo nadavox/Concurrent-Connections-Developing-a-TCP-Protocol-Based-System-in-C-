@@ -52,9 +52,9 @@ void CLI::executeCommand(string s) {
 }
 
 CLI::~CLI() {
-    for (const auto& [key, value] : this->commands) {
-        delete(value);
-        this->commands.erase(key);
+    for (auto it = commands.rbegin(); it != commands.rend(); ++it) {
+        delete it->second;
+        commands.erase(it->first);
     }
-    delete(this);
+
 }

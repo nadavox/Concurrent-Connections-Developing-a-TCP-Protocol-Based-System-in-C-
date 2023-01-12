@@ -274,6 +274,7 @@ int main(int argc, char *argv[]) {
             cli->start();
             number = receiveNumber(client_socket, cli);
         }
+        delete(values);
         delete(cli);
         close(client_socket);
         number.clear();
