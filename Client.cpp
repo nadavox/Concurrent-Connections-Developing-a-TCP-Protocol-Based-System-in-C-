@@ -239,12 +239,15 @@ int main(int argc, char *argv[]) {
     char* ip_address = argv[1];
     // create a socket
     int sock = createSocket(port_no, ip_address);
-    // get menu from the server
+    // create StandardIO object
     DefaultIO *sdio = new StandardIO;
+    // create SocketIO object
+    DefaultIO *stdio = new SocketIO(sock);
     // get the program to run until the user press 8
     while(true) {
         // print the menu to the user
-        sdio->writeInput(receiveData(sock));
+        //->writeInput(receiveData(sock));
+        sdio->writeInput(stdio->readInput());
         // get number from the user
         string input = sdio->readInput();
         // send the number to the server
