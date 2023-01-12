@@ -145,7 +145,6 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
 void function5(DefaultIO* sdio, DefaultIO* stdio) {
     // get a path to a file which we will write the results to
     string writeFilePath = sdio->readInput();
-    DefaultIO* fdio = new FileIO("", writeFilePath);
     string s;
     // print the classification to the user from the server until there are no more
     while (true) {
@@ -163,11 +162,8 @@ void function5(DefaultIO* sdio, DefaultIO* stdio) {
         // the string from the server is a classification of a vector
         else {
             // write the result to the file
-            fdio->writeInput(s);
         }
     }
-    // delete the allocation of fdio
-    delete(fdio);
 }
 
 
