@@ -100,13 +100,21 @@ void function2(DefaultIO* sdio, DefaultIO* stdio) {
     sdio->writeInput(stdio->readInput());
     // get the user response
     string userUpdate = sdio->readInput();
-    // send the server the input from the user
-    stdio->writeInput(userUpdate);
-    string isOkay = stdio->readInput();
-    // one of the parameters the user have inserted is not valid
-    if (isOkay != "input is valid") {
-        // print the information from the server
-        sdio->writeInput(stdio->readInput());
+    // the user want to update the parameters
+    if (userUpdate != "") {
+        // send the server the input from the user
+        stdio->writeInput(userUpdate);
+        string answer = stdio->readInput();
+        // one of the parameters the user have inserted is not valid
+        if (answer != "input is valid") {
+            // print the information from the server
+            sdio->writeInput(answer);
+        }
+    }
+    // the user don't want to update the parameters
+    else {
+        // send the server that the user don't want to update the parameters
+        stdio->writeInput("done");
     }
 }
 

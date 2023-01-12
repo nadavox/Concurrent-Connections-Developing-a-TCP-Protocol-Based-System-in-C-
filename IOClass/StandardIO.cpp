@@ -5,9 +5,7 @@
  */
 string StandardIO::readInput() {
     string s;
-    cin >> s;
-    // clean the buffer
-    cin.ignore();
+    getline(cin, s);
     return s;
 }
 
