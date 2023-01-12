@@ -6,6 +6,7 @@
 class SettingsCommand : public Command
 {
 public:
+    explicit SettingsCommand(int socket, Values *value);
     string description();
     void execute();
 };

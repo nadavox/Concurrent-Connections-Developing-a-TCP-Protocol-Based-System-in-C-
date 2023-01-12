@@ -29,7 +29,7 @@ void CLI::start() {
  */
 CLI::CLI(int socketNumber, Values *v) {
     Command *uc = new UploadCommand(socketNumber, v);
-    Command *sc = new SettingsCommand();
+    Command *sc = new SettingsCommand(socketNumber, v);
     Command *cc = new ClassifyCommand();
     Command *dyc = new DisplayCommand();
     Command *ddc = new DownloadCommand();
