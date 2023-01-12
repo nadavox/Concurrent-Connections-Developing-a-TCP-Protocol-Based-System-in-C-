@@ -27,9 +27,7 @@ void SettingsCommand::execute()
     // copy the data of the vector, distance function name and k to char array
     strcpy(data_addr, str);
     // send the full sentence to the server
-    cout <<"sending the option to the user" << endl;
    long int sent_bytes = send(clientSocket, data_addr, data_len, 0);
-   cout << "send successfully" << endl;
     if (sent_bytes < 0) {
         perror("Error sending the data to the client");
         exit(1);

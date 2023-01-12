@@ -201,10 +201,8 @@ int main(int argc, char *argv[]) {
     // get the program to run until the user press 8
     int counter = 0;
     while(true) {
-        cout << "the start of the while loop in the client"<< endl;
         // print the menu to the user
         string menue = stdio->readInput();
-        cout << "counter: " << counter <<endl;
         sdio->writeInput(menue);
         // get number from the user
         string input = sdio->readInput();
@@ -221,7 +219,6 @@ int main(int argc, char *argv[]) {
             // call function2
             function2(sdio, stdio);
             counter ++;
-            cout << " if menue print efor me not good" << endl;
         }
         // the user want to activate option 3
         else if (input == "3") {
