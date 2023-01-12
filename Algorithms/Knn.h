@@ -1,5 +1,6 @@
 #ifndef ADVANCEDPROGRAMINGPART2_KNN_H
 #define ADVANCEDPROGRAMINGPART2_KNN_H
+
 #include "Distance.h"
 #include "EuclideanDistance.h"
 #include "CanberraDistance.h"

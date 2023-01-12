@@ -4,6 +4,7 @@
 #include <cstring>
 #include <sstream>
 #include <string>
+#include <string.h>
 
 using namespace std;
 
@@ -100,10 +101,7 @@ void UploadCommand::notClassifiedVector(const string &dataVector) {
             // error
         }
     }
-    pair<vector<double>, string> tempPair;
-    tempPair.first = numbers;
-    tempPair.second = typeVector;
-    values->setNotClassifiedVectorList(&tempPair);
+    values->setNotClassifiedVectorList(&numbers);
 }
 
 /**
@@ -113,30 +111,31 @@ void UploadCommand::notClassifiedVector(const string &dataVector) {
 void UploadCommand::execute() {
     //the client socket
     int clientSocket = values->getSocket();
-    char buffer[4096];
+    char buffer[512];
+    // clean the buffer
+    memset(buffer, 0, sizeof(buffer));
     string trainString = "Please upload your local train CSV file.\n";
     string uploadComplete1String = "Upload complete.\nPlease upload your local test CSV file.\n";
     string uploadComplete2String = "Upload complete.\n";
+    vector<string> classifiedStrings;
+    vector<string> unclassifiedStrings;
 
     // send the train string to the client
     unsigned int data_len = trainString.length();
     char data_addr[data_len + 1];
     const char* str = trainString.c_str();
-    // copy the data of the vector, distance function name and k to char array
+    // copy the data to the char array
     strcpy(data_addr, str);
-    // send the full sentence to the server
+    // send the string to the server
     long int sent_bytes = send(clientSocket, data_addr, data_len, 0);
     if (sent_bytes < 0) {
         perror("Error sending the data to the client");
         exit(1);
     }
-
     int expected_data_len = sizeof(buffer);
     while (true) {
-        // clean the buffer
-        memset(buffer, 0, sizeof(buffer));
         // get the lines from the client
-        int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
+        long int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
         if (read_bytes == 0) {
             // connection is closed
             perror("Error the connection with the server is closed");
@@ -149,9 +148,15 @@ void UploadCommand::execute() {
         string s(buffer);
         // done reading the file
         if (s == "done") {
+            // clean the buffer
+            memset(buffer, 0, s.size());
             break;
         } else {
-            this->classifiedVector(s);
+            //this->classifiedVector(s);
+            classifiedStrings.push_back(s);
+            //cout << s << endl;
+            // clean the buffer
+            memset(buffer, 0, s.size());
         }
     }
 
@@ -159,21 +164,17 @@ void UploadCommand::execute() {
     data_len = uploadComplete1String.length() + 1;
     char data_addrTwo[data_len];
     str = uploadComplete1String.c_str();
-    // copy the data of the vector, distance function name and k to char array
+    // copy the data to the char array
     strcpy(data_addrTwo, str);
-    // send the full sentence to the server
+    // send the string to the server
     sent_bytes = send(clientSocket, data_addrTwo, data_len, 0);
     if (sent_bytes < 0) {
         perror("Error sending the data to the client");
         exit(1);
     }
 
-    // clean the buffer
-    memset(buffer, 0, sizeof(buffer));
-    string s = buffer;
+    string s;
     while (s != "done") {
-        // clean the buffer
-        memset(buffer, 0, sizeof(buffer));
         // get the lines from the client
         long int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
         if (read_bytes == 0) {
@@ -186,16 +187,21 @@ void UploadCommand::execute() {
             exit(1);
         }
         s = buffer;
-        this->notClassifiedVector(s);
+        // remove /r from the end of the string
+        //s.erase(s.length() - 1, 1);
+        //this->notClassifiedVector(s);
+        unclassifiedStrings.push_back(s);
+        // clean the buffer
+        memset(buffer, 0, s.size());
     }
 
     // send the upload complete string to the client
     data_len = uploadComplete2String.length() + 1;
     char data_addrThree[data_len];
     str = uploadComplete2String.c_str();
-    // copy the data of the vector, distance function name and k to char array
+    // copy the data to the char array
     strcpy(data_addrThree, str);
-    // send the full sentence to the server
+    // send the string to the server
     sent_bytes = send(clientSocket, data_addrThree, data_len, 0);
     if (sent_bytes < 0) {
         perror("Error sending the data to the client");

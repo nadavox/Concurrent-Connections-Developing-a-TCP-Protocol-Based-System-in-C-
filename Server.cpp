@@ -2,12 +2,6 @@
 #include <cstring>
 #include <netinet/in.h>
 #include <vector>
-#include "Algorithms/Distance.h"
-#include "Algorithms/EuclideanDistance.h"
-#include "Algorithms/TaxicabGeometry.h"
-#include "Algorithms/ChebyshevDistance.h"
-#include "Algorithms/MinkowskiDistance.h"
-#include "Algorithms/CanberraDistance.h"
 #include "Algorithms/Knn.h"
 #include "Command_pattern/CLI.h"
 #include "Command_pattern/Command.h"
@@ -21,45 +15,6 @@
 
 using namespace std;
 
-/**
- * this function classified the user vector.
- * @param kindDistance
- * @param k
- * @param userVector
- * @param vectorsList
- * @return the name of the classified vector
- */
-string getKnnOutput(const string& kindDistance, int k, vector<double> userVector,
-                    vector<pair<vector<double>, string> > *vectorsList) {
-    string output;
-    Distance *distanceAlgo;
-    // we will calculate knn according to euclidean distance
-    if (kindDistance == "AUC") {
-        distanceAlgo = new EuclideanDistance;
-    }
-        // we will calculate knn according to taxicab geometry
-    else if (kindDistance == "MAN") {
-        distanceAlgo = new TaxicabGeometry;
-    }
-        // we will calculate knn according to chebyshev distance
-    else if (kindDistance == "CHB") {
-        distanceAlgo = new ChebyshevDistance;
-    }
-        // we will calculate knn according to canberra distance
-    else if (kindDistance == "CAN") {
-        distanceAlgo = new CanberraDistance;
-    }
-        // we will calculate knn according to minkowski distance
-    else {
-        distanceAlgo = new MinkowskiDistance;
-    }
-    // now we have the vector all what left is to calculate.
-    Knn knnAlgo = Knn(distanceAlgo, k);
-    // calculate knn
-    output = knnAlgo.CalculateKNN(userVector, *vectorsList);
-    free(distanceAlgo);
-    return output;
-}
 
 /**
  * the function creates the master socket
@@ -84,77 +39,6 @@ int createSocket() {
         exit(1);
     }
     return master_socket;
-}
-
-/**
- * the function classify the input from the user and send it to the client
- * @param vectorsList - the classified vectors from the file
- * @param new_socket - the socket that listens to the current client
- * @param buffer - the buffer that has the input from the user
- */
-void classifyData(vector<pair<vector<double>, string> > *vectorsList, int new_socket, const char buffer[4096]) {
-    int kFlag = 0, k;
-    string output, kindDistance;
-    double number;
-    char data_error[] = "invalid input";
-    int data_error_len = strlen(data_error);
-    // Parse the received data
-    stringstream ss(buffer);
-    vector<string> userVectorDemo;
-    vector<double> userVector;
-    string value;
-    while (ss >> value) {
-        userVectorDemo.push_back(value);
-    }
-    // make the size of the user vector
-    unsigned long sizeUserVector = userVectorDemo.size() - 2;
-    // make the size of the server vector
-    unsigned long sizeServerVector = vectorsList->at(0).first.size();
-    // check if the user vector is in the right size of the vector list.
-    if (sizeUserVector != sizeServerVector) {
-        kFlag = ERROR; // the size of the vector is too big or too small
-    } else {
-        int i;
-        //the size of the vector is good.
-        for (i = 0; i < sizeUserVector; ++i) {
-            try {
-                number = stoi(userVectorDemo.at(i));
-                userVector.push_back(number);
-            } catch (const invalid_argument&) {
-                cout << userVectorDemo.at(i)<< endl;
-            }
-        }
-        kindDistance = userVectorDemo.at(sizeUserVector);
-        try {
-            k = stoi(userVectorDemo.at(sizeUserVector + 1));
-        } catch (const invalid_argument&) {
-            cout << userVectorDemo.at(sizeUserVector + 1)<< endl;
-        }
-        //check if k is valid
-        if (k > vectorsList->size()) {
-            // k is not valid
-            kFlag = ERROR;
-        }
-    }
-    // the string from the user is valid
-    if (!kFlag) {
-        output = getKnnOutput(kindDistance, k, userVector, vectorsList);
-    }
-    // Send the result back to the client
-    if (kFlag) {
-        // send the error message to the client
-        send(new_socket, data_error, data_error_len, 0);
-    }
-    else {
-        unsigned int data_len = output.length();
-        char data_addr[data_len + 1];
-        const char *str = output.c_str();
-        // copy the data of the vector, distance function name and k to char array
-        strcpy(data_addr, str);
-        // send the full sentence to the client
-        send(new_socket, data_addr, data_len, 0);
-    }
-    userVector.clear();
 }
 
 /**

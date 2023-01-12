@@ -3,11 +3,11 @@
 
 #include "Command.h"
 
-class ClassifyCommand : public Command
-{
+class ClassifyCommand : public Command {
 public:
     string description();
     void execute();
+    ClassifyCommand(int socket, Values *valuesCopy);
 };
 
 #endif //ADVANCEDPROGRAMINGPART3_CLASSIFYCOMMAND_H

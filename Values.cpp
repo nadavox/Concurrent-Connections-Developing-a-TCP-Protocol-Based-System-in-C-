@@ -4,7 +4,7 @@ Values::Values(int socket_val) {
     k = 5;
     distance_metric = "EUC";
     classifiedVectorList = new vector<pair< vector<double>, string > >;
-    notClassifiedVectorList = new vector<pair< vector<double>, string > >;
+    notClassifiedVectorList = new vector<vector<double> >;
 }
 
 Values::~Values() {
@@ -22,11 +22,14 @@ string Values::getDistanceMetric() const {
 vector<pair< vector<double>, string > > *Values::getClassifiedVectorList() {
     return classifiedVectorList;
 }
-vector<pair< vector<double>, string > > *Values::getNotClassifiedVectorList() {
+vector<vector<double> > *Values::getNotClassifiedVectorList() {
     return notClassifiedVectorList;
 }
 int Values::getSocket() const {
     return socket;
+}
+vector<pair<vector<double>, string> > *Values::getAfterClassifing() {
+    return afterClassifing;
 }
 
 // Setters
@@ -40,7 +43,7 @@ void Values::setClassifiedVectorList(vector<pair< vector<double>, string > > *va
     classifiedVectorList = val;
 }
 
-void Values::setNotClassifiedVectorList(vector<pair< vector<double>, string > > *val) {
+void Values::setNotClassifiedVectorList(vector<vector<double> > *val) {
     notClassifiedVectorList = val;
 }
 void Values::setSocket(int val) {
@@ -50,6 +53,14 @@ void Values::setClassifiedVectorList(pair<vector<double>, string> *v) {
     this->classifiedVectorList->push_back(*v);
 }
 
-void Values::setNotClassifiedVectorList(pair<vector<double>, string> *v) {
+void Values::setNotClassifiedVectorList(vector<double> *v) {
     this->notClassifiedVectorList->push_back(*v);
+}
+
+void Values::setAfterClassifing(pair<vector<double>, string> *v) {
+    this->afterClassifing->push_back(*v);
+}
+
+void Values::setAfterClassifing(vector<pair<vector<double>, string> > *val) {
+    this->afterClassifing = val;
 }

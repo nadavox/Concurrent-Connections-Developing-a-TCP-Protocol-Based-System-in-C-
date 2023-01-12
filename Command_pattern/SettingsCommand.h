@@ -9,6 +9,7 @@ public:
     explicit SettingsCommand(int socket, Values *value);
     string description();
     void execute();
+    void sendData(string s, int clientSock);
 };
 
 #endif //ADVANCEDPROGRAMINGPART3_SETTINGSCOMMAND_H

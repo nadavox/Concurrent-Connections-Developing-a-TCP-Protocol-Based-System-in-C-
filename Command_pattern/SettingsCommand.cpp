@@ -20,23 +20,12 @@ void SettingsCommand::execute()
     string currentParametersString = "The current KNN parameters are: K = " + to_string(values->getK()) +
             ", distance metric = " + values->getDistanceMetric() + "\n";
 
-    // send the train string to the client
-    unsigned int data_len = currentParametersString.length();
-    char data_addr[data_len + 1];
-    const char* str = currentParametersString.c_str();
-    // copy the data of the vector, distance function name and k to char array
-    strcpy(data_addr, str);
-    // send the full sentence to the server
-   long int sent_bytes = send(clientSocket, data_addr, data_len, 0);
-    if (sent_bytes < 0) {
-        perror("Error sending the data to the client");
-        exit(1);
-    }
+    sendData(currentParametersString, clientSocket);
 
     int expected_data_len = sizeof(buffer);
     // clean the buffer
     memset(buffer, 0, sizeof(buffer));
-    // get the lines from the client
+    // get the input from the client
     int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
     if (read_bytes == 0) {
         // connection is closed
@@ -50,8 +39,8 @@ void SettingsCommand::execute()
 
     string s(buffer);
     string s1, s2;
+    // the user want to update the parameters
     if (s != "done") {
-        // the user want to update the parameters
         istringstream iss(s);
         // the k
         iss >> s1;
@@ -67,35 +56,15 @@ void SettingsCommand::execute()
                 if (s2 != "AUC" && s2 != "MAN" && s2 != "CHB" && s2 != "CAN" && s2 != "MIN") {
                     // send message that k and the metric is not valid to the client
                     string kAndMetricNotValidString = "invalid value for K\ninvalid value for metric\n";
-                    // send message that one parameter is not valid to the client
-                    data_len = kAndMetricNotValidString.length();
-                    data_addr[data_len + 1];
-                    str = kAndMetricNotValidString.c_str();
-                    // copy the data of the vector, distance function name and k to char array
-                    strcpy(data_addr, str);
-                    // send the full sentence to the server
-                    sent_bytes = send(clientSocket, data_addr, data_len, 0);
-                    if (sent_bytes < 0) {
-                        perror("Error sending the data to the client");
-                        exit(1);
-                    }
+                    sendData(kAndMetricNotValidString, clientSocket);
+
                 }
                 // only k is not valid
                 else {
                     // send message that k is not valid to the client
                     string kNotValidString = "invalid value for K\n";
-                    // send message that one parameter is not valid to the client
-                    data_len = kNotValidString.length();
-                    data_addr[data_len + 1];
-                    str = kNotValidString.c_str();
-                    // copy the data of the vector, distance function name and k to char array
-                    strcpy(data_addr, str);
-                    // send the full sentence to the server
-                    sent_bytes = send(clientSocket, data_addr, data_len, 0);
-                    if (sent_bytes < 0) {
-                        perror("Error sending the data to the client");
-                        exit(1);
-                    }
+                    sendData(kNotValidString, clientSocket);
+
                 }
             }
             // k is a positive integer
@@ -104,18 +73,7 @@ void SettingsCommand::execute()
                 if (s2 != "AUC" && s2 != "MAN" && s2 != "CHB" && s2 != "CAN" && s2 != "MIN") {
                     // send message that the distance metric is not valid to the client
                     string metricNotValidString = "invalid value for metric\n";
-                    // send message that one parameter is not valid to the client
-                    data_len = metricNotValidString.length();
-                    data_addr[data_len + 1];
-                    str = metricNotValidString.c_str();
-                    // copy the data of the vector, distance function name and k to char array
-                    strcpy(data_addr, str);
-                    // send the full sentence to the server
-                    sent_bytes = send(clientSocket, data_addr, data_len, 0);
-                    if (sent_bytes < 0) {
-                        perror("Error sending the data to the client");
-                        exit(1);
-                    }
+                    sendData(metricNotValidString, clientSocket);
                 }
                 // update distance metric
                 else {
@@ -125,18 +83,7 @@ void SettingsCommand::execute()
                     values->setDistanceMetric(s2);
                     // send message that everything okay
                     string valid = "input is valid";
-                    // send message that one parameter is not valid to the client
-                    data_len = valid.length();
-                    data_addr[data_len + 1];
-                    str = valid.c_str();
-                    // copy the data of the vector, distance function name and k to char array
-                    strcpy(data_addr, str);
-                    // send the full sentence to the server
-                    sent_bytes = send(clientSocket, data_addr, data_len, 0);
-                    if (sent_bytes < 0) {
-                        perror("Error sending the data to the client");
-                        exit(1);
-                    }
+                    sendData(valid, clientSocket);
                     this_thread::sleep_for(chrono::milliseconds(50));
                 }
             }
@@ -147,35 +94,13 @@ void SettingsCommand::execute()
             if (s2 != "AUC" && s2 != "MAN" && s2 != "CHB" && s2 != "CAN" && s2 != "MIN") {
                 // send message that k and the metric is not valid to the client
                 string kAndMetricNotValidString = "invalid value for K\ninvalid value for metric\n";
-                // send message that one parameter is not valid to the client
-                data_len = kAndMetricNotValidString.length();
-                data_addr[data_len + 1];
-                str = kAndMetricNotValidString.c_str();
-                // copy the data of the vector, distance function name and k to char array
-                strcpy(data_addr, str);
-                // send the full sentence to the server
-                sent_bytes = send(clientSocket, data_addr, data_len, 0);
-                if (sent_bytes < 0) {
-                    perror("Error sending the data to the client");
-                    exit(1);
-                }
+                sendData(kAndMetricNotValidString, clientSocket);
             }
             // the distance metric is valid
             else {
                 // send message that k is not valid to the client
                 string kNotValidString = "invalid value for K\n";
-                // send message that one parameter is not valid to the client
-                data_len = kNotValidString.length();
-                data_addr[data_len + 1];
-                str = kNotValidString.c_str();
-                // copy the data of the vector, distance function name and k to char array
-                strcpy(data_addr, str);
-                // send the full sentence to the server
-                sent_bytes = send(clientSocket, data_addr, data_len, 0);
-                if (sent_bytes < 0) {
-                    perror("Error sending the data to the client");
-                    exit(1);
-                }
+                sendData(kNotValidString, clientSocket);
             }
         }
     }
@@ -197,4 +122,24 @@ string SettingsCommand::description() {
 SettingsCommand::SettingsCommand(int socket, Values *valuesCopy) {
     values = valuesCopy;
     valuesCopy->setSocket(socket);
+}
+
+/**
+ * this function sends the wanted string to the client
+ * @param s - the wanted string
+ * @param clientSock - the number of the client socket
+ */
+void SettingsCommand::sendData(string s, int clientSock) {
+    // send the current parameters string to the client
+    unsigned int data_len = s.length();
+    char data_addr[data_len + 1];
+    const char* str = s.c_str();
+    // copy the data to the char array
+    strcpy(data_addr, str);
+    // send the string to the server
+    long int sent_bytes = send(clientSock, data_addr, data_len, 0);
+    if (sent_bytes < 0) {
+        perror("Error sending the data to the client");
+        exit(1);
+    }
 }

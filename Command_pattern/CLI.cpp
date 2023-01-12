@@ -30,7 +30,7 @@ void CLI::start() {
 CLI::CLI(int socketNumber, Values *v) {
     Command *uc = new UploadCommand(socketNumber, v);
     Command *sc = new SettingsCommand(socketNumber, v);
-    Command *cc = new ClassifyCommand();
+    Command *cc = new ClassifyCommand(socketNumber, v);
     Command *dyc = new DisplayCommand();
     Command *ddc = new DownloadCommand();
     Command *ec = new ExitCommand();
@@ -51,10 +51,12 @@ void CLI::executeCommand(string s) {
     commands[s]->execute();
 }
 
+/**
+ * destructor for CLI
+ */
 CLI::~CLI() {
     for (auto it = commands.rbegin(); it != commands.rend(); ++it) {
         delete it->second;
         commands.erase(it->first);
     }
-
 }
