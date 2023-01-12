@@ -22,7 +22,7 @@ public:
     CLI(int socketNumber, Values *v);
     void start();
     void executeCommand(string s);
-    virtual ~CLI();
+    ~CLI();
 };
 
 #endif //ADVANCEDPROGRAMINGPART3_CLI_H

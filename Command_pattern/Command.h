@@ -15,7 +15,6 @@ protected:
 public:
     virtual string description() = 0;
     virtual void execute() = 0;
-    //virtual ~Command() = 0;
 };
 
 
