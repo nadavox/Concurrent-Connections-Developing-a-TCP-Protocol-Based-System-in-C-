@@ -111,8 +111,9 @@ void function2(DefaultIO* sdio, DefaultIO* stdio) {
             sdio->writeInput(answer);
         }
     }
+    // the user don't want to update the parameters
     else {
-        // send the server the input from the user
+        // send the server that the user don't want to update the parameters
         stdio->writeInput("done");
     }
 }
