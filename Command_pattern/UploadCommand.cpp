@@ -115,8 +115,8 @@ void UploadCommand::execute() {
     int clientSocket = values->getSocket();
     char buffer[4096];
     string trainString = "Please upload your local train CSV file.\n";
-    string testString = "Please upload your local test CSV file.\n";
-    string uploadCompleteString = "Upload complete.\n";
+    string uploadComplete1String = "Upload complete.\nPlease upload your local test CSV file.\n";
+    string uploadComplete2String = "Upload complete.\n";
 
     // send the train string to the client
     unsigned int data_len = trainString.length();
@@ -155,23 +155,10 @@ void UploadCommand::execute() {
         }
     }
 
-    // send the upload complete string to the client
-    data_len = uploadCompleteString.length();
+    // send the upload complete and the test string to the client
+    data_len = uploadComplete1String.length();
     data_addr[data_len + 1];
-    str = uploadCompleteString.c_str();
-    // copy the data of the vector, distance function name and k to char array
-    strcpy(data_addr, str);
-    // send the full sentence to the server
-    sent_bytes = send(clientSocket, data_addr, data_len, 0);
-    if (sent_bytes < 0) {
-        perror("Error sending the data to the client");
-        exit(1);
-    }
-
-    // send the test string to the client
-    data_len = testString.length();
-    data_addr[data_len + 1];
-    str = testString.c_str();
+    str = uploadComplete1String.c_str();
     // copy the data of the vector, distance function name and k to char array
     strcpy(data_addr, str);
     // send the full sentence to the server
@@ -203,9 +190,9 @@ void UploadCommand::execute() {
     }
 
     // send the upload complete string to the client
-    data_len = uploadCompleteString.length();
+    data_len = uploadComplete2String.length();
     data_addr[data_len + 1];
-    str = uploadCompleteString.c_str();
+    str = uploadComplete2String.c_str();
     // copy the data of the vector, distance function name and k to char array
     strcpy(data_addr, str);
     // send the full sentence to the server
