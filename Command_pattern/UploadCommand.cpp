@@ -4,6 +4,8 @@
 #include <cstring>
 #include <sstream>
 #include <string>
+#include <string.h>
+#include <queue>
 
 using namespace std;
 
@@ -103,6 +105,18 @@ void UploadCommand::notClassifiedVector(const string &dataVector) {
     values->setNotClassifiedVectorList(&numbers);
 }
 
+void receiveMessage(std::string message) {
+    messageQueue.push(message);
+}
+
+void processMessages() {
+    while (!messageQueue.empty()) {
+        std::string message = messageQueue.front();
+        messageQueue.pop();
+        std::cout << "Received message: " << message << std::endl;
+    }
+}
+
 /**
  * this function sends and receives message from the client.
  * every vector we get, we save.
@@ -114,6 +128,8 @@ void UploadCommand::execute() {
     string trainString = "Please upload your local train CSV file.\n";
     string uploadComplete1String = "Upload complete.\nPlease upload your local test CSV file.\n";
     string uploadComplete2String = "Upload complete.\n";
+    vector<string> classifiedStrings;
+    vector<string> unclassifiedStrings;
 
     // send the train string to the client
     unsigned int data_len = trainString.length();
@@ -148,7 +164,8 @@ void UploadCommand::execute() {
         if (s == "done") {
             break;
         } else {
-            this->classifiedVector(s);
+            //this->classifiedVector(s);
+            classifiedStrings.push_back(s);
         }
     }
 
@@ -183,7 +200,10 @@ void UploadCommand::execute() {
             exit(1);
         }
         s = buffer;
-        this->notClassifiedVector(s);
+        // remove /r from the end of the string
+        //s.erase(s.length() - 1, 1);
+        //this->notClassifiedVector(s);
+        unclassifiedStrings.push_back(s);
     }
 
     // send the upload complete string to the client
