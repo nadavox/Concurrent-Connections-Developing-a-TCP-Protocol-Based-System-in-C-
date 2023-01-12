@@ -184,9 +184,8 @@ string receiveNumber(int clientSock, CLI *c, int counter) {
         perror("Error with reading the data from the client");
         exit(1);
     }
-    cout <<"the buffer: " << buffer << "counter: " << counter <<endl;
+
     string number(buffer);
-    cout <<"the number: " << number << "counter: " << counter <<endl;
     // the user want to activate option 1
     if (number == "1"){
         // execute UploadCommand
@@ -194,37 +193,32 @@ string receiveNumber(int clientSock, CLI *c, int counter) {
     }
     // the user want to activate option 2
     else if (number == "2") {
-        cout <<"the number: " << number << "counter: " << counter <<endl;
         // execute SettingsCommand
         c->executeCommand("2");
     }
     // the user want to activate option 3
     else if (number == "3") {
-        cout <<"the number: " << number << "counter: " << counter <<endl;
         // execute ClassifyCommand
         c->executeCommand("3");
     }
     // the user want to activate option 4
     else if (number == "4") {
-        cout <<"the number: " << number << "counter: " << counter <<endl;
         // execute DisplayCommand
         c->executeCommand("4");
     }
     // the user want to activate option 5
     else if (number == "5") {
-        cout <<"the number: " << number << "counter: " << counter <<endl;
         // execute DownloadCommand
         c->executeCommand("5");
     }
     // the user want to activate option 8
     else if (number == "8") {
-        cout <<"the number: " << number << "counter: " << counter <<endl;
         // execute ExitCommand
         c->executeCommand("8");
     }
     // the user didn't inset valid value
     else {
-        cout <<"the number: " << number << "counter: " << counter <<endl;
+        // error
     }
     return number;
 }
@@ -283,7 +277,6 @@ int main(int argc, char *argv[]) {
         while (number != "8") {
             this_thread::sleep_for(chrono::milliseconds(100));
             cli->start();
-            cout << "counter outside: "<< counter <<endl;
             number = receiveNumber(client_socket, cli, counter);
             counter++;
         }
