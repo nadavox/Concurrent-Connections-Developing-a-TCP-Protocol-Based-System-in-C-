@@ -23,6 +23,7 @@ string SocketIO::readInput() {
     return buffer;
 }
 
+
 /**
  * this function writes to the socket
  * @param s - the string
