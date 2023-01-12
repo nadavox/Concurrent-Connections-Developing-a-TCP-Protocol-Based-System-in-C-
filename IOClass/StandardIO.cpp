@@ -6,7 +6,8 @@
 string StandardIO::readInput() {
     string s;
     cin >> s;
-    cin.clear();
+    // clean the buffer
+    cin.ignore();
     return s;
 }
 

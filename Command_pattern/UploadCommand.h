@@ -8,6 +8,7 @@ class UploadCommand : public Command
 public:
     explicit UploadCommand(int socket, Values *value);
     string description();
+
     void execute();
 };
 

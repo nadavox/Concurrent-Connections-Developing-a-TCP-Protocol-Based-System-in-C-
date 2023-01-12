@@ -1,5 +1,5 @@
 #include <iostream>
-#include <string.h>
+#include <cstring>
 #include <netinet/in.h>
 #include <vector>
 #include <fstream>
@@ -18,7 +18,7 @@
 #include "Command_pattern/DisplayCommand.h"
 #include "Command_pattern/DownloadCommand.h"
 #include "Command_pattern/ExitCommand.h"
-
+#include <unistd.h>
 
 #define TRUE 1
 #define ERROR 1 // if the size of the vector is not good
@@ -166,7 +166,7 @@ void classifyData(vector<pair<vector<double>, string> > *vectorsList, int new_so
  * the function gets data from the client and check if the number is valid
  * @param clientSock - the client socket number
  */
-void receiveNumber(int clientSock, Values *value) {
+string receiveNumber(int clientSock, Values *value) {
     char buffer[4096];
     // make the array to zero.
     memset(buffer, 0, sizeof(buffer));
@@ -229,6 +229,7 @@ void receiveNumber(int clientSock, Values *value) {
     else {
         // invalid number
     }
+    return number;
 }
 
 /**
@@ -251,7 +252,7 @@ int main(int argc, char *argv[]) {
         int port_no = stoi(argv[1]);
         serverAddr.sin_port = htons(port_no);
     }
-    // port number is not a number
+        // port number is not a number
     catch (const invalid_argument &) {
         perror("Invalid port number");
         return 1;
@@ -266,28 +267,41 @@ int main(int argc, char *argv[]) {
         perror("Error while trying to listen");
         return 1;
     }
-    // create a socket for the client
-    int client_socket;
-    vector<double> userVector;
-    struct sockaddr_in client_sin = {};
-    unsigned int addr_len = sizeof(client_sin);
-    // accept connection
-    if ((client_socket = accept(master_socket, (struct sockaddr *) &client_sin, &addr_len)) < 0) {
-        perror("Error while trying to accept the new client");
-        return 1;
+    string number;
+    while (true) {
+        // create a socket for the client
+        int client_socket;
+        struct sockaddr_in client_sin = {};
+        unsigned int addr_len = sizeof(client_sin);
+        // accept connection
+        if ((client_socket = accept(master_socket, (struct sockaddr *) &client_sin, &addr_len)) < 0) {
+            perror("Error while trying to accept the new client");
+            return 1;
+        }
+        //create value object.
+        Values *values = new Values(client_socket);
+        // create CLI object that will send the menu
+        Command *us = new UploadCommand(client_socket, values);
+        Command *sc = new SettingsCommand();
+        Command *cc = new ClassifyCommand();
+        Command *dyc = new DisplayCommand();
+        Command *ddc = new DownloadCommand();
+        Command *ec = new ExitCommand();
+        CLI *cli = new CLI(us, sc, cc, dyc, ddc, ec, client_socket);
+        // create a function that receives the number of the function from the client
+        while (number != "8") {
+            cli->start();
+            number = receiveNumber(client_socket, values);
+            cout << "finish" << endl;
+        }
+        free(us);
+        free(sc);
+        free(cc);
+        free(dyc);
+        free(ddc);
+        free(ec);
+        free(cli);
+        close(client_socket);
+        number.clear();
     }
-    //create value object.
-    Values *values = new Values(client_socket);
-    // create CLI object that will send the menu
-    Command *us = new UploadCommand(client_socket, values);
-    Command *sc = new SettingsCommand();
-    Command *cc = new ClassifyCommand();
-    Command *dyc = new DisplayCommand();
-    Command *ddc = new DownloadCommand();
-    Command *ec = new ExitCommand();
-    CLI* cli = new CLI(us, sc, cc, dyc, ddc, ec, client_socket);
-    cli->start();
-
-    // create a function that receives the number of the function from the client
-    receiveNumber(client_socket, values);
 }

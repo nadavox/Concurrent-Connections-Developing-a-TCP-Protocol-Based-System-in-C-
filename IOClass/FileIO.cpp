@@ -22,6 +22,7 @@ string FileIO::readInput() {
     if (!inputFile)
     {
         perror("Error with opening the file");
+        s = "Error with opening the file";
         return s;
     }
     getline(inputFile, s);
