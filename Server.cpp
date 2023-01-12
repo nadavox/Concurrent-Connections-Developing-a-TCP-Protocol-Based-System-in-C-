@@ -19,6 +19,7 @@
 #include "Command_pattern/DownloadCommand.h"
 #include "Command_pattern/ExitCommand.h"
 #include <unistd.h>
+#include <thread>
 
 #define TRUE 1
 #define ERROR 1 // if the size of the vector is not good
@@ -166,13 +167,14 @@ void classifyData(vector<pair<vector<double>, string> > *vectorsList, int new_so
  * the function gets data from the client and check if the number is valid
  * @param clientSock - the client socket number
  */
-string receiveNumber(int clientSock, Values *value) {
+string receiveNumber(int clientSock, CLI *c) {
     char buffer[4096];
     // make the array to zero.
     memset(buffer, 0, sizeof(buffer));
     int expected_data_len = sizeof(buffer);
     // read from the client
-    int read_bytes = recv(clientSock, buffer, expected_data_len, 0);
+    cout << "now reading from the client. the number he will enter: " << endl;
+    long int read_bytes = recv(clientSock, buffer, expected_data_len, 0);
     if (read_bytes == 0) {
         // connection is closed
         perror("Error the connection with the client is closed");
@@ -182,52 +184,41 @@ string receiveNumber(int clientSock, Values *value) {
         perror("Error with reading the data from the client");
         exit(1);
     }
+
     string number(buffer);
     // the user want to activate option 1
     if (number == "1"){
         // execute UploadCommand
-        Command *us = new UploadCommand(clientSock, value);
-        us->execute();
-        free(us);
+        c->executeCommand("1");
     }
     // the user want to activate option 2
     else if (number == "2") {
         // execute SettingsCommand
-        Command *sc = new SettingsCommand();
-        sc->execute();
-        free(sc);
+        c->executeCommand("2");
     }
     // the user want to activate option 3
     else if (number == "3") {
         // execute ClassifyCommand
-        Command *cc = new ClassifyCommand();
-        cc->execute();
-        free(cc);
+        c->executeCommand("3");
     }
     // the user want to activate option 4
     else if (number == "4") {
         // execute DisplayCommand
-        Command *dyc = new DisplayCommand();
-        dyc->execute();
-        free(dyc);
+        c->executeCommand("4");
     }
     // the user want to activate option 5
     else if (number == "5") {
         // execute DownloadCommand
-        Command *ddc = new DownloadCommand();
-        ddc->execute();
-        free(ddc);
+        c->executeCommand("5");
     }
     // the user want to activate option 8
     else if (number == "8") {
         // execute ExitCommand
-        Command *ec = new ExitCommand();
-        ec->execute();
-        free(ec);
+        c->executeCommand("8");
     }
     // the user didn't inset valid value
     else {
-        // invalid number
+        // error
     }
     return number;
 }
@@ -280,27 +271,15 @@ int main(int argc, char *argv[]) {
         }
         //create value object.
         Values *values = new Values(client_socket);
-        // create CLI object that will send the menu
-        Command *us = new UploadCommand(client_socket, values);
-        Command *sc = new SettingsCommand();
-        Command *cc = new ClassifyCommand();
-        Command *dyc = new DisplayCommand();
-        Command *ddc = new DownloadCommand();
-        Command *ec = new ExitCommand();
-        CLI *cli = new CLI(us, sc, cc, dyc, ddc, ec, client_socket);
+        CLI *cli = new CLI(client_socket, values);
         // create a function that receives the number of the function from the client
         while (number != "8") {
+            this_thread::sleep_for(chrono::milliseconds(10));
             cli->start();
-            number = receiveNumber(client_socket, values);
-            cout << "finish" << endl;
+            number = receiveNumber(client_socket, cli);
         }
-        free(us);
-        free(sc);
-        free(cc);
-        free(dyc);
-        free(ddc);
-        free(ec);
-        free(cli);
+        delete(values);
+        delete(cli);
         close(client_socket);
         number.clear();
     }

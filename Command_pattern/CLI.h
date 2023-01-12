@@ -5,6 +5,13 @@
 #include "Command.h"
 #include <cstring>
 #include <sys/socket.h>
+#include "UploadCommand.h"
+#include "SettingsCommand.h"
+#include "ClassifyCommand.h"
+#include "DisplayCommand.h"
+#include "DownloadCommand.h"
+#include "ExitCommand.h"
+#include "../Values.h"
 
 class CLI
 {
@@ -12,9 +19,10 @@ private:
     map<string, Command*> commands;
     int socketNumber;
 public:
-
-    CLI(Command* uc, Command* sc, Command* cc, Command* dyc, Command* ddc, Command* ec, int socketNumber);
+    CLI(int socketNumber, Values *v);
     void start();
+    void executeCommand(string s);
+    ~CLI();
 };
 
 #endif //ADVANCEDPROGRAMINGPART3_CLI_H

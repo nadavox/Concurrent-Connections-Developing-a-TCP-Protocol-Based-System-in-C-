@@ -3,13 +3,13 @@
 Values::Values(int socket_val) {
     k = 5;
     distance_metric = "EUC";
-    classfiedVectorList = new vector<pair< vector<double>, string > >;
-    notClassfiedVectorList = new vector<pair< vector<double>, string > >;
+    classifiedVectorList = new vector<pair< vector<double>, string > >;
+    notClassifiedVectorList = new vector<pair< vector<double>, string > >;
 }
 
 Values::~Values() {
-    delete notClassfiedVectorList;
-    delete classfiedVectorList;
+    delete notClassifiedVectorList;
+    delete classifiedVectorList;
 }
 
 // Getters
@@ -19,11 +19,11 @@ int Values::getK() const {
 string Values::getDistanceMetric() const {
     return distance_metric;
 }
-vector<pair< vector<double>, string > > *Values::getClassfiedVectorList() {
-    return classfiedVectorList;
+vector<pair< vector<double>, string > > *Values::getClassifiedVectorList() {
+    return classifiedVectorList;
 }
-vector<pair< vector<double>, string > > *Values::getNotClassfiedVectorList() {
-    return notClassfiedVectorList;
+vector<pair< vector<double>, string > > *Values::getNotClassifiedVectorList() {
+    return notClassifiedVectorList;
 }
 int Values::getSocket() const {
     return socket;
@@ -36,12 +36,20 @@ void Values::setK(int val) {
 void Values::setDistanceMetric(string val) {
     distance_metric = val;
 }
-void Values::setClassfiedVectorList(vector<pair< vector<double>, string > > *val) {
-    classfiedVectorList = val;
+void Values::setClassifiedVectorList(vector<pair< vector<double>, string > > *val) {
+    classifiedVectorList = val;
 }
-void Values::setNotClassfiedVectorList(vector<pair< vector<double>, string > > *val) {
-    notClassfiedVectorList = val;
+
+void Values::setNotClassifiedVectorList(vector<pair< vector<double>, string > > *val) {
+    notClassifiedVectorList = val;
 }
 void Values::setSocket(int val) {
     socket = val;
+}
+void Values::setClassifiedVectorList(pair<vector<double>, string> *v) {
+    this->classifiedVectorList->push_back(*v);
+}
+
+void Values::setNotClassifiedVectorList(pair<vector<double>, string> *v) {
+    this->notClassifiedVectorList->push_back(*v);
 }

@@ -1,13 +1,17 @@
 #include <iostream>
 #include "UploadCommand.h"
 #include <sys/socket.h>
-#include <unistd.h>
 #include <cstring>
 #include <sstream>
 #include <string>
 
 using namespace std;
 
+/**
+ * this function checks if a string is double.
+ * @param s - the string
+ * @return true if the string is double, false if not
+ */
 bool isNumber(const string& s)
 {
     bool hasDigit = false;
@@ -37,74 +41,82 @@ bool isNumber(const string& s)
     return hasDigit;
 }
 
-void classfiedVector(const string& dataVector,  vector<pair<vector<double>, string> >*classfiedVectorList) {
+/**
+ * this function save the classified vector in the classifiedVectorList
+ * @param dataVector - the string
+ */
+void UploadCommand::classifiedVector(const string &dataVector) {
     vector<double> numbers;
     istringstream iss(dataVector);
-    string word; string typeVector;
-    char * charWord;
-    // while loop that each iteration will take one word sepreate by space.
-    while (iss >> word) {
+    string word, typeVector;
+    char *charWord;
+    // while loop that each iteration will take one word separate by space.
+    while (getline(iss, word, ',')) {
+        // there is more than one string for the vector
         if (!typeVector.empty()) {
-            //not good there is more than one string.
-            //if not empty there is more string.
+            // error
         }
-        //word is one word of the string
-        charWord = &word[0]; // char word point to the start of the word.
+        // char word point to the start of the word.
+        charWord = &word[0];
         //check if the word is number.
         if (isNumber(charWord)) {
             //it is number
             numbers.push_back(stod(word));
-            //TODO: try and catch.
         } else {
             //the string
             typeVector = word;
         }
     }
+    // there is no classified string
     if (typeVector.empty()) {
-        //there is no classified string.
-        //the file is not good.
+        // error
     }
-    pair<vector<double>, string> temppair;
-    temppair.first = numbers;
-    temppair.second = typeVector;
-    classfiedVectorList->push_back(temppair);
+    pair<vector<double>, string> tempPair;
+    tempPair.first = numbers;
+    tempPair.second = typeVector;
+    values->setClassifiedVectorList(&tempPair);
 }
 
-void notclassfiedVector(string dataVector,  vector<pair<vector<double>, string> > *notClassfiedVectorList) {
+/**
+ * this function save the un classified vector in the unClassifiedVectorList
+ * @param dataVector - the string
+ */
+void UploadCommand::notClassifiedVector(const string &dataVector) {
     vector<double> numbers;
     istringstream iss(dataVector);
-    string word; string typeVector;
-    char * charWord;
-    // while loop that each iteration will take one word sepreate by space.
-    while (iss >> word) {
-        //word is one word of the string
-        charWord = &word[0]; // char word point to the start of the word.
+    string word, typeVector;
+    char *charWord;
+    // while loop that each iteration will take one word separate by space.
+    while (getline(iss, word, ',')) {
+        // char word point to the start of the word.
+        charWord = &word[0];
         //check if the word is number.
         if (isNumber(charWord)) {
             //it is number
             numbers.push_back(stod(word));
-            //TODO: try and catch.
         } else {
-            //TODO: not good supposed to be only numbers.
             //the string
             typeVector = word;
-            //need to check if the string is valid ?
+            // error
         }
     }
-    pair<vector<double>, string> temppair;
-    temppair.first = numbers;
-    temppair.second = typeVector;
-    notClassfiedVectorList->push_back(temppair);
+    pair<vector<double>, string> tempPair;
+    tempPair.first = numbers;
+    tempPair.second = typeVector;
+    values->setNotClassifiedVectorList(&tempPair);
 }
 
-void UploadCommand::execute()
-{
-    //the socket.
+/**
+ * this function sends and receives message from the client.
+ * every vector we get, we save.
+ */
+void UploadCommand::execute() {
+    //the client socket
     int clientSocket = values->getSocket();
     char buffer[4096];
     string trainString = "Please upload your local train CSV file.\n";
-    string testString = "Please upload your local test CSV file.\n";
-    string uploadCompleteString = "Upload complete.\n";
+    string uploadComplete1String = "Upload complete.\nPlease upload your local test CSV file.\n";
+    string uploadComplete2String = "Upload complete.\n";
 
     // send the train string to the client
     unsigned int data_len = trainString.length();
@@ -113,7 +125,7 @@ void UploadCommand::execute()
     // copy the data of the vector, distance function name and k to char array
     strcpy(data_addr, str);
     // send the full sentence to the server
-    int sent_bytes = send(clientSocket, data_addr, data_len, 0);
+    long int sent_bytes = send(clientSocket, data_addr, data_len, 0);
     if (sent_bytes < 0) {
         perror("Error sending the data to the client");
         exit(1);
@@ -135,34 +147,22 @@ void UploadCommand::execute()
             exit(1);
         }
         string s(buffer);
-        //cout << s << endl;
+        // done reading the file
         if (s == "done") {
-            cout << "in break" << endl;
             break;
+        } else {
+            this->classifiedVector(s);
         }
-
-    }
-    // send the upload complete string to the client
-    data_len = uploadCompleteString.length();
-    data_addr[data_len + 1];
-    str = uploadCompleteString.c_str();
-    // copy the data of the vector, distance function name and k to char array
-    strcpy(data_addr, str);
-    // send the full sentence to the server
-    sent_bytes = send(clientSocket, data_addr, data_len, 0);
-    if (sent_bytes < 0) {
-        perror("Error sending the data to the client");
-        exit(1);
     }
 
-    // send the test string to the client
-    data_len = testString.length();
-    data_addr[data_len + 1];
-    str = testString.c_str();
+    // send the upload complete and the test string to the client
+    data_len = uploadComplete1String.length() + 1;
+    char data_addrTwo[data_len];
+    str = uploadComplete1String.c_str();
     // copy the data of the vector, distance function name and k to char array
-    strcpy(data_addr, str);
+    strcpy(data_addrTwo, str);
     // send the full sentence to the server
-    sent_bytes = send(clientSocket, data_addr, data_len, 0);
+    sent_bytes = send(clientSocket, data_addrTwo, data_len, 0);
     if (sent_bytes < 0) {
         perror("Error sending the data to the client");
         exit(1);
@@ -175,8 +175,7 @@ void UploadCommand::execute()
         // clean the buffer
         memset(buffer, 0, sizeof(buffer));
         // get the lines from the client
-        int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
-        //cout << buffer << endl;
+        long int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
         if (read_bytes == 0) {
             // connection is closed
             perror("Error the connection with the server is closed");
@@ -187,27 +186,36 @@ void UploadCommand::execute()
             exit(1);
         }
         s = buffer;
+        this->notClassifiedVector(s);
     }
 
     // send the upload complete string to the client
-    data_len = uploadCompleteString.length();
-    data_addr[data_len + 1];
-    str = uploadCompleteString.c_str();
+    data_len = uploadComplete2String.length() + 1;
+    char data_addrThree[data_len];
+    str = uploadComplete2String.c_str();
     // copy the data of the vector, distance function name and k to char array
-    strcpy(data_addr, str);
+    strcpy(data_addrThree, str);
     // send the full sentence to the server
-    sent_bytes = send(clientSocket, data_addr, data_len, 0);
+    sent_bytes = send(clientSocket, data_addrThree, data_len, 0);
     if (sent_bytes < 0) {
         perror("Error sending the data to the client");
         exit(1);
     }
 }
 
+/**
+ * this function returns the description of this command in the menu
+ * @return the description of this command in the menu
+ */
 string UploadCommand::description() {
     return "1. upload an unclassified csv data file\n";
-
 }
 
+/**
+ * the constructor of UploadCommand
+ * @param socket - the socket of the client
+ * @param valuesCopy - values object
+ */
 UploadCommand::UploadCommand(int socket, Values *valuesCopy) {
     values = valuesCopy;
     valuesCopy->setSocket(socket);
