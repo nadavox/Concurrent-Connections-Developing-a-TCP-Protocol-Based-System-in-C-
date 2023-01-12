@@ -7,7 +7,7 @@ class SocketIO : public DefaultIO {
 private:
     int sockNumber;
 public:
-    SocketIO(int sockNumber);
+    explicit SocketIO(int sockNumber);
     string readInput();
     void writeInput(string s);
 };

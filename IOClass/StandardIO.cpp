@@ -18,3 +18,4 @@ void StandardIO::writeInput(std::string s) {
 
     cout << s;
 }
+

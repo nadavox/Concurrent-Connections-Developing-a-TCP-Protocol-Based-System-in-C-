@@ -12,6 +12,7 @@ class DefaultIO {
 public:
     virtual string readInput() = 0;
     virtual void writeInput(string s) = 0;
+    virtual ~DefaultIO() {}
 };
 
 #endif //ADVANCEDPROGRAMINGPART3_DEFAULTIO_H

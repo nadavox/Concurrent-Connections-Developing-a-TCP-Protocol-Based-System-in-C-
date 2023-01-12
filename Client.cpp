@@ -168,7 +168,7 @@ void function5(DefaultIO* sdio, DefaultIO* stdio) {
         }
     }
     // delete the allocation of fdio
-    delete(fdio);
+    delete fdio;
 }
 
 
@@ -238,8 +238,8 @@ int main(int argc, char *argv[]) {
         // the user want to activate option 8
         else if (input == "8") {
             // delete the allocation of sdio
-            delete(sdio);
-            delete(stdio);
+            delete sdio;
+            delete stdio;
             // close the client socket
             close(sock);
             break;
