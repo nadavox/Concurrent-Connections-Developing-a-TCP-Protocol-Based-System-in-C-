@@ -300,8 +300,8 @@ int main(int argc, char *argv[]) {
         free(dyc);
         free(ddc);
         free(ec);
-        free(cli)
-
+        free(cli);
         close(client_socket);
+        number.clear();
     }
 }
