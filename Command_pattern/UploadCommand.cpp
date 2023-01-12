@@ -5,7 +5,6 @@
 #include <sstream>
 #include <string>
 #include <string.h>
-#include <queue>
 
 using namespace std;
 
@@ -103,18 +102,6 @@ void UploadCommand::notClassifiedVector(const string &dataVector) {
         }
     }
     values->setNotClassifiedVectorList(&numbers);
-}
-
-void receiveMessage(std::string message) {
-    messageQueue.push(message);
-}
-
-void processMessages() {
-    while (!messageQueue.empty()) {
-        std::string message = messageQueue.front();
-        messageQueue.pop();
-        std::cout << "Received message: " << message << std::endl;
-    }
 }
 
 /**
