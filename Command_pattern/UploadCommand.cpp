@@ -99,7 +99,7 @@ void notclassfiedVector(string dataVector,  vector<pair<vector<double>, string> 
 
 void UploadCommand::execute()
 {
-    //the socket.
+    //the client socket
     int clientSocket = values->getSocket();
     char buffer[4096];
     string trainString = "Please upload your local train CSV file.\n";
@@ -135,13 +135,12 @@ void UploadCommand::execute()
             exit(1);
         }
         string s(buffer);
-        //cout << s << endl;
+        // done reading the file
         if (s == "done") {
-            cout << "in break" << endl;
             break;
         }
-
     }
+
     // send the upload complete string to the client
     data_len = uploadCompleteString.length();
     data_addr[data_len + 1];
@@ -176,7 +175,6 @@ void UploadCommand::execute()
         memset(buffer, 0, sizeof(buffer));
         // get the lines from the client
         int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
-        //cout << buffer << endl;
         if (read_bytes == 0) {
             // connection is closed
             perror("Error the connection with the server is closed");

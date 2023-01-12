@@ -1,26 +1,6 @@
 #include "CLI.h"
 
 /**
- * the constructor of CLI
- * @param uc - the UploadCommand object
- * @param sc - the SettingsCommand object
- * @param cc - the ClassifyCommand object
- * @param dyc - the DisplayCommand object
- * @param ddc - the DownloadCommand object
- * @param ec - the ExitCommand object
- * @param socketNumber - the socket number to which we will send the menu to
- */
-CLI::CLI(Command* uc, Command* sc, Command* cc, Command* dyc, Command* ddc, Command* ec, int socketNumber) {
-    this->commands.insert(make_pair("1", uc));
-    this->commands.insert(make_pair("2", sc));
-    this->commands.insert(make_pair("3", cc));
-    this->commands.insert(make_pair("4", dyc));
-    this->commands.insert(make_pair("5", ddc));
-    this->commands.insert(make_pair("8", ec));
-    this->socketNumber = socketNumber;
-}
-
-/**
  * this function creates the menu and sends it to the client socket
  */
 void CLI::start() {
@@ -40,4 +20,41 @@ void CLI::start() {
     if (sent_bytes < 0) {
         perror("Error sending the data to the server");
     }
+}
+
+/**
+ * the constructor of CLI
+ * @param socketNumber - the client socket number
+ * @param v - pointer to values object
+ */
+CLI::CLI(int socketNumber, Values *v) {
+    Command *uc = new UploadCommand(socketNumber, v);
+    Command *sc = new SettingsCommand();
+    Command *cc = new ClassifyCommand();
+    Command *dyc = new DisplayCommand();
+    Command *ddc = new DownloadCommand();
+    Command *ec = new ExitCommand();
+    this->commands.insert(make_pair("1", uc));
+    this->commands.insert(make_pair("2", sc));
+    this->commands.insert(make_pair("3", cc));
+    this->commands.insert(make_pair("4", dyc));
+    this->commands.insert(make_pair("5", ddc));
+    this->commands.insert(make_pair("8", ec));
+    this->socketNumber = socketNumber;
+}
+
+/**
+ * this function executes the wanted command
+ * @param s - the command number
+ */
+void CLI::executeCommand(string s) {
+    commands[s]->execute();
+}
+
+CLI::~CLI() {
+    for (const auto& [key, value] : this->commands) {
+        delete(value);
+        this->commands.erase(key);
+    }
+    delete(this);
 }

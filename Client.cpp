@@ -106,17 +106,13 @@ void function1(int sock, DefaultIO* sdio) {
     }
     // reading lines from the first file
     while(getline(inputFileOne, line)) {
-        //cout << line << endl;
         sendData(sock, line);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
-    //cout<< "done" << endl;
     // let the server now we are done
     sendData(sock, "done");
-    // print the request from the server to the user
+    // print the message from the server to the user
     sdio->writeInput(receiveData(sock));
-    // print the request from the server to the user
-    //sdio->writeInput(receiveData(sock));
     // get the path to the un classified file from the user
     string readUnClassifiedFilePath = sdio->readInput();
     // create a fileIO object with the classified file path
@@ -132,7 +128,6 @@ void function1(int sock, DefaultIO* sdio) {
     }
     // reading lines from the first file
     while(getline(inputFileTwo, line)) {
-        //cout << line << endl;
         sendData(sock, line);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
@@ -259,7 +254,6 @@ int main(int argc, char *argv[]) {
         if (input == "1"){
             // call function1
             function1(sock, sdio);
-            cout <<"finish mission one" << endl;
         }
         // the user want to activate option 2
         else if (input == "2") {
