@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
+#include <thread>
 #include "IOClass/DefaultIO.h"
 #include "IOClass/StandardIO.h"
 #include "IOClass/SocketIO.h"
@@ -93,42 +94,47 @@ void function1(int sock, DefaultIO* sdio) {
     string readClassifiedFilePath = sdio->readInput();
     // create a fileIO object with the classified file path
     DefaultIO *fdio1 = new FileIO(readClassifiedFilePath, "");
-    ifstream inputFile;
+    ifstream inputFileOne;
     // open the file, doesn't matter if it relative or not.
-    inputFile.open(readClassifiedFilePath);
+    inputFileOne.open(readClassifiedFilePath);
     string line = "";
     // could not open the file
-    if (!inputFile)
+    if (!inputFileOne)
     {
         perror("Error with opening the file");
         return;
     }
     // reading lines from the first file
-    while(getline(inputFile, line)) {
-        cout << line << endl;
+    while(getline(inputFileOne, line)) {
+        //cout << line << endl;
         sendData(sock, line);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
+    //cout<< "done" << endl;
     // let the server now we are done
     sendData(sock, "done");
     // print the request from the server to the user
     sdio->writeInput(receiveData(sock));
     // print the request from the server to the user
-    sdio->writeInput(receiveData(sock));
+    //sdio->writeInput(receiveData(sock));
     // get the path to the un classified file from the user
     string readUnClassifiedFilePath = sdio->readInput();
     // create a fileIO object with the classified file path
     DefaultIO *fdio2 = new FileIO(readUnClassifiedFilePath, "");
     // open the file, doesn't matter if it relative or not.
-    inputFile.open(readUnClassifiedFilePath);
+    ifstream inputFileTwo;
+    inputFileTwo.open(readUnClassifiedFilePath);
     // could not open the file
-    if (!inputFile)
+    if (!inputFileTwo)
     {
         perror("Error with opening the file");
         return;
     }
     // reading lines from the first file
-    while(getline(inputFile, line)) {
+    while(getline(inputFileTwo, line)) {
+        //cout << line << endl;
         sendData(sock, line);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     sendData(sock, "done");
     // print the request from the server to the user
@@ -253,6 +259,7 @@ int main(int argc, char *argv[]) {
         if (input == "1"){
             // call function1
             function1(sock, sdio);
+            cout <<"finish mission one" << endl;
         }
         // the user want to activate option 2
         else if (input == "2") {

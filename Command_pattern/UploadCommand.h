@@ -9,7 +9,7 @@ public:
     explicit UploadCommand(int socket, Values *value);
     string description();
 
-    [[noreturn]] void execute();
+    void execute();
 };
 
 #endif //ADVANCEDPROGRAMINGPART3_UPLOADCOMMAND_H
