@@ -51,10 +51,12 @@ void CLI::executeCommand(string s) {
     commands[s]->execute();
 }
 
+/**
+ * destructor for CLI
+ */
 CLI::~CLI() {
     for (auto it = commands.rbegin(); it != commands.rend(); ++it) {
         delete it->second;
         commands.erase(it->first);
     }
-
 }
