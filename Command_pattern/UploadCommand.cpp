@@ -111,7 +111,9 @@ void UploadCommand::notClassifiedVector(const string &dataVector) {
 void UploadCommand::execute() {
     //the client socket
     int clientSocket = values->getSocket();
-    char buffer[4096];
+    char buffer[512];
+    // clean the buffer
+    memset(buffer, 0, sizeof(buffer));
     string trainString = "Please upload your local train CSV file.\n";
     string uploadComplete1String = "Upload complete.\nPlease upload your local test CSV file.\n";
     string uploadComplete2String = "Upload complete.\n";
@@ -130,13 +132,10 @@ void UploadCommand::execute() {
         perror("Error sending the data to the client");
         exit(1);
     }
-
     int expected_data_len = sizeof(buffer);
     while (true) {
-        // clean the buffer
-        memset(buffer, 0, sizeof(buffer));
         // get the lines from the client
-        int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
+        long int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
         if (read_bytes == 0) {
             // connection is closed
             perror("Error the connection with the server is closed");
@@ -149,10 +148,15 @@ void UploadCommand::execute() {
         string s(buffer);
         // done reading the file
         if (s == "done") {
+            // clean the buffer
+            memset(buffer, 0, s.size());
             break;
         } else {
             //this->classifiedVector(s);
             classifiedStrings.push_back(s);
+            //cout << s << endl;
+            // clean the buffer
+            memset(buffer, 0, s.size());
         }
     }
 
@@ -169,12 +173,8 @@ void UploadCommand::execute() {
         exit(1);
     }
 
-    // clean the buffer
-    memset(buffer, 0, sizeof(buffer));
-    string s = buffer;
+    string s;
     while (s != "done") {
-        // clean the buffer
-        memset(buffer, 0, sizeof(buffer));
         // get the lines from the client
         long int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
         if (read_bytes == 0) {
@@ -191,6 +191,8 @@ void UploadCommand::execute() {
         //s.erase(s.length() - 1, 1);
         //this->notClassifiedVector(s);
         unclassifiedStrings.push_back(s);
+        // clean the buffer
+        memset(buffer, 0, s.size());
     }
 
     // send the upload complete string to the client

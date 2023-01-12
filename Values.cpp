@@ -4,7 +4,7 @@ Values::Values(int socket_val) {
     k = 5;
     distance_metric = "EUC";
     classifiedVectorList = new vector<pair< vector<double>, string > >;
-    notClassifiedVectorList = new vector<vector<double>>;
+    notClassifiedVectorList = new vector<vector<double> >;
 }
 
 Values::~Values() {
@@ -22,13 +22,13 @@ string Values::getDistanceMetric() const {
 vector<pair< vector<double>, string > > *Values::getClassifiedVectorList() {
     return classifiedVectorList;
 }
-vector<vector<double>> *Values::getNotClassifiedVectorList() {
+vector<vector<double> > *Values::getNotClassifiedVectorList() {
     return notClassifiedVectorList;
 }
 int Values::getSocket() const {
     return socket;
 }
-vector<pair<vector<double>, string>> *Values::getAfterClassifing() {
+vector<pair<vector<double>, string> > *Values::getAfterClassifing() {
     return afterClassifing;
 }
 
@@ -61,6 +61,6 @@ void Values::setAfterClassifing(pair<vector<double>, string> *v) {
     this->afterClassifing->push_back(*v);
 }
 
-void Values::setAfterClassifing(vector<pair<vector<double>, string>> *val) {
+void Values::setAfterClassifing(vector<pair<vector<double>, string> > *val) {
     this->afterClassifing = val;
 }
