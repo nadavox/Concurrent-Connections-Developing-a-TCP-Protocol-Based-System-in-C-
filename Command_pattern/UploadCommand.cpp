@@ -100,10 +100,7 @@ void UploadCommand::notClassifiedVector(const string &dataVector) {
             // error
         }
     }
-    pair<vector<double>, string> tempPair;
-    tempPair.first = numbers;
-    tempPair.second = typeVector;
-    values->setNotClassifiedVectorList(&tempPair);
+    values->setNotClassifiedVectorList(&numbers);
 }
 
 /**
@@ -122,9 +119,9 @@ void UploadCommand::execute() {
     unsigned int data_len = trainString.length();
     char data_addr[data_len + 1];
     const char* str = trainString.c_str();
-    // copy the data of the vector, distance function name and k to char array
+    // copy the data to the char array
     strcpy(data_addr, str);
-    // send the full sentence to the server
+    // send the string to the server
     long int sent_bytes = send(clientSocket, data_addr, data_len, 0);
     if (sent_bytes < 0) {
         perror("Error sending the data to the client");
@@ -159,9 +156,9 @@ void UploadCommand::execute() {
     data_len = uploadComplete1String.length() + 1;
     char data_addrTwo[data_len];
     str = uploadComplete1String.c_str();
-    // copy the data of the vector, distance function name and k to char array
+    // copy the data to the char array
     strcpy(data_addrTwo, str);
-    // send the full sentence to the server
+    // send the string to the server
     sent_bytes = send(clientSocket, data_addrTwo, data_len, 0);
     if (sent_bytes < 0) {
         perror("Error sending the data to the client");
@@ -193,9 +190,9 @@ void UploadCommand::execute() {
     data_len = uploadComplete2String.length() + 1;
     char data_addrThree[data_len];
     str = uploadComplete2String.c_str();
-    // copy the data of the vector, distance function name and k to char array
+    // copy the data to the char array
     strcpy(data_addrThree, str);
-    // send the full sentence to the server
+    // send the string to the server
     sent_bytes = send(clientSocket, data_addrThree, data_len, 0);
     if (sent_bytes < 0) {
         perror("Error sending the data to the client");
