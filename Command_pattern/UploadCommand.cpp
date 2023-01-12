@@ -125,7 +125,7 @@ void UploadCommand::execute() {
     // copy the data of the vector, distance function name and k to char array
     strcpy(data_addr, str);
     // send the full sentence to the server
-    int sent_bytes = send(clientSocket, data_addr, data_len, 0);
+    long int sent_bytes = send(clientSocket, data_addr, data_len, 0);
     if (sent_bytes < 0) {
         perror("Error sending the data to the client");
         exit(1);
@@ -156,13 +156,13 @@ void UploadCommand::execute() {
     }
 
     // send the upload complete and the test string to the client
-    data_len = uploadComplete1String.length();
-    data_addr[data_len + 1];
+    data_len = uploadComplete1String.length() + 1;
+    char data_addrTwo[data_len];
     str = uploadComplete1String.c_str();
     // copy the data of the vector, distance function name and k to char array
-    strcpy(data_addr, str);
+    strcpy(data_addrTwo, str);
     // send the full sentence to the server
-    sent_bytes = send(clientSocket, data_addr, data_len, 0);
+    sent_bytes = send(clientSocket, data_addrTwo, data_len, 0);
     if (sent_bytes < 0) {
         perror("Error sending the data to the client");
         exit(1);
@@ -175,7 +175,7 @@ void UploadCommand::execute() {
         // clean the buffer
         memset(buffer, 0, sizeof(buffer));
         // get the lines from the client
-        int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
+        long int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
         if (read_bytes == 0) {
             // connection is closed
             perror("Error the connection with the server is closed");
@@ -190,13 +190,13 @@ void UploadCommand::execute() {
     }
 
     // send the upload complete string to the client
-    data_len = uploadComplete2String.length();
-    data_addr[data_len + 1];
+    data_len = uploadComplete2String.length() + 1;
+    char data_addrThree[data_len];
     str = uploadComplete2String.c_str();
     // copy the data of the vector, distance function name and k to char array
-    strcpy(data_addr, str);
+    strcpy(data_addrThree, str);
     // send the full sentence to the server
-    sent_bytes = send(clientSocket, data_addr, data_len, 0);
+    sent_bytes = send(clientSocket, data_addrThree, data_len, 0);
     if (sent_bytes < 0) {
         perror("Error sending the data to the client");
         exit(1);

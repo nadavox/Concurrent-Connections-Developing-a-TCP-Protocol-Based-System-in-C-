@@ -275,7 +275,7 @@ int main(int argc, char *argv[]) {
         // create a function that receives the number of the function from the client
         int counter = 0;
         while (number != "8") {
-            this_thread::sleep_for(chrono::milliseconds(100));
+            this_thread::sleep_for(chrono::milliseconds(10));
             cli->start();
             number = receiveNumber(client_socket, cli, counter);
             counter++;
