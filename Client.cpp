@@ -9,7 +9,7 @@
 #include "IOClass/DefaultIO.h"
 #include "IOClass/StandardIO.h"
 #include "IOClass/SocketIO.h"
-#include "IOClass/FileIO.h"
+#include "fstream"
 
 using namespace std;
 
