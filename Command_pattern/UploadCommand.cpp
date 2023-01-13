@@ -241,7 +241,12 @@ void UploadCommand::execute() {
     //put the vectors in the Unclassfied vector of values.
     notClassifiedVector(file_data);
     //TODO: print the values of values->notclassifiedVector to see if it works.
-
+    for (int i=0; i< values->getNotClassifiedVectorList()->size(); i++) {
+        for (int j = 0; j < values->getNotClassifiedVectorList()->at(i).size(); ++j) {
+            cout << values->getNotClassifiedVectorList()->at(i).at(j) << " ";
+        }
+        cout << endl;
+    }
     // send the upload complete string to the client
     data_len = uploadComplete2String.length() + 1;
     char data_addrThree[data_len];
