@@ -8,6 +8,13 @@
 
 using namespace std;
 
+bool check_done(char* file_data, long int file_size) {
+    if (file_size < 4) {
+        return false;
+    }
+    return file_data[file_size - 4] == 'd' && file_data[file_size - 3] == 'o' && file_data[file_size - 2] == 'n' && file_data[file_size - 1] == 'e';
+}
+
 /**
  * this function checks if a string is double.
  * @param s - the string
@@ -46,62 +53,97 @@ bool isNumber(const string& s)
  * this function save the classified vector in the classifiedVectorList
  * @param dataVector - the string
  */
-void UploadCommand::classifiedVector(const string &dataVector) {
-    vector<double> numbers;
-    istringstream iss(dataVector);
-    string word, typeVector;
-    char *charWord;
-    // while loop that each iteration will take one word separate by space.
-    while (getline(iss, word, ',')) {
-        // there is more than one string for the vector
-        if (!typeVector.empty()) {
+void UploadCommand::classifiedVector(const vector<char>& dataVector) {
+    string line;
+    vector<std::string> lines;
+    for (auto c : dataVector) {
+        if (c == '\n' || c == '\r') {
+            lines.push_back(line);
+            line.clear();
+        } else {
+            line += c;
+        }
+    }
+    // add the last line if there's no newline at the end of the file
+    if (!line.empty()) {
+        lines.push_back(line);
+    }
+    for (auto l : lines) {
+        vector<double> numbers;
+        istringstream iss(l);
+        string word, typeVector;
+        char *charWord;
+        // while loop that each iteration will take one word separate by space.
+        while (getline(iss, word, ',')) {
+            // there is more than one string for the vector
+            if (!typeVector.empty()) {
+                // error
+            }
+            // char word point to the start of the word.
+            charWord = &word[0];
+            //check if the word is number.
+            if (isNumber(charWord)) {
+                //it is number
+                numbers.push_back(stod(word));
+            } else {
+                //the string
+                typeVector = word;
+            }
+        }
+        // there is no classified string
+        if (typeVector.empty()) {
             // error
         }
-        // char word point to the start of the word.
-        charWord = &word[0];
-        //check if the word is number.
-        if (isNumber(charWord)) {
-            //it is number
-            numbers.push_back(stod(word));
-        } else {
-            //the string
-            typeVector = word;
-        }
+        pair<vector<double>, string> tempPair;
+        tempPair.first = numbers;
+        tempPair.second = typeVector;
+        values->setClassifiedVectorList(&tempPair);
     }
-    // there is no classified string
-    if (typeVector.empty()) {
-        // error
-    }
-    pair<vector<double>, string> tempPair;
-    tempPair.first = numbers;
-    tempPair.second = typeVector;
-    values->setClassifiedVectorList(&tempPair);
 }
 
 /**
  * this function save the un classified vector in the unClassifiedVectorList
  * @param dataVector - the string
  */
-void UploadCommand::notClassifiedVector(const string &dataVector) {
-    vector<double> numbers;
-    istringstream iss(dataVector);
-    string word, typeVector;
-    char *charWord;
-    // while loop that each iteration will take one word separate by space.
-    while (getline(iss, word, ',')) {
-        // char word point to the start of the word.
-        charWord = &word[0];
-        //check if the word is number.
-        if (isNumber(charWord)) {
-            //it is number
-            numbers.push_back(stod(word));
+void UploadCommand::notClassifiedVector(const vector<char>& dataVector) {
+    string line;
+    vector<std::string> lines;
+    for (auto c : dataVector) {
+        if (c == '\n' || c == '\r') {
+            lines.push_back(line);
+            line.clear();
         } else {
-            //the string
-            typeVector = word;
-            // error
+            line += c;
         }
     }
-    values->setNotClassifiedVectorList(&numbers);
+    // add the last line if there's no newline at the end of the file
+    if (!line.empty()) {
+        lines.push_back(line);
+    }
+    for (auto l : lines) {
+        vector<double> numbers;
+        istringstream iss(l);
+        string word, typeVector;
+        char *charWord;
+        // while loop that each iteration will take one word separate by space.
+        while (getline(iss, word, ',')) {
+            // char word point to the start of the word.
+            charWord = &word[0];
+            //check if the word is number.
+            if (isNumber(charWord)) {
+                //it is number
+                numbers.push_back(stod(word));
+            } else {
+                //the string
+                typeVector = word;
+                // error
+            }
+        }
+        if (!numbers.empty()) {
+            values->setNotClassifiedVectorList(&numbers);
+        }
+    }
+
 }
 
 /**
@@ -111,7 +153,7 @@ void UploadCommand::notClassifiedVector(const string &dataVector) {
 void UploadCommand::execute() {
     //the client socket
     int clientSocket = values->getSocket();
-    char buffer[512];
+    char buffer[1028];
     // clean the buffer
     memset(buffer, 0, sizeof(buffer));
     string trainString = "Please upload your local train CSV file.\n";
@@ -133,8 +175,9 @@ void UploadCommand::execute() {
         exit(1);
     }
     int expected_data_len = sizeof(buffer);
+    vector<char> file_data;
     while (true) {
-        // get the lines from the client
+        //Nadav -------------------------------------------------------
         long int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
         if (read_bytes == 0) {
             // connection is closed
@@ -145,20 +188,20 @@ void UploadCommand::execute() {
             perror("Error with reading the data from the server");
             exit(1);
         }
-        string s(buffer);
-        // done reading the file
-        if (s == "done") {
+        if (check_done(buffer, read_bytes)) {
             // clean the buffer
-            memset(buffer, 0, s.size());
+            memset(buffer, 0, read_bytes);
             break;
         } else {
-            //this->classifiedVector(s);
-            classifiedStrings.push_back(s);
-            //cout << s << endl;
-            // clean the buffer
-            memset(buffer, 0, s.size());
+            //copy the buffer to the vector
+            file_data.insert(file_data.end(), buffer, buffer + read_bytes);
+            memset(buffer, 0, read_bytes);
         }
     }
+    //classfied the vector.
+    classifiedVector(file_data);
+    //TODO: print the values of values->classifiedVector to see if it works.
+
 
     // send the upload complete and the test string to the client
     data_len = uploadComplete1String.length() + 1;
@@ -173,9 +216,8 @@ void UploadCommand::execute() {
         exit(1);
     }
 
-    string s;
-    while (s != "done") {
-        // get the lines from the client
+    file_data.clear();
+    while (true) {
         long int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
         if (read_bytes == 0) {
             // connection is closed
@@ -186,14 +228,19 @@ void UploadCommand::execute() {
             perror("Error with reading the data from the server");
             exit(1);
         }
-        s = buffer;
-        // remove /r from the end of the string
-        //s.erase(s.length() - 1, 1);
-        //this->notClassifiedVector(s);
-        unclassifiedStrings.push_back(s);
-        // clean the buffer
-        memset(buffer, 0, s.size());
+        if (check_done(buffer, read_bytes)) {
+            // clean the buffer
+            memset(buffer, 0, read_bytes);
+            break;
+        } else {
+            //copy the buffer to the vector
+            file_data.insert(file_data.end(), buffer, buffer + read_bytes);
+            memset(buffer, 0, read_bytes);
+        }
     }
+    //put the vectors in the Unclassfied vector of values.
+    notClassifiedVector(file_data);
+    //TODO: print the values of values->notclassifiedVector to see if it works.
 
     // send the upload complete string to the client
     data_len = uploadComplete2String.length() + 1;

@@ -34,7 +34,7 @@ void SocketIO::writeInput(string s) {
     const char* str = s.c_str();
     // copy the data of the vector, distance function name and k to char array
     strcpy(data_addr, str);
-    int n;
+    long int n;
     n = write(sockNumber, data_addr, data_len);
     if (n < 0) {
         perror("Error writing to the socket");
