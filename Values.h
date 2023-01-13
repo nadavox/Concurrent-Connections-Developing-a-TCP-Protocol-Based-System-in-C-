@@ -17,25 +17,25 @@ private:
 public:
     //constructor
     Values(int socket_val);
+
     //deconstruction
     ~Values();
+
     // Getters
     int getK() const;
     string getDistanceMetric() const;
+    int getSocket() const;
     vector<pair< vector<double>, string > > *getClassifiedVectorList();
     vector<vector<double> > *getNotClassifiedVectorList();
-    int getSocket() const;
-    vector<pair<vector<double>, string> > *getAfterClassifing();
+    vector<pair< vector<double>, string > > *getAfterClassifingList();
+
     // Setters
     void setK(int val);
     void setDistanceMetric(string val);
-    void setClassifiedVectorList(vector<pair< vector<double>, string > > *val);
+    void setSocket(int val);
     void setClassifiedVectorList(pair<vector<double>, string> *v);
     void setNotClassifiedVectorList(vector<double> *v);
-    void setNotClassifiedVectorList(vector<vector<double> > *val);
-    void setSocket(int val);
     void setAfterClassifing(pair<vector<double>, string> *v);
-    void setAfterClassifing(vector<pair< vector<double>, string > > *val);
 };
 
 #endif //ADVANCEDPROGRAMINGPART3_VALUES_H

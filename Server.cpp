@@ -7,14 +7,11 @@
 #include "Command_pattern/Command.h"
 #include <unistd.h>
 #include <thread>
-#include <sstream>
 
 #define TRUE 1
-#define ERROR 1 // if the size of the vector is not good
 #define MAX_CLIENTS 30 //max client for the server
 
 using namespace std;
-
 
 /**
  * the function creates the master socket

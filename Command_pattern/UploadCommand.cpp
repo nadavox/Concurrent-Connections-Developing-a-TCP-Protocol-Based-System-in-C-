@@ -166,6 +166,11 @@ void UploadCommand::execute() {
     vector<string> classifiedStrings;
     vector<string> unclassifiedStrings;
 
+    // reset vectors in values
+    values->getClassifiedVectorList()->clear();
+    values->getNotClassifiedVectorList()->clear();
+    values->getAfterClassifingList()->clear();
+
     // send the train string to the client
     unsigned int data_len = trainString.length();
     char data_addr[data_len + 1];
@@ -178,6 +183,7 @@ void UploadCommand::execute() {
         perror("Error sending the data to the client");
         exit(1);
     }
+
     int expected_data_len = sizeof(buffer);
     vector<char> file_data;
     while (true) {
