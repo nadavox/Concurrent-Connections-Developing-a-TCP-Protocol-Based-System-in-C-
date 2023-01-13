@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "../Values.h"
+#include "../IOClass/DefaultIO.h"
 
 using namespace std;
 
@@ -12,6 +13,7 @@ class Command
 {
 protected:
     Values *values;
+    DefaultIO *dio;
 public:
     virtual string description() = 0;
     virtual void execute() = 0;

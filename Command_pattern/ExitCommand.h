@@ -6,6 +6,7 @@
 class ExitCommand : public Command
 {
 public:
+    explicit ExitCommand(int socket, Values *value, DefaultIO *dio);
     string description();
     void execute();
 };

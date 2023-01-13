@@ -19,3 +19,15 @@ void DownloadCommand::execute()
 string DownloadCommand::description() {
     return "5. download results\n";
 }
+
+/**
+ * the constructor of DownloadCommand
+ * @param socket - the socket of the client
+ * @param valuesCopy - values object
+ * @param dio - pointer to DefaultIO object
+ */
+DownloadCommand::DownloadCommand(int socket, Values *value, DefaultIO *dio) {
+    values = value;
+    value->setSocket(socket);
+    this->dio = dio;
+}

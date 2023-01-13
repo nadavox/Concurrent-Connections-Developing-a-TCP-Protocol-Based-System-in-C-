@@ -18,3 +18,15 @@ void ExitCommand::execute()
 string ExitCommand::description() {
     return "8. exit\n";
 }
+
+/**
+ * the constructor of ExitCommand
+ * @param socket - the socket of the client
+ * @param valuesCopy - values object
+ * @param dio - pointer to DefaultIO object
+ */
+ExitCommand::ExitCommand(int socket, Values *value, DefaultIO *dio) {
+    values = value;
+    value->setSocket(socket);
+    this->dio = dio;
+}

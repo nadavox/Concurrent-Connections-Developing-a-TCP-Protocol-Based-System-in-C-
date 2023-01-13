@@ -1,7 +1,4 @@
-#include <iostream>
 #include "UploadCommand.h"
-#include <sys/socket.h>
-#include <sstream>
 #include <string>
 #include <string.h>
 
@@ -11,7 +8,7 @@ using namespace std;
  * this function checks if the we are done reading from the client
  * @param file_data
  * @param file_size
- * @return
+ * @return true if we are done reading the file, false if not
  */
 bool check_done(char* file_data, long int file_size) {
     if (file_size < 4) {
@@ -156,7 +153,6 @@ void UploadCommand::notClassifiedVector(const vector<char>& dataVector) {
  */
 void UploadCommand::execute() {
     //the client socket
-    int clientSocket = values->getSocket();
     char buffer[1028];
     // clean the buffer
     memset(buffer, 0, sizeof(buffer));
@@ -172,94 +168,50 @@ void UploadCommand::execute() {
     values->getAfterClassifingList()->clear();
 
     // send the train string to the client
-    unsigned int data_len = trainString.length();
-    char data_addr[data_len + 1];
-    const char* str = trainString.c_str();
-    // copy the data to the char array
-    strcpy(data_addr, str);
-    // send the string to the server
-    long int sent_bytes = send(clientSocket, data_addr, data_len, 0);
-    if (sent_bytes < 0) {
-        perror("Error sending the data to the client");
-        exit(1);
-    }
+    this->dio->writeInput(trainString);
 
-    int expected_data_len = sizeof(buffer);
     vector<char> file_data;
+    string input;
     while (true) {
-        long int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
-        if (read_bytes == 0) {
-            // connection is closed
-            perror("Error the connection with the server is closed");
-            exit(1);
-        }
-        else if (read_bytes < 0) {
-            perror("Error with reading the data from the server");
-            exit(1);
-        }
-        if (check_done(buffer, read_bytes)) {
+        // getting the input from the client
+        input = this->dio->readInput();
+        strcpy(buffer, input.c_str());
+        if (check_done(buffer, input.size())) {
             // clean the buffer
-            memset(buffer, 0, read_bytes);
+            memset(buffer, 0, input.size());
             break;
         } else {
             //copy the buffer to the vector
-            file_data.insert(file_data.end(), buffer, buffer + read_bytes);
-            memset(buffer, 0, read_bytes);
+            file_data.insert(file_data.end(), buffer, buffer + input.size());
+            memset(buffer, 0, input.size());
         }
     }
     // save the classified the vector.
     classifiedVector(file_data);
 
     // send the upload complete and the test string to the client
-    data_len = uploadComplete1String.length() + 1;
-    char data_addrTwo[data_len];
-    str = uploadComplete1String.c_str();
-    // copy the data to the char array
-    strcpy(data_addrTwo, str);
-    // send the string to the server
-    sent_bytes = send(clientSocket, data_addrTwo, data_len, 0);
-    if (sent_bytes < 0) {
-        perror("Error sending the data to the client");
-        exit(1);
-    }
+    this->dio->writeInput(uploadComplete1String);
 
     file_data.clear();
     while (true) {
-        long int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
-        if (read_bytes == 0) {
-            // connection is closed
-            perror("Error the connection with the server is closed");
-            exit(1);
-        }
-        else if (read_bytes < 0) {
-            perror("Error with reading the data from the server");
-            exit(1);
-        }
-        if (check_done(buffer, read_bytes)) {
+        // getting the input from the client
+        input = this->dio->readInput();
+        strcpy(buffer, input.c_str());
+        if (check_done(buffer, input.size())) {
             // clean the buffer
-            memset(buffer, 0, read_bytes);
+            memset(buffer, 0, input.size());
             break;
         } else {
             //copy the buffer to the vector
-            file_data.insert(file_data.end(), buffer, buffer + read_bytes);
-            memset(buffer, 0, read_bytes);
+            file_data.insert(file_data.end(), buffer, buffer + input.size());
+            memset(buffer, 0, input.size());
         }
     }
     //put the vectors in the Unclassified vector of values.
     notClassifiedVector(file_data);
 
     // send the upload complete string to the client
-    data_len = uploadComplete2String.length() + 1;
-    char data_addrThree[data_len];
-    str = uploadComplete2String.c_str();
-    // copy the data to the char array
-    strcpy(data_addrThree, str);
-    // send the string to the server
-    sent_bytes = send(clientSocket, data_addrThree, data_len, 0);
-    if (sent_bytes < 0) {
-        perror("Error sending the data to the client");
-        exit(1);
-    }
+    this->dio->writeInput(uploadComplete2String);
 }
 
 /**
@@ -274,8 +226,10 @@ string UploadCommand::description() {
  * the constructor of UploadCommand
  * @param socket - the socket of the client
  * @param valuesCopy - values object
+ * @param dio - pointer to DefaultIO object
  */
-UploadCommand::UploadCommand(int socket, Values *valuesCopy) {
+UploadCommand::UploadCommand(int socket, Values *valuesCopy, DefaultIO *dio) {
     values = valuesCopy;
     valuesCopy->setSocket(socket);
+    this->dio = dio;
 }

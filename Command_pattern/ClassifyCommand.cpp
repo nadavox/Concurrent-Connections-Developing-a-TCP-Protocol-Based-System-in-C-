@@ -1,6 +1,4 @@
 #include "ClassifyCommand.h"
-#include "string.h"
-#include <sys/socket.h>
 #include "../Algorithms/Distance.h"
 #include "../Algorithms/EuclideanDistance.h"
 #include "../Algorithms/TaxicabGeometry.h"
@@ -56,23 +54,11 @@ string getKnnOutput(const string& kindDistance, int k, vector<double> userVector
  */
 void ClassifyCommand::execute()
 {
-    int clientSocket = values->getSocket();
-
     // the user have uploaded the vectors yet
     if (values->getNotClassifiedVectorList()->empty()) {
         string noData = "please upload data\n";
         // send the no data string to the client
-        unsigned int data_len = noData.length();
-        char data_addr[data_len + 1];
-        const char* str = noData.c_str();
-        // copy the data to the char array
-        strcpy(data_addr, str);
-        // send the string to the server
-        long int sent_bytes = send(clientSocket, data_addr, data_len, 0);
-        if (sent_bytes < 0) {
-            perror("Error sending the data to the client");
-            exit(1);
-        }
+        this->dio->writeInput(noData);
     }
         // the vectors in the classified file are not in the same size as the vectors in the un classified file
     else if (values->getNotClassifiedVectorList()->at(0).size() != values->getClassifiedVectorList()->at(0).first.size()){
@@ -93,17 +79,7 @@ void ClassifyCommand::execute()
         }
         string complete = "classifying data complete\n";
         // send the complete string to the client
-        unsigned int data_len = complete.length();
-        char data_addr[data_len + 1];
-        const char* str = complete.c_str();
-        // copy the data to the char array
-        strcpy(data_addr, str);
-        // send the string to the server
-        long int sent_bytes = send(clientSocket, data_addr, data_len, 0);
-        if (sent_bytes < 0) {
-            perror("Error sending the data to the client");
-            exit(1);
-        }
+        this->dio->writeInput(complete);
     }
 }
 
@@ -119,8 +95,10 @@ string ClassifyCommand::description() {
  * the constructor of ClassifyCommand
  * @param socket - the socket of the client
  * @param valuesCopy - values object
+ * @param dio - pointer to DefaultIO object
  */
-ClassifyCommand::ClassifyCommand(int socket, Values *valuesCopy) {
+ClassifyCommand::ClassifyCommand(int socket, Values *valuesCopy, DefaultIO *dio) {
     values = valuesCopy;
     valuesCopy->setSocket(socket);
+    this->dio = dio;
 }

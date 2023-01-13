@@ -7,6 +7,8 @@
 #include "Command_pattern/Command.h"
 #include <unistd.h>
 #include <thread>
+#include "IOClass/DefaultIO.h"
+#include "IOClass/SocketIO.h"
 
 #define TRUE 1
 #define MAX_CLIENTS 30 //max client for the server
@@ -145,7 +147,8 @@ int main(int argc, char *argv[]) {
         }
         //create value object.
         Values *values = new Values(client_socket);
-        CLI *cli = new CLI(client_socket, values);
+        DefaultIO *dio = new SocketIO(client_socket);
+        CLI *cli = new CLI(client_socket, values, dio);
         // create a function that receives the number of the function from the client
         while (number != "8") {
             this_thread::sleep_for(chrono::milliseconds(10));

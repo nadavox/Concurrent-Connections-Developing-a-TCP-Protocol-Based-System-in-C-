@@ -6,10 +6,9 @@
 class SettingsCommand : public Command
 {
 public:
-    explicit SettingsCommand(int socket, Values *value);
+    explicit SettingsCommand(int socket, Values *value, DefaultIO *dio);
     string description();
     void execute();
-    void sendData(string s, int clientSock);
 };
 
 #endif //ADVANCEDPROGRAMINGPART3_SETTINGSCOMMAND_H
