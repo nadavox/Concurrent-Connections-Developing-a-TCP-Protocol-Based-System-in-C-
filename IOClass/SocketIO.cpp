@@ -14,7 +14,7 @@ SocketIO::SocketIO(int sockNumber) {
  * this function reads from the socket
  */
 string SocketIO::readInput() {
-    char buffer[1028];
+    char buffer[1024];
     memset(buffer, 0, sizeof(buffer));
     long int n = read(sockNumber, buffer, sizeof(buffer));
     if (n < 0){

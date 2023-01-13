@@ -44,7 +44,7 @@ int createSocket(int portNumber, char* ipAddress) {
  * @param sdio - the StandardIO object
  * @param stdio - the SocketIO object
  */
-void function1(DefaultIO* sdio, DefaultIO* stdio, int sock) {
+void function1(DefaultIO* sdio, DefaultIO* stdio) {
     // print the request from the server to the user
     sdio->writeInput(stdio->readInput());
     // get the path to the classified file from the user
@@ -207,7 +207,7 @@ int main(int argc, char *argv[]) {
         // the user want to activate option 1
         if (input == "1"){
             // call function1
-            function1(sdio, stdio, sock);
+            function1(sdio, stdio);
         }
         // the user want to activate option 2
         else if (input == "2") {
