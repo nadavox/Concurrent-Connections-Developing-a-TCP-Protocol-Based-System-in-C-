@@ -9,8 +9,8 @@ public:
     explicit UploadCommand(int socket, Values *value);
     string description();
     void execute();
-    void classifiedVector(const string& dataVector);
-    void notClassifiedVector(const string &dataVector);
+    void classifiedVector(const vector<char>& dataVector);
+    void notClassifiedVector(const vector<char>& dataVector);
 };
 
 #endif //ADVANCEDPROGRAMINGPART3_UPLOADCOMMAND_H
