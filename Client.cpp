@@ -63,7 +63,7 @@ void function1(DefaultIO* sdio, DefaultIO* stdio, int sock) {
     while(inputFileOne.read(buffer, 1023) || inputFileOne.gcount() > 0) {
         stdio->writeInput(buffer);
         memset(buffer, 0, 1024);
-        this_thread::sleep_for(chrono::milliseconds(10));
+        this_thread::sleep_for(chrono::milliseconds(25));
     }
     // let the server now we are done
     stdio->writeInput("done");
@@ -84,7 +84,7 @@ void function1(DefaultIO* sdio, DefaultIO* stdio, int sock) {
     while(inputFileTwo.read(buffer, 1023) || inputFileTwo.gcount() > 0) {
         stdio->writeInput(buffer);
         memset(buffer, 0, 1024);
-        this_thread::sleep_for(chrono::milliseconds(10));
+        this_thread::sleep_for(chrono::milliseconds(25));
     }
     stdio->writeInput("done");
     // print the request from the server to the user

@@ -74,13 +74,11 @@ void ClassifyCommand::execute()
             exit(1);
         }
     }
-    // the vectors in the classified file are not in the same size as the vectors in the un classified file
+        // the vectors in the classified file are not in the same size as the vectors in the un classified file
     else if (values->getNotClassifiedVectorList()->at(0).size() != values->getClassifiedVectorList()->at(0).first.size()){
         // error
-        cout << values->getNotClassifiedVectorList()->at(0).size() << endl;
-        cout << values->getClassifiedVectorList()->at(0).first.size() << endl;
     }
-    // we can classify
+        // we can classify
     else {
         string kindDistance = values->getDistanceMetric(), output;
         int k = values->getK(), sizeOfUnClassifiedVectors = values->getNotClassifiedVectorList()->size();
@@ -92,20 +90,19 @@ void ClassifyCommand::execute()
             result.second = output;
             // save the result
             values->setAfterClassifing(&result);
-
-            string complete = "classifying data complete\n";
-            // send the complete string to the client
-            unsigned int data_len = complete.length();
-            char data_addr[data_len + 1];
-            const char* str = complete.c_str();
-            // copy the data to the char array
-            strcpy(data_addr, str);
-            // send the string to the server
-            long int sent_bytes = send(clientSocket, data_addr, data_len, 0);
-            if (sent_bytes < 0) {
-                perror("Error sending the data to the client");
-                exit(1);
-            }
+        }
+        string complete = "classifying data complete\n";
+        // send the complete string to the client
+        unsigned int data_len = complete.length();
+        char data_addr[data_len + 1];
+        const char* str = complete.c_str();
+        // copy the data to the char array
+        strcpy(data_addr, str);
+        // send the string to the server
+        long int sent_bytes = send(clientSocket, data_addr, data_len, 0);
+        if (sent_bytes < 0) {
+            perror("Error sending the data to the client");
+            exit(1);
         }
     }
 }

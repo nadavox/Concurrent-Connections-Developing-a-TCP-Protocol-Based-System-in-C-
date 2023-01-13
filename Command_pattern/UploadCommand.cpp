@@ -1,13 +1,18 @@
 #include <iostream>
 #include "UploadCommand.h"
 #include <sys/socket.h>
-#include <cstring>
 #include <sstream>
 #include <string>
 #include <string.h>
 
 using namespace std;
 
+/**
+ * this function checks if the we are done reading from the client
+ * @param file_data
+ * @param file_size
+ * @return
+ */
 bool check_done(char* file_data, long int file_size) {
     if (file_size < 4) {
         return false;
@@ -143,7 +148,6 @@ void UploadCommand::notClassifiedVector(const vector<char>& dataVector) {
             values->setNotClassifiedVectorList(&numbers);
         }
     }
-
 }
 
 /**
@@ -177,7 +181,6 @@ void UploadCommand::execute() {
     int expected_data_len = sizeof(buffer);
     vector<char> file_data;
     while (true) {
-        //Nadav -------------------------------------------------------
         long int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
         if (read_bytes == 0) {
             // connection is closed
@@ -198,10 +201,8 @@ void UploadCommand::execute() {
             memset(buffer, 0, read_bytes);
         }
     }
-    //classfied the vector.
+    // save the classified the vector.
     classifiedVector(file_data);
-    //TODO: print the values of values->classifiedVector to see if it works.
-
 
     // send the upload complete and the test string to the client
     data_len = uploadComplete1String.length() + 1;
@@ -238,15 +239,9 @@ void UploadCommand::execute() {
             memset(buffer, 0, read_bytes);
         }
     }
-    //put the vectors in the Unclassfied vector of values.
+    //put the vectors in the Unclassified vector of values.
     notClassifiedVector(file_data);
-    //TODO: print the values of values->notclassifiedVector to see if it works.
-    for (int i=0; i< values->getNotClassifiedVectorList()->size(); i++) {
-        for (int j = 0; j < values->getNotClassifiedVectorList()->at(i).size(); ++j) {
-            cout << values->getNotClassifiedVectorList()->at(i).at(j) << " ";
-        }
-        cout << endl;
-    }
+
     // send the upload complete string to the client
     data_len = uploadComplete2String.length() + 1;
     char data_addrThree[data_len];

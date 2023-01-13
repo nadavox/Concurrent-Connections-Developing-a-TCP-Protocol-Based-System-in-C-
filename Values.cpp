@@ -5,6 +5,8 @@ Values::Values(int socket_val) {
     distance_metric = "EUC";
     classifiedVectorList = new vector<pair< vector<double>, string > >;
     notClassifiedVectorList = new vector<vector<double> >;
+    afterClassifing = new vector<pair< vector<double>, string > >;
+    socket = socket_val;
 }
 
 Values::~Values() {
