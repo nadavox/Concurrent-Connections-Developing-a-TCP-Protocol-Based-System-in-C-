@@ -6,6 +6,7 @@
 class DisplayCommand : public Command
 {
 public:
+    explicit DisplayCommand(int socket, Values *value, DefaultIO *dio);
     string description();
     void execute();
 };

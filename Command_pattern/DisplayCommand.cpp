@@ -19,3 +19,15 @@ void DisplayCommand::execute()
 string DisplayCommand::description() {
     return "4. display results\n";
 }
+
+/**
+ * the constructor of DisplayCommand
+ * @param socket - the socket of the client
+ * @param valuesCopy - values object
+ * @param dio - pointer to DefaultIO object
+ */
+DisplayCommand::DisplayCommand(int socket, Values *value, DefaultIO *dio) {
+    values = value;
+    value->setSocket(socket);
+    this->dio = dio;
+}

@@ -19,7 +19,7 @@ private:
     map<string, Command*> commands;
     int socketNumber;
 public:
-    CLI(int socketNumber, Values *v);
+    CLI(int socketNumber, Values *v, DefaultIO *dio);
     void start();
     void executeCommand(string s);
     ~CLI();

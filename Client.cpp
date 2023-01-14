@@ -44,7 +44,7 @@ int createSocket(int portNumber, char* ipAddress) {
  * @param sdio - the StandardIO object
  * @param stdio - the SocketIO object
  */
-void function1(DefaultIO* sdio, DefaultIO* stdio, int sock) {
+void function1(DefaultIO* sdio, DefaultIO* stdio) {
     // print the request from the server to the user
     sdio->writeInput(stdio->readInput());
     // get the path to the classified file from the user
@@ -60,10 +60,11 @@ void function1(DefaultIO* sdio, DefaultIO* stdio, int sock) {
         return;
     }
     char buffer[1024];
-    while(inputFileOne.read(buffer, 1023) || inputFileOne.gcount() > 0) {
-        stdio->writeInput(buffer);
+    memset(buffer, 0, 1024);
+    while(inputFileOne.read(buffer, 1024) || inputFileOne.gcount() > 0) {
+        string input(buffer, sizeof(buffer));
+        stdio->writeInput(input);
         memset(buffer, 0, 1024);
-        this_thread::sleep_for(chrono::milliseconds(25));
     }
     // let the server now we are done
     stdio->writeInput("done");
@@ -81,10 +82,10 @@ void function1(DefaultIO* sdio, DefaultIO* stdio, int sock) {
         return;
     }
     memset(buffer, 0, 1024);
-    while(inputFileTwo.read(buffer, 1023) || inputFileTwo.gcount() > 0) {
-        stdio->writeInput(buffer);
+    while(inputFileTwo.read(buffer, 1024) || inputFileTwo.gcount() > 0) {
+        string input(buffer, sizeof(buffer));
+        stdio->writeInput(input);
         memset(buffer, 0, 1024);
-        this_thread::sleep_for(chrono::milliseconds(25));
     }
     stdio->writeInput("done");
     // print the request from the server to the user
@@ -207,7 +208,7 @@ int main(int argc, char *argv[]) {
         // the user want to activate option 1
         if (input == "1"){
             // call function1
-            function1(sdio, stdio, sock);
+            function1(sdio, stdio);
         }
         // the user want to activate option 2
         else if (input == "2") {

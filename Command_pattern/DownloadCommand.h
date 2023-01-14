@@ -6,6 +6,7 @@
 class DownloadCommand : public Command
 {
 public:
+    explicit DownloadCommand(int socket, Values *value, DefaultIO *dio);
     string description();
     void execute();
 };

@@ -26,14 +26,15 @@ void CLI::start() {
  * the constructor of CLI
  * @param socketNumber - the client socket number
  * @param v - pointer to values object
+ * @param dio - pointer to DefaultIO object
  */
-CLI::CLI(int socketNumber, Values *v) {
-    Command *uc = new UploadCommand(socketNumber, v);
-    Command *sc = new SettingsCommand(socketNumber, v);
-    Command *cc = new ClassifyCommand(socketNumber, v);
-    Command *dyc = new DisplayCommand();
-    Command *ddc = new DownloadCommand();
-    Command *ec = new ExitCommand();
+CLI::CLI(int socketNumber, Values *v, DefaultIO *dio) {
+    Command *uc = new UploadCommand(socketNumber, v, dio);
+    Command *sc = new SettingsCommand(socketNumber, v, dio);
+    Command *cc = new ClassifyCommand(socketNumber, v, dio);
+    Command *dyc = new DisplayCommand(socketNumber, v, dio);
+    Command *ddc = new DownloadCommand(socketNumber, v, dio);
+    Command *ec = new ExitCommand(socketNumber, v, dio);
     this->commands.insert(make_pair("1", uc));
     this->commands.insert(make_pair("2", sc));
     this->commands.insert(make_pair("3", cc));

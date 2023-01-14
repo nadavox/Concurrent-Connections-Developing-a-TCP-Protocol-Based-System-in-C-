@@ -6,7 +6,7 @@
 class UploadCommand : public Command
 {
 public:
-    explicit UploadCommand(int socket, Values *value);
+    explicit UploadCommand(int socket, Values *value, DefaultIO *dio);
     string description();
     void execute();
     void classifiedVector(const vector<char>& dataVector);

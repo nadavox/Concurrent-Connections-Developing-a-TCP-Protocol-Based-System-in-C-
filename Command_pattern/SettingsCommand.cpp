@@ -1,8 +1,6 @@
 #include <iostream>
 #include "SettingsCommand.h"
-#include <sys/socket.h>
 #include <cstring>
-#include <sstream>
 #include <thread>
 
 using namespace std;
@@ -14,28 +12,17 @@ using namespace std;
  */
 void SettingsCommand::execute()
 {
-    //the client socket
-    int clientSocket = values->getSocket();
     char buffer[256];
+    // clean the buffer
+    memset(buffer, 0, sizeof(buffer));
     string currentParametersString = "The current KNN parameters are: K = " + to_string(values->getK()) +
             ", distance metric = " + values->getDistanceMetric() + "\n";
 
-    sendData(currentParametersString, clientSocket);
+    this->dio->writeInput(currentParametersString);
 
-    int expected_data_len = sizeof(buffer);
-    // clean the buffer
-    memset(buffer, 0, sizeof(buffer));
-    // get the input from the client
-    int read_bytes = recv(clientSocket, buffer, expected_data_len, 0);
-    if (read_bytes == 0) {
-        // connection is closed
-        perror("Error the connection with the server is closed");
-        exit(1);
-    }
-    else if (read_bytes < 0) {
-        perror("Error with reading the data from the server");
-        exit(1);
-    }
+    string input;
+    input = this->dio->readInput();
+    strcpy(buffer, input.c_str());
 
     string s(buffer);
     string s1, s2;
@@ -56,15 +43,13 @@ void SettingsCommand::execute()
                 if (s2 != "AUC" && s2 != "MAN" && s2 != "CHB" && s2 != "CAN" && s2 != "MIN") {
                     // send message that k and the metric is not valid to the client
                     string kAndMetricNotValidString = "invalid value for K\ninvalid value for metric\n";
-                    sendData(kAndMetricNotValidString, clientSocket);
-
+                    this->dio->writeInput(kAndMetricNotValidString);
                 }
                 // only k is not valid
                 else {
                     // send message that k is not valid to the client
                     string kNotValidString = "invalid value for K\n";
-                    sendData(kNotValidString, clientSocket);
-
+                    this->dio->writeInput(kNotValidString);
                 }
             }
             // k is a positive integer
@@ -73,7 +58,7 @@ void SettingsCommand::execute()
                 if (s2 != "AUC" && s2 != "MAN" && s2 != "CHB" && s2 != "CAN" && s2 != "MIN") {
                     // send message that the distance metric is not valid to the client
                     string metricNotValidString = "invalid value for metric\n";
-                    sendData(metricNotValidString, clientSocket);
+                    this->dio->writeInput(metricNotValidString);
                 }
                 // update distance metric
                 else {
@@ -83,7 +68,7 @@ void SettingsCommand::execute()
                     values->setDistanceMetric(s2);
                     // send message that everything okay
                     string valid = "input is valid";
-                    sendData(valid, clientSocket);
+                    this->dio->writeInput(valid);
                     this_thread::sleep_for(chrono::milliseconds(50));
                 }
             }
@@ -94,13 +79,13 @@ void SettingsCommand::execute()
             if (s2 != "AUC" && s2 != "MAN" && s2 != "CHB" && s2 != "CAN" && s2 != "MIN") {
                 // send message that k and the metric is not valid to the client
                 string kAndMetricNotValidString = "invalid value for K\ninvalid value for metric\n";
-                sendData(kAndMetricNotValidString, clientSocket);
+                this->dio->writeInput(kAndMetricNotValidString);
             }
             // the distance metric is valid
             else {
                 // send message that k is not valid to the client
                 string kNotValidString = "invalid value for K\n";
-                sendData(kNotValidString, clientSocket);
+                this->dio->writeInput(kNotValidString);
             }
         }
     }
@@ -118,28 +103,10 @@ string SettingsCommand::description() {
  * the constructor of UploadCommand
  * @param socket - the socket of the client
  * @param valuesCopy - values object
+ * @param dio - pointer to DefaultIO object
  */
-SettingsCommand::SettingsCommand(int socket, Values *valuesCopy) {
+SettingsCommand::SettingsCommand(int socket, Values *valuesCopy, DefaultIO *dio) {
     values = valuesCopy;
     valuesCopy->setSocket(socket);
-}
-
-/**
- * this function sends the wanted string to the client
- * @param s - the wanted string
- * @param clientSock - the number of the client socket
- */
-void SettingsCommand::sendData(string s, int clientSock) {
-    // send the current parameters string to the client
-    unsigned int data_len = s.length();
-    char data_addr[data_len + 1];
-    const char* str = s.c_str();
-    // copy the data to the char array
-    strcpy(data_addr, str);
-    // send the string to the server
-    long int sent_bytes = send(clientSock, data_addr, data_len, 0);
-    if (sent_bytes < 0) {
-        perror("Error sending the data to the client");
-        exit(1);
-    }
+    this->dio = dio;
 }

@@ -7,6 +7,8 @@
 #include "Command_pattern/Command.h"
 #include <unistd.h>
 #include <thread>
+#include "IOClass/DefaultIO.h"
+#include "IOClass/SocketIO.h"
 
 #define TRUE 1
 #define MAX_CLIENTS 30 //max client for the server
@@ -52,11 +54,13 @@ string receiveNumber(int clientSock, CLI *c) {
     if (read_bytes == 0) {
         // connection is closed
         perror("Error the connection with the client is closed");
-        exit(1);
+        //exit(1);
+        return "8";
     }
     else if (read_bytes < 0) {
         perror("Error with reading the data from the client");
-        exit(1);
+        //exit(1);
+        return "8";
     }
 
     string number(buffer);
@@ -123,7 +127,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     // bind the server
-    if (bind(master_socket, (sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
+    int b = ::bind(master_socket, (sockaddr *) &serverAddr, sizeof(serverAddr));
+    if (b < 0) {
         perror("Error while trying to bind");
         return 1;
     }
@@ -145,7 +150,8 @@ int main(int argc, char *argv[]) {
         }
         //create value object.
         Values *values = new Values(client_socket);
-        CLI *cli = new CLI(client_socket, values);
+        DefaultIO *dio = new SocketIO(client_socket);
+        CLI *cli = new CLI(client_socket, values, dio);
         // create a function that receives the number of the function from the client
         while (number != "8") {
             this_thread::sleep_for(chrono::milliseconds(10));

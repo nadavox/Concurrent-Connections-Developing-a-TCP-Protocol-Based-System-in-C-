@@ -1,6 +1,4 @@
 #include "ClassifyCommand.h"
-#include "string.h"
-#include <sys/socket.h>
 #include "../Algorithms/Distance.h"
 #include "../Algorithms/EuclideanDistance.h"
 #include "../Algorithms/TaxicabGeometry.h"
@@ -56,54 +54,51 @@ string getKnnOutput(const string& kindDistance, int k, vector<double> userVector
  */
 void ClassifyCommand::execute()
 {
-    int clientSocket = values->getSocket();
-
     // the user have uploaded the vectors yet
     if (values->getNotClassifiedVectorList()->empty()) {
         string noData = "please upload data\n";
         // send the no data string to the client
-        unsigned int data_len = noData.length();
-        char data_addr[data_len + 1];
-        const char* str = noData.c_str();
-        // copy the data to the char array
-        strcpy(data_addr, str);
-        // send the string to the server
-        long int sent_bytes = send(clientSocket, data_addr, data_len, 0);
-        if (sent_bytes < 0) {
-            perror("Error sending the data to the client");
-            exit(1);
-        }
+        this->dio->writeInput(noData);
     }
         // the vectors in the classified file are not in the same size as the vectors in the un classified file
+        //TODO: not good. maybe the second one is not good but the first is good
     else if (values->getNotClassifiedVectorList()->at(0).size() != values->getClassifiedVectorList()->at(0).first.size()){
         // error
     }
         // we can classify
     else {
+        //cout << "-----------------------------names----------------------------------" << endl;
         string kindDistance = values->getDistanceMetric(), output;
         int k = values->getK(), sizeOfUnClassifiedVectors = values->getNotClassifiedVectorList()->size();
         for (int i = 0; i < sizeOfUnClassifiedVectors; ++i) {
-            // get the classification of the vector
-            output = getKnnOutput(kindDistance, k, values->getNotClassifiedVectorList()->at(i), values->getClassifiedVectorList());
-            pair<vector<double>, string> result;
-            result.first = values->getNotClassifiedVectorList()->at(i);
-            result.second = output;
-            // save the result
-            values->setAfterClassifing(&result);
+            try {
+                // get the classification of the vector
+                output = getKnnOutput(kindDistance, k, values->getNotClassifiedVectorList()->at(i), values->getClassifiedVectorList());
+                //cout << " " << endl;
+                pair<vector<double>, string> result;
+                result.first = values->getNotClassifiedVectorList()->at(i);
+                result.second = output;
+                // save the result
+                values->setAfterClassifing(&result);
+            }
+            catch (out_of_range) {
+                cout << "in catch " << i << endl;
+                for (int j = 0; j < values->getNotClassifiedVectorList()->at(i).size(); ++j) {
+                    cout << values->getNotClassifiedVectorList()->at(i).at(j) << " ";
+                }
+                cout << endl;
+            }
+        }
+        cout << "after classifying: ------------------------------------------------------------" << endl;
+        for (int i = 0; i < values->getAfterClassifingList()->size(); ++i) {
+            for (int j = 0; j <values->getAfterClassifingList()->at(i).first.size(); ++j) {
+                cout <<values->getAfterClassifingList()->at(i).first.at(j) << " ";
+            }
+            cout << values->getAfterClassifingList()->at(i).second << endl;
         }
         string complete = "classifying data complete\n";
         // send the complete string to the client
-        unsigned int data_len = complete.length();
-        char data_addr[data_len + 1];
-        const char* str = complete.c_str();
-        // copy the data to the char array
-        strcpy(data_addr, str);
-        // send the string to the server
-        long int sent_bytes = send(clientSocket, data_addr, data_len, 0);
-        if (sent_bytes < 0) {
-            perror("Error sending the data to the client");
-            exit(1);
-        }
+        this->dio->writeInput(complete);
     }
 }
 
@@ -119,8 +114,11 @@ string ClassifyCommand::description() {
  * the constructor of ClassifyCommand
  * @param socket - the socket of the client
  * @param valuesCopy - values object
+ * @param dio - pointer to DefaultIO object
  */
-ClassifyCommand::ClassifyCommand(int socket, Values *valuesCopy) {
+ClassifyCommand::ClassifyCommand(int socket, Values *valuesCopy, DefaultIO *dio) {
     values = valuesCopy;
     valuesCopy->setSocket(socket);
+    this->dio = dio;
 }
+
