@@ -59,11 +59,17 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
         perror("Error with opening the file");
         return;
     }
+
     char buffer[1024];
+    // clean the buffer
     memset(buffer, 0, 1024);
+    // reading chunks of data from the file
     while(inputFileOne.read(buffer, 1024) || inputFileOne.gcount() > 0) {
+        // converting char array to string
         string input(buffer, sizeof(buffer) / sizeof(buffer[0]));
+        // sending the string to the server
         stdio->writeInput(input);
+        // clean the buffer
         memset(buffer, 0, 1024);
     }
     // let the server now we are done
@@ -81,12 +87,19 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
         perror("Error with opening the file");
         return;
     }
+
+    // clean the buffer
     memset(buffer, 0, 1024);
+    // reading chunks of data from the file
     while(inputFileTwo.read(buffer, 1024) || inputFileTwo.gcount() > 0) {
+        // converting char array to string
         string input(buffer, sizeof(buffer) / sizeof(buffer[0]));
+        // sending the string to the server
         stdio->writeInput(input);
+        // clean the buffer
         memset(buffer, 0, 1024);
     }
+    // let the server now we are done
     stdio->writeInput("done");
     // print the request from the server to the user
     sdio->writeInput(stdio->readInput());

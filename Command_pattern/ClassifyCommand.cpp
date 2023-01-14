@@ -17,7 +17,7 @@ using namespace std;
  * @param vectorsList
  * @return the name of the classified vector
  */
-string getKnnOutput(const string& kindDistance, int k, vector<double> userVector,
+string ClassifyCommand::getKnnOutput(const string& kindDistance, int k, vector<double> userVector,
                     vector<pair<vector<double>, string> > *vectorsList) {
     string output;
     Distance *distanceAlgo;
@@ -54,50 +54,30 @@ string getKnnOutput(const string& kindDistance, int k, vector<double> userVector
  */
 void ClassifyCommand::execute()
 {
+    values->getAfterClassifingList()->clear();
+
     // the user have uploaded the vectors yet
     if (values->getNotClassifiedVectorList()->empty()) {
         string noData = "please upload data\n";
         // send the no data string to the client
         this->dio->writeInput(noData);
     }
-        // the vectors in the classified file are not in the same size as the vectors in the un classified file
-        //TODO: not good. maybe the second one is not good but the first is good
+    // the vectors in the classified file are not in the same size as the vectors in the un classified file
     else if (values->getNotClassifiedVectorList()->at(0).size() != values->getClassifiedVectorList()->at(0).first.size()){
         // error
     }
-        // we can classify
+    // we can classify
     else {
-        //cout << "-----------------------------names----------------------------------" << endl;
         string kindDistance = values->getDistanceMetric(), output;
         int k = values->getK(), sizeOfUnClassifiedVectors = values->getNotClassifiedVectorList()->size();
         for (int i = 0; i < sizeOfUnClassifiedVectors; ++i) {
-            try {
-                // get the classification of the vector
-                output = getKnnOutput(kindDistance, k, values->getNotClassifiedVectorList()->at(i), values->getClassifiedVectorList());
-                //cout << " " << endl;
-                pair<vector<double>, string> result;
-                result.first = values->getNotClassifiedVectorList()->at(i);
-                result.second = output;
-                // save the result
-                values->setAfterClassifing(&result);
-            }
-            catch (out_of_range) {
-                if (values->getNotClassifiedVectorList()->at(i).size() < 16) {
-                    cout << "in catch " << i << endl;
-                    cout << "the size: " << values->getNotClassifiedVectorList()->at(i).size() << endl;
-                    for (int j = 0; j < values->getNotClassifiedVectorList()->at(i).size(); ++j) {
-                        cout << values->getNotClassifiedVectorList()->at(i).at(j) << " ";
-                    }
-                    cout << endl;
-                }
-            }
-        }
-        cout << "after classifying: ------------------------------------------------------------" << endl;
-        for (int i = 0; i < values->getAfterClassifingList()->size(); ++i) {
-            for (int j = 0; j <values->getAfterClassifingList()->at(i).first.size(); ++j) {
-                cout <<values->getAfterClassifingList()->at(i).first.at(j) << " ";
-            }
-            cout << values->getAfterClassifingList()->at(i).second << endl;
+            // get the classification of the vector
+            output = getKnnOutput(kindDistance, k, values->getNotClassifiedVectorList()->at(i), values->getClassifiedVectorList());
+            pair<vector<double>, string> result;
+            result.first = values->getNotClassifiedVectorList()->at(i);
+            result.second = output;
+            // save the result
+            values->setAfterClassifing(&result);
         }
         string complete = "classifying data complete\n";
         // send the complete string to the client

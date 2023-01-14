@@ -16,12 +16,15 @@ SocketIO::SocketIO(int sockNumber) {
 string SocketIO::readInput() {
     char buffer[1024];
     memset(buffer, 0, 1024);
-    long int n = recv(sockNumber, buffer, sizeof(buffer), 0);
-    cout << "n read: " << n << endl;
-    if (n < 0){
-        perror("Error reading from the socket");
+    long int read_bytes = recv(sockNumber, buffer, sizeof(buffer), 0);
+    if (read_bytes == 0) {
+        // connection is closed
+        perror("Error the connection with the server is closed");
     }
-    string input(buffer, n);
+    else if (read_bytes < 0) {
+        perror("Error with reading the data from the server");
+    }
+    string input(buffer, read_bytes);
     return input;
 }
 
@@ -34,12 +37,11 @@ void SocketIO::writeInput(string s) {
     unsigned int data_len = s.length();
     char data_addr[data_len + 1];
     const char* str = s.c_str();
-    // copy the data of the vector, distance function name and k to char array
+    // copy the data of the string
     strcpy(data_addr, str);
     long int n;
     n = send(sockNumber, data_addr, data_len, 0);
-    cout << "n write: " << n << endl;
     if (n < 0) {
-        perror("Error writing to the socket");
+        perror("Error sending the data to the socket");
     }
 }

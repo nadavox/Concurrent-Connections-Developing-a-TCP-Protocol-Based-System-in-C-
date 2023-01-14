@@ -53,7 +53,7 @@ bool isNumber(const string& s)
 
 /**
  * this function save the classified vector in the classifiedVectorList
- * @param dataVector - the string
+ * @param dataVector - vector that contain all the string from the file
  */
 void UploadCommand::classifiedVector(const vector<char>& dataVector) {
     string line;
@@ -72,7 +72,6 @@ void UploadCommand::classifiedVector(const vector<char>& dataVector) {
     if (!line.empty()) {
         lines.push_back(line);
     }
-    cout << lines.size() << endl;
     for (auto l : lines) {
         vector<double> numbers;
         istringstream iss(l);
@@ -200,14 +199,6 @@ void UploadCommand::execute() {
 
     // save the classified the vector.
     classifiedVector(file_data);
-    for (int i = 0; i < values->getClassifiedVectorList()->size(); ++i) {
-        if (values->getClassifiedVectorList()->at(i).first.size() < 16) {
-            for (int j = 0; j < values->getClassifiedVectorList()->at(i).first.size(); ++j) {
-                cout << values->getClassifiedVectorList()->at(i).first.at(j) << " ";
-            }
-            cout << values->getClassifiedVectorList()->at(i).second << endl;
-        }
-    }
 
     file_data.clear();
     while (true) {
@@ -223,21 +214,12 @@ void UploadCommand::execute() {
             for (int i = 0; i < input.size(); ++i) {
                 file_data.push_back(buffer[i]);
             }
-            //file_data.insert(file_data.end(), buffer, buffer + input.size() - 1);
             memset(buffer, 0, input.size());
         }
     }
+
     //put the vectors in the Unclassified vector of values.
     notClassifiedVector(file_data);
-
-//    cout << endl;
-//    cout << "------------------------------------- new--------------------------" << endl;
-//    for (int i = 0; i < values->getNotClassifiedVectorList()->size(); ++i) {
-//        for (int j = 0; j < values->getNotClassifiedVectorList()->at(i).size(); ++j) {
-//            cout << values->getNotClassifiedVectorList()->at(i).at(j) << " ";
-//        }
-//        cout << endl;
-//    }
 
     // send the upload complete string to the client
     this->dio->writeInput(uploadComplete2String);
