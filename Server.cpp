@@ -127,7 +127,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     // bind the server
-    if (bind(master_socket, (sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
+    int b = ::bind(master_socket, (sockaddr *) &serverAddr, sizeof(serverAddr));
+    if (b < 0) {
         perror("Error while trying to bind");
         return 1;
     }

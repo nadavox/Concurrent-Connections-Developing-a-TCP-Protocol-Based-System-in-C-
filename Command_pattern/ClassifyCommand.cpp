@@ -78,6 +78,7 @@ void ClassifyCommand::execute()
             // save the result
             values->setAfterClassifing(&result);
         }
+        cout << "after classifying: ------------------------------------------------------------" << endl;
         for (int i = 0; i < values->getAfterClassifingList()->size(); ++i) {
             for (int j = 0; j <values->getAfterClassifingList()->at(i).first.size(); ++j) {
                 cout <<values->getAfterClassifingList()->at(i).first.at(j) << " ";
@@ -109,3 +110,4 @@ ClassifyCommand::ClassifyCommand(int socket, Values *valuesCopy, DefaultIO *dio)
     valuesCopy->setSocket(socket);
     this->dio = dio;
 }
+
