@@ -116,9 +116,11 @@ void UploadCommand::notClassifiedVector(const vector<char>& dataVector) {
     string line;
     vector<std::string> lines;
     for (auto c : dataVector) {
-        if (c == '\n' || c == '\r') {
+        if (c == '\n') {
             lines.push_back(line);
             line.clear();
+        } else if (c == '\r'){
+            continue;
         } else {
             line += c;
         }
