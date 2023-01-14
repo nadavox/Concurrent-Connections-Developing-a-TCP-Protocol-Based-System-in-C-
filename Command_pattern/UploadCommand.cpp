@@ -72,6 +72,7 @@ void UploadCommand::classifiedVector(const vector<char>& dataVector) {
     if (!line.empty()) {
         lines.push_back(line);
     }
+    cout << lines.size() << endl;
     for (auto l : lines) {
         vector<double> numbers;
         istringstream iss(l);
@@ -88,9 +89,6 @@ void UploadCommand::classifiedVector(const vector<char>& dataVector) {
             //check if the word is number.
             if (isNumber(charWord)) {
                 //it is number
-                if (l == "1.1658521083280848") {
-                    cout <<"hey"<< endl;
-                }
                 numbers.push_back(stod(word));
             } else {
                 //the string
@@ -200,24 +198,12 @@ void UploadCommand::execute() {
 
     // save the classified the vector.
     classifiedVector(file_data);
-    for (int i = 0; i < values->getClassifiedVectorList()->size(); ++i) {
-        if (values->getClassifiedVectorList()->at(i).first.size() < 16) {
-            cout << i << endl;
-            for (int j = 0; j < values->getClassifiedVectorList()->at(i).first.size(); ++j) {
-                cout << values->getClassifiedVectorList()->at(i).first.at(j) << " ";
-            }
-            cout << endl;
-        }
-    }
-
 //    for (int i = 0; i < values->getClassifiedVectorList()->size(); ++i) {
 //        for (int j = 0; j < values->getClassifiedVectorList()->at(i).first.size(); ++j) {
 //            cout << values->getClassifiedVectorList()->at(i).first.at(j) << " ";
 //        }
-//        cout << endl;
+//        cout << values->getClassifiedVectorList()->at(i).second << endl;
 //    }
-
-
 
     file_data.clear();
     while (true) {

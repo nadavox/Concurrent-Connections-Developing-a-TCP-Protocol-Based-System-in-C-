@@ -60,11 +60,11 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
         return;
     }
     char buffer[1024];
-    memset(buffer, 0, 1023);
-    while(inputFileOne.read(buffer, 1022) || inputFileOne.gcount() > 0) {
+    memset(buffer, 0, 1024);
+    while(inputFileOne.read(buffer, 1024) || inputFileOne.gcount() > 0) {
         string input(buffer, sizeof(buffer));
         stdio->writeInput(input);
-        memset(buffer, 0, 1023);
+        memset(buffer, 0, 1024);
     }
     // let the server now we are done
     stdio->writeInput("done");
@@ -82,10 +82,10 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
         return;
     }
     memset(buffer, 0, 1024);
-    while(inputFileTwo.read(buffer, 1022) || inputFileTwo.gcount() > 0) {
+    while(inputFileTwo.read(buffer, 1024) || inputFileTwo.gcount() > 0) {
         string input(buffer, sizeof(buffer));
         stdio->writeInput(input);
-        memset(buffer, 0, 1023);
+        memset(buffer, 0, 1024);
     }
     stdio->writeInput("done");
     // print the request from the server to the user
