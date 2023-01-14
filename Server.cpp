@@ -54,11 +54,13 @@ string receiveNumber(int clientSock, CLI *c) {
     if (read_bytes == 0) {
         // connection is closed
         perror("Error the connection with the client is closed");
-        exit(1);
+        //exit(1);
+        return "8";
     }
     else if (read_bytes < 0) {
         perror("Error with reading the data from the client");
-        exit(1);
+        //exit(1);
+        return "8";
     }
 
     string number(buffer);
