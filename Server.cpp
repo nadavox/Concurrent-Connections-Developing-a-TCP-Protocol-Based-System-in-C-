@@ -109,59 +109,116 @@ string receiveNumber(int clientSock, CLI *c, DefaultIO *stdio) {
  * @return 0 if everything okay and 1 if there is errors
  */
 int main(int argc, char *argv[]) {
-    //  create the server socket
+    // main for multi threading
+    // create the server socket
     int master_socket = createSocket();
     struct sockaddr_in serverAddr = {};
-    //type of socket created
+    // type of socket created
     memset(&serverAddr, 0, sizeof(serverAddr));
+    // IPV4
     serverAddr.sin_family = AF_INET;
+    // listen on any IP address
     serverAddr.sin_addr.s_addr = INADDR_ANY;
-    // check if port number is a number
-    try {
-        // port number is okay
-        int port_no = stoi(argv[1]);
-        serverAddr.sin_port = htons(port_no);
-    }
-        // port number is not a number
-    catch (const invalid_argument &) {
-        perror("Invalid port number");
-        return 1;
-    }
-    // bind the server
-    int b = ::bind(master_socket, (sockaddr *) &serverAddr, sizeof(serverAddr));
-    if (b < 0) {
-        perror("Error while trying to bind");
-        return 1;
-    }
-    //try to specify maximum of 5 pending connections for the master socket
-    if (listen(master_socket, 5) < 0) {
-        perror("Error while trying to listen");
-        return 1;
-    }
-    string number;
-    while (true) {
-        // create a socket for the client
-        int client_socket;
-        struct sockaddr_in client_sin = {};
-        unsigned int addr_len = sizeof(client_sin);
-        // accept connection
-        if ((client_socket = accept(master_socket, (struct sockaddr *) &client_sin, &addr_len)) < 0) {
-            perror("Error while trying to accept the new client");
-            return 1;
+    // listening port number
+    serverAddr.sin_port = htons(8080);
+    // bind the socket to the IP and port
+    bind(master_socket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
+    // listen to the socket
+    listen(master_socket, MAX_CLIENTS);
+
+    // vector to store threads
+    vector<thread> clients;
+
+    while (TRUE) {
+        // accept a client connection
+        int client_socket = accept(master_socket, (struct sockaddr *) &serverAddr, (socklen_t *) &serverAddr);
+        if (client_socket < 0) {
+            perror("Error while trying to accept a new client connection");
+            exit(1);
         }
         //create value object.
-        Values *values = new Values(client_socket);
-        DefaultIO *dio = new SocketIO(client_socket);
+        auto values = make_unique<Values>(client_socket);
+        //auto *values = new Values(client_socket);
+
+        auto dio = make_unique<SocketIO>(client_socket);
+        //DefaultIO *dio = new SocketIO(client_socket);
+
+        //auto cli = make_unique<CLI>(client_socket, values, dio);
         CLI *cli = new CLI(client_socket, values, dio);
-        // create a function that receives the number of the function from the client
-        while (number != "8") {
-            this_thread::sleep_for(chrono::milliseconds(10));
-            cli->start();
-            number = receiveNumber(client_socket, cli, dio);
-        }
-        delete(values);
-        delete(cli);
-        close(client_socket);
-        number.clear();
+
+
+        // when creating new thread it will start the receiveNumber function, so we need to start
+        // to print the menu there and to finish the thread there.
+        // need to check if the thread start immediately
+        clients.emplace_back(receiveNumber, client_socket, cli, dio);
+
+        // release ownership of CLI and DefaultIO to the thread
+        cli.release();
+        dio.release();
     }
+
+    // join all threads
+    for (auto &client : clients) {
+        client.join();
+    }
+
+    return 0;
+    //---------------------------------------
+    //the main without multi threading
+    //  create the server socket
+//    int master_socket = createSocket();
+//    struct sockaddr_in serverAddr = {};
+//    //type of socket created
+//    memset(&serverAddr, 0, sizeof(serverAddr));
+//    serverAddr.sin_family = AF_INET;
+//    serverAddr.sin_addr.s_addr = INADDR_ANY;
+//    // check if port number is a number
+//    try {
+//        // port number is okay
+//        int port_no = stoi(argv[1]);
+//        serverAddr.sin_port = htons(port_no);
+//    }
+//        // port number is not a number
+//    catch (const invalid_argument &) {
+//        perror("Invalid port number");
+//        return 1;
+//    }
+//    // bind the server
+//    int b = ::bind(master_socket, (sockaddr *) &serverAddr, sizeof(serverAddr));
+//    if (b < 0) {
+//        perror("Error while trying to bind");
+//        return 1;
+//    }
+//    //try to specify maximum of 5 pending connections for the master socket
+//    if (listen(master_socket, 5) < 0) {
+//        perror("Error while trying to listen");
+//        return 1;
+//    }
+//    string number;
+//    while (true) {
+//        // create a socket for the client
+//        int client_socket;
+//        struct sockaddr_in client_sin = {};
+//        unsigned int addr_len = sizeof(client_sin);
+//        // accept connection
+//        if ((client_socket = accept(master_socket, (struct sockaddr *) &client_sin, &addr_len)) < 0) {
+//            perror("Error while trying to accept the new client");
+//            return 1;
+//        }
+//        //create value object.
+//        Values *values = new Values(client_socket);
+//        DefaultIO *dio = new SocketIO(client_socket);
+//        CLI *cli = new CLI(client_socket, values, dio);
+//        // create a function that receives the number of the function from the client
+//        while (number != "8") {
+//            this_thread::sleep_for(chrono::milliseconds(10));
+//            cli->start();
+//            number = receiveNumber(client_socket, cli, dio);
+//        }
+//        delete(values);
+//        delete(cli);
+//        close(client_socket);
+//        number.clear();
+//    }
 }
+
