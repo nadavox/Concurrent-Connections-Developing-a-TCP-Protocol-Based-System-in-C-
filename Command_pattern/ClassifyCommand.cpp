@@ -78,7 +78,10 @@ void ClassifyCommand::execute()
             // save the result
             values->setAfterClassifing(&result);
         }
-        for (int i = 0; i < sizeOfUnClassifiedVectors; ++i) {
+        for (int i = 0; i < values->getAfterClassifingList()->size(); ++i) {
+            for (int j = 0; j <values->getAfterClassifingList()->at(i).first.size(); ++j) {
+                cout <<values->getAfterClassifingList()->at(i).first.at(j) << " ";
+            }
             cout << values->getAfterClassifingList()->at(i).second << endl;
         }
         string complete = "classifying data complete\n";
