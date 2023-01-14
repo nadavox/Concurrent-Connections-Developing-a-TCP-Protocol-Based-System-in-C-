@@ -82,11 +82,14 @@ void ClassifyCommand::execute()
                 values->setAfterClassifing(&result);
             }
             catch (out_of_range) {
-                cout << "in catch " << i << endl;
-                for (int j = 0; j < values->getNotClassifiedVectorList()->at(i).size(); ++j) {
-                    cout << values->getNotClassifiedVectorList()->at(i).at(j) << " ";
+                if (values->getNotClassifiedVectorList()->at(i).size() < 16) {
+                    cout << "in catch " << i << endl;
+                    cout << "the size: " << values->getNotClassifiedVectorList()->at(i).size() << endl;
+                    for (int j = 0; j < values->getNotClassifiedVectorList()->at(i).size(); ++j) {
+                        cout << values->getNotClassifiedVectorList()->at(i).at(j) << " ";
+                    }
+                    cout << endl;
                 }
-                cout << endl;
             }
         }
         cout << "after classifying: ------------------------------------------------------------" << endl;

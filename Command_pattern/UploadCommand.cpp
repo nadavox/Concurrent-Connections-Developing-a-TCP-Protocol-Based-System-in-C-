@@ -182,7 +182,6 @@ void UploadCommand::execute() {
     while (true) {
         // getting the input from the client
         input = this->dio->readInput();
-        cout << input.size() << endl;
         strcpy(buffer, input.c_str());
         if (check_done(buffer, input.size())) {
             // clean the buffer
@@ -190,7 +189,7 @@ void UploadCommand::execute() {
             break;
         } else {
             //copy the buffer to the vector
-            for (int i = 0; i < input.size() - 1; ++i) {
+            for (int i = 0; i < input.size(); ++i) {
                 file_data.push_back(buffer[i]);
             }
             memset(buffer, 0, input.size());
@@ -201,12 +200,14 @@ void UploadCommand::execute() {
 
     // save the classified the vector.
     classifiedVector(file_data);
-//    for (int i = 0; i < values->getClassifiedVectorList()->size(); ++i) {
-//        for (int j = 0; j < values->getClassifiedVectorList()->at(i).first.size(); ++j) {
-//            cout << values->getClassifiedVectorList()->at(i).first.at(j) << " ";
-//        }
-//        cout << values->getClassifiedVectorList()->at(i).second << endl;
-//    }
+    for (int i = 0; i < values->getClassifiedVectorList()->size(); ++i) {
+        if (values->getClassifiedVectorList()->at(i).first.size() < 16) {
+            for (int j = 0; j < values->getClassifiedVectorList()->at(i).first.size(); ++j) {
+                cout << values->getClassifiedVectorList()->at(i).first.at(j) << " ";
+            }
+            cout << values->getClassifiedVectorList()->at(i).second << endl;
+        }
+    }
 
     file_data.clear();
     while (true) {
@@ -219,7 +220,7 @@ void UploadCommand::execute() {
             break;
         } else {
             //copy the buffer to the vector
-            for (int i = 0; i < input.size() - 1; ++i) {
+            for (int i = 0; i < input.size(); ++i) {
                 file_data.push_back(buffer[i]);
             }
             //file_data.insert(file_data.end(), buffer, buffer + input.size() - 1);

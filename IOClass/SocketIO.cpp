@@ -17,7 +17,7 @@ string SocketIO::readInput() {
     char buffer[1024];
     memset(buffer, 0, 1024);
     long int n = recv(sockNumber, buffer, sizeof(buffer), 0);
-    //cout << "n read: " << n << endl;
+    cout << "n read: " << n << endl;
     if (n < 0){
         perror("Error reading from the socket");
     }
@@ -38,7 +38,7 @@ void SocketIO::writeInput(string s) {
     strcpy(data_addr, str);
     long int n;
     n = send(sockNumber, data_addr, data_len, 0);
-    //cout << "n write: " << n << endl;
+    cout << "n write: " << n << endl;
     if (n < 0) {
         perror("Error writing to the socket");
     }
