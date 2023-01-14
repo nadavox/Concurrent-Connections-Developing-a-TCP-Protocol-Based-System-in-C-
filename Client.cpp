@@ -56,7 +56,7 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     // could not open the file
     if (!inputFileOne)
     {
-        perror("Error with opening the file");
+        sdio->writeInput("invalid input");
         return;
     }
 
@@ -84,7 +84,7 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     // could not open the file
     if (!inputFileTwo)
     {
-        perror("Error with opening the file");
+        sdio->writeInput("invalid input");
         return;
     }
 
@@ -254,7 +254,7 @@ int main(int argc, char *argv[]) {
         }
         // the user didn't inset valid value
         else {
-            // error
+            break;
         }
     }
     return 0;

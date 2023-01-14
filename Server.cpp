@@ -43,8 +43,9 @@ int createSocket() {
 /**
  * the function gets data from the client and check if the number is valid
  * @param clientSock - the client socket number
+ * @param stdio - pointer to DefaultIO
  */
-string receiveNumber(int clientSock, CLI *c) {
+string receiveNumber(int clientSock, CLI *c, DefaultIO *stdio) {
     char buffer[4096];
     // make the array to zero.
     memset(buffer, 0, sizeof(buffer));
@@ -96,7 +97,7 @@ string receiveNumber(int clientSock, CLI *c) {
     }
     // the user didn't inset valid value
     else {
-        // error
+        stdio->writeInput("invalid input");
     }
     return number;
 }
@@ -156,7 +157,7 @@ int main(int argc, char *argv[]) {
         while (number != "8") {
             this_thread::sleep_for(chrono::milliseconds(10));
             cli->start();
-            number = receiveNumber(client_socket, cli);
+            number = receiveNumber(client_socket, cli, dio);
         }
         delete(values);
         delete(cli);
