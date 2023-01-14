@@ -188,15 +188,25 @@ void UploadCommand::execute() {
             memset(buffer, 0, input.size());
         }
     }
+
     // save the classified the vector.
     classifiedVector(file_data);
-
     for (int i = 0; i < values->getClassifiedVectorList()->size(); ++i) {
-        for (int j = 0; j < values->getClassifiedVectorList()->at(i).first.size(); ++j) {
-            cout << values->getClassifiedVectorList()->at(i).first.at(j) << " ";
+        if (values->getClassifiedVectorList()->at(i).first.size() < 16) {
+            cout << i << endl;
+            for (int j = 0; j < values->getClassifiedVectorList()->at(i).first.size(); ++j) {
+                cout << values->getClassifiedVectorList()->at(i).first.at(j) << " ";
+            }
+            cout << endl;
         }
-        cout << endl;
     }
+
+//    for (int i = 0; i < values->getClassifiedVectorList()->size(); ++i) {
+//        for (int j = 0; j < values->getClassifiedVectorList()->at(i).first.size(); ++j) {
+//            cout << values->getClassifiedVectorList()->at(i).first.at(j) << " ";
+//        }
+//        cout << endl;
+//    }
 
     // send the upload complete and the test string to the client
     this->dio->writeInput(uploadComplete1String);
@@ -219,14 +229,14 @@ void UploadCommand::execute() {
     //put the vectors in the Unclassified vector of values.
     notClassifiedVector(file_data);
 
-    cout << endl;
-    cout << "------------------------------------- new--------------------------" << endl;
-    for (int i = 0; i < values->getNotClassifiedVectorList()->size(); ++i) {
-        for (int j = 0; j < values->getNotClassifiedVectorList()->at(i).size(); ++j) {
-            cout << values->getNotClassifiedVectorList()->at(i).at(j) << " ";
-        }
-        cout << endl;
-    }
+//    cout << endl;
+//    cout << "------------------------------------- new--------------------------" << endl;
+//    for (int i = 0; i < values->getNotClassifiedVectorList()->size(); ++i) {
+//        for (int j = 0; j < values->getNotClassifiedVectorList()->at(i).size(); ++j) {
+//            cout << values->getNotClassifiedVectorList()->at(i).at(j) << " ";
+//        }
+//        cout << endl;
+//    }
 
     // send the upload complete string to the client
     this->dio->writeInput(uploadComplete2String);

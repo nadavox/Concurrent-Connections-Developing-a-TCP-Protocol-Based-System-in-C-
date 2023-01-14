@@ -67,16 +67,27 @@ void ClassifyCommand::execute()
     }
         // we can classify
     else {
+        //cout << "-----------------------------names----------------------------------" << endl;
         string kindDistance = values->getDistanceMetric(), output;
         int k = values->getK(), sizeOfUnClassifiedVectors = values->getNotClassifiedVectorList()->size();
         for (int i = 0; i < sizeOfUnClassifiedVectors; ++i) {
-            // get the classification of the vector
-            output = getKnnOutput(kindDistance, k, values->getNotClassifiedVectorList()->at(i), values->getClassifiedVectorList());
-            pair<vector<double>, string> result;
-            result.first = values->getNotClassifiedVectorList()->at(i);
-            result.second = output;
-            // save the result
-            values->setAfterClassifing(&result);
+            try {
+                // get the classification of the vector
+                output = getKnnOutput(kindDistance, k, values->getNotClassifiedVectorList()->at(i), values->getClassifiedVectorList());
+                //cout << " " << endl;
+                pair<vector<double>, string> result;
+                result.first = values->getNotClassifiedVectorList()->at(i);
+                result.second = output;
+                // save the result
+                values->setAfterClassifing(&result);
+            }
+            catch (out_of_range) {
+                cout << "in catch " << i << endl;
+                for (int j = 0; j < values->getNotClassifiedVectorList()->at(i).size(); ++j) {
+                    cout << values->getNotClassifiedVectorList()->at(i).at(j) << " ";
+                }
+                cout << endl;
+            }
         }
         cout << "after classifying: ------------------------------------------------------------" << endl;
         for (int i = 0; i < values->getAfterClassifingList()->size(); ++i) {
