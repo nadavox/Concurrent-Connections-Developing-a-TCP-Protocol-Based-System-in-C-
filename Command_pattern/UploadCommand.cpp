@@ -198,12 +198,13 @@ void UploadCommand::execute() {
 
     // save the classified the vector.
     classifiedVector(file_data);
-//    for (int i = 0; i < values->getClassifiedVectorList()->size(); ++i) {
-//        for (int j = 0; j < values->getClassifiedVectorList()->at(i).first.size(); ++j) {
-//            cout << values->getClassifiedVectorList()->at(i).first.at(j) << " ";
-//        }
-//        cout << values->getClassifiedVectorList()->at(i).second << endl;
-//    }
+    cout << "----------------------------------classified-----------------------------" << endl;
+    for (int i = 0; i < values->getClassifiedVectorList()->size(); ++i) {
+        for (int j = 0; j < values->getClassifiedVectorList()->at(i).first.size(); ++j) {
+            cout << values->getClassifiedVectorList()->at(i).first.at(j) << " ";
+        }
+        cout << values->getClassifiedVectorList()->at(i).second << endl;
+    }
 
     file_data.clear();
     while (true) {
@@ -226,14 +227,13 @@ void UploadCommand::execute() {
     //put the vectors in the Unclassified vector of values.
     notClassifiedVector(file_data);
 
-//    cout << endl;
-//    cout << "------------------------------------- new--------------------------" << endl;
-//    for (int i = 0; i < values->getNotClassifiedVectorList()->size(); ++i) {
-//        for (int j = 0; j < values->getNotClassifiedVectorList()->at(i).size(); ++j) {
-//            cout << values->getNotClassifiedVectorList()->at(i).at(j) << " ";
-//        }
-//        cout << endl;
-//    }
+    cout << "----------------------------------un classified-----------------------------" << endl;
+    for (int i = 0; i < values->getNotClassifiedVectorList()->size(); ++i) {
+        for (int j = 0; j < values->getNotClassifiedVectorList()->at(i).size(); ++j) {
+            cout << values->getNotClassifiedVectorList()->at(i).at(j) << " ";
+        }
+        cout << endl;
+    }
 
     // send the upload complete string to the client
     this->dio->writeInput(uploadComplete2String);
