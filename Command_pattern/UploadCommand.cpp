@@ -59,9 +59,11 @@ void UploadCommand::classifiedVector(const vector<char>& dataVector) {
     string line;
     vector<std::string> lines;
     for (auto c : dataVector) {
-        if (c == '\n' || c == '\r') {
+        if (c == '\n') {
             lines.push_back(line);
             line.clear();
+        } else if (c == '\r'){
+            continue;
         } else {
             line += c;
         }
@@ -86,6 +88,9 @@ void UploadCommand::classifiedVector(const vector<char>& dataVector) {
             //check if the word is number.
             if (isNumber(charWord)) {
                 //it is number
+                if (l == "1.1658521083280848") {
+                    cout <<"hey"<< endl;
+                }
                 numbers.push_back(stod(word));
             } else {
                 //the string
@@ -188,6 +193,8 @@ void UploadCommand::execute() {
             memset(buffer, 0, input.size());
         }
     }
+    // send the upload complete and the test string to the client
+    this->dio->writeInput(uploadComplete1String);
 
     // save the classified the vector.
     classifiedVector(file_data);
@@ -208,8 +215,7 @@ void UploadCommand::execute() {
 //        cout << endl;
 //    }
 
-    // send the upload complete and the test string to the client
-    this->dio->writeInput(uploadComplete1String);
+
 
     file_data.clear();
     while (true) {
