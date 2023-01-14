@@ -61,6 +61,7 @@ void ClassifyCommand::execute()
         this->dio->writeInput(noData);
     }
         // the vectors in the classified file are not in the same size as the vectors in the un classified file
+        //TODO: not good. maybe the second one is not good but the first is good
     else if (values->getNotClassifiedVectorList()->at(0).size() != values->getClassifiedVectorList()->at(0).first.size()){
         // error
     }
@@ -76,6 +77,9 @@ void ClassifyCommand::execute()
             result.second = output;
             // save the result
             values->setAfterClassifing(&result);
+        }
+        for (int i = 0; i < sizeOfUnClassifiedVectors; ++i) {
+            cout << values->getAfterClassifingList()->at(i).second << endl;
         }
         string complete = "classifying data complete\n";
         // send the complete string to the client
