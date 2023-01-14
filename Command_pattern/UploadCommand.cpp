@@ -182,6 +182,7 @@ void UploadCommand::execute() {
     while (true) {
         // getting the input from the client
         input = this->dio->readInput();
+        cout << input.size() << endl;
         strcpy(buffer, input.c_str());
         if (check_done(buffer, input.size())) {
             // clean the buffer

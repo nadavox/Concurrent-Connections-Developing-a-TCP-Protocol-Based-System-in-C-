@@ -62,7 +62,7 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     char buffer[1024];
     memset(buffer, 0, 1024);
     while(inputFileOne.read(buffer, 1024) || inputFileOne.gcount() > 0) {
-        string input(buffer, sizeof(buffer));
+        string input(buffer, sizeof(buffer) / sizeof(buffer[0]));
         stdio->writeInput(input);
         memset(buffer, 0, 1024);
     }
@@ -83,7 +83,7 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     }
     memset(buffer, 0, 1024);
     while(inputFileTwo.read(buffer, 1024) || inputFileTwo.gcount() > 0) {
-        string input(buffer, sizeof(buffer));
+        string input(buffer, sizeof(buffer) / sizeof(buffer[0]));
         stdio->writeInput(input);
         memset(buffer, 0, 1024);
     }
