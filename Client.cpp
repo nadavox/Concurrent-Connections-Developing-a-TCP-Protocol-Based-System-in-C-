@@ -56,7 +56,7 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     // could not open the file
     if (!inputFileOne)
     {
-        sdio->writeInput("invalid input");
+        sdio->writeInput("invalid input\n");
         return;
     }
 
@@ -84,7 +84,7 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     // could not open the file
     if (!inputFileTwo)
     {
-        sdio->writeInput("invalid input");
+        sdio->writeInput("invalid input\n");
         return;
     }
 

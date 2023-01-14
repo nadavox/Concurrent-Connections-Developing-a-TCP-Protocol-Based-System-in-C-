@@ -97,7 +97,7 @@ string receiveNumber(int clientSock, CLI *c, DefaultIO *stdio) {
     }
     // the user didn't inset valid value
     else {
-        stdio->writeInput("invalid input");
+        stdio->writeInput("invalid input\n");
     }
     return number;
 }
