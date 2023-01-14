@@ -16,7 +16,7 @@ SocketIO::SocketIO(int sockNumber) {
 string SocketIO::readInput() {
     char buffer[1024];
     memset(buffer, 0, sizeof(buffer));
-    long int n = read(sockNumber, buffer, sizeof(buffer));
+    long int n = recv(sockNumber, buffer, sizeof(buffer), 0);
     if (n < 0){
         perror("Error reading from the socket");
     }
@@ -35,7 +35,7 @@ void SocketIO::writeInput(string s) {
     // copy the data of the vector, distance function name and k to char array
     strcpy(data_addr, str);
     long int n;
-    n = write(sockNumber, data_addr, data_len);
+    n = send(sockNumber, data_addr, data_len, 0);
     if (n < 0) {
         perror("Error writing to the socket");
     }

@@ -184,7 +184,9 @@ void UploadCommand::execute() {
             break;
         } else {
             //copy the buffer to the vector
-            file_data.insert(file_data.end(), buffer, buffer + input.size());
+            for (int i = 0; i < input.size() - 1; ++i) {
+                file_data.push_back(buffer[i]);
+            }
             memset(buffer, 0, input.size());
         }
     }
@@ -222,7 +224,10 @@ void UploadCommand::execute() {
             break;
         } else {
             //copy the buffer to the vector
-            file_data.insert(file_data.end(), buffer, buffer + input.size());
+            for (int i = 0; i < input.size() - 1; ++i) {
+                file_data.push_back(buffer[i]);
+            }
+            //file_data.insert(file_data.end(), buffer, buffer + input.size() - 1);
             memset(buffer, 0, input.size());
         }
     }
