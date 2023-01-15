@@ -162,7 +162,11 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
 }
 
 
-void writeClassified(string writeFilePath, DefaultIO* sdio, DefaultIO* stdio) {
+void writeClassified(string writeFilePath, int sock) {
+    // create StandardIO object
+    DefaultIO *sdio = new StandardIO;
+    // create SocketIO object
+    DefaultIO *stdio = new SocketIO(sock);
     ofstream writeToFile;
     writeToFile.open(writeFilePath);
     if (!writeToFile)
@@ -200,7 +204,7 @@ void writeClassified(string writeFilePath, DefaultIO* sdio, DefaultIO* stdio) {
  * @param sdio - the StandardIO object
  * @param stdio - the SocketIO object
  */
-void function5(DefaultIO* sdio, DefaultIO* stdio) {
+void function5(DefaultIO* sdio, DefaultIO* stdio, int sock) {
     string s = stdio->readInput();
     // let the server know we are done reading
     stdio->writeInput("finish read");
@@ -208,9 +212,9 @@ void function5(DefaultIO* sdio, DefaultIO* stdio) {
     sdio->writeInput(s);
     // get a path to a file which we will write the results to
     string writeFilePath = sdio->readInput();
-    thread t(writeClassified, writeFilePath, sdio, stdio);
+    thread t(writeClassified, writeFilePath, sock);
     t.detach();
-    writeClassified(writeFilePath, sdio, stdio);
+    //writeClassified(writeFilePath, sdio, stdio);
 }
 
 
@@ -275,7 +279,7 @@ int main(int argc, char *argv[]) {
         // the user want to activate option 5
         else if (input == "5") {
             // call function5
-            function5(sdio, stdio);
+            function5(sdio, stdio, sock);
         }
         // the user want to activate option 8
         else if (input == "8") {
