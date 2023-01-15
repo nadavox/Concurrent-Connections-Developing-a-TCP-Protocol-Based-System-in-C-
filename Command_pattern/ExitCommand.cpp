@@ -6,8 +6,7 @@ using namespace std;
 /**
  * this function will end the connection between the client and the server
  */
-void ExitCommand::execute()
-{
+void ExitCommand::execute(){
     cout << "Exiting the program..." << endl;
 }
 

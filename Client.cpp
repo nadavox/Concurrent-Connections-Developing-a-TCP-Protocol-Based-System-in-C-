@@ -10,6 +10,7 @@
 #include "IOClass/StandardIO.h"
 #include "IOClass/SocketIO.h"
 #include "fstream"
+#include <thread>
 
 using namespace std;
 
@@ -160,14 +161,8 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
     }
 }
 
-/**
- * this function writes the classification of the vectors to a file
- * @param sdio - the StandardIO object
- * @param stdio - the SocketIO object
- */
-void function5(DefaultIO* sdio, DefaultIO* stdio) {
-    // get a path to a file which we will write the results to
-    string writeFilePath = sdio->readInput();
+
+void writeClassified(string writeFilePath, DefaultIO* sdio, DefaultIO* stdio) {
     ofstream writeToFile;
     writeToFile.open(writeFilePath);
     if (!writeToFile)
@@ -179,23 +174,43 @@ void function5(DefaultIO* sdio, DefaultIO* stdio) {
     // print the classification to the user from the server until there are no more
     while (true) {
         s = stdio->readInput();
+        // let the server know we are done reading
+        stdio->writeInput("finish read");
         // there are no more classification
-        if (s == "Done.") {
+        if (s == "Done.\n") {
             break;
         }
-        // the user need to make some other function before this one
-        else if (s == "please upload data" || s == "please classify the data") {
+            // the user need to make some other function before this one
+        else if (s == "please upload data\n" || s == "please classify the data\n") {
             // print the information from the server
             sdio->writeInput(s);
             break;
         }
-        // the string from the server is a classification of a vector
+            // the string from the server is a classification of a vector
         else {
             // write the result to the file
             writeToFile << s;
         }
     }
     writeToFile.close();
+}
+
+/**
+ * this function writes the classification of the vectors to a file
+ * @param sdio - the StandardIO object
+ * @param stdio - the SocketIO object
+ */
+void function5(DefaultIO* sdio, DefaultIO* stdio) {
+    string s = stdio->readInput();
+    // let the server know we are done reading
+    stdio->writeInput("finish read");
+    // print the information from the server
+    sdio->writeInput(s);
+    // get a path to a file which we will write the results to
+    string writeFilePath = sdio->readInput();
+    thread t(writeClassified, writeFilePath, sdio, stdio);
+    t.detach();
+    writeClassified(writeFilePath, sdio, stdio);
 }
 
 

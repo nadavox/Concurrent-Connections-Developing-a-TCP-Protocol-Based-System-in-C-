@@ -5,7 +5,6 @@
 #include "Algorithms/Knn.h"
 #include "Command_pattern/CLI.h"
 #include "Command_pattern/Command.h"
-#include <unistd.h>
 #include <thread>
 #include "IOClass/DefaultIO.h"
 #include "IOClass/SocketIO.h"
@@ -43,7 +42,6 @@ int createSocket() {
 /**
  * the function gets data from the client and check if the number is valid
  * @param clientSock - the client socket number
- * @param stdio - pointer to DefaultIO
  */
 void receiveNumber(int clientSock) {
     //create value object.
