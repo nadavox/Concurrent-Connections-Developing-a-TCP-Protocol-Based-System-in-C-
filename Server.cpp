@@ -45,61 +45,77 @@ int createSocket() {
  * @param clientSock - the client socket number
  * @param stdio - pointer to DefaultIO
  */
-string receiveNumber(int clientSock, CLI *c, DefaultIO *stdio) {
-    char buffer[4096];
-    // make the array to zero.
-    memset(buffer, 0, sizeof(buffer));
-    int expected_data_len = sizeof(buffer);
-    // read from the client
-    long int read_bytes = recv(clientSock, buffer, expected_data_len, 0);
-    if (read_bytes == 0) {
-        // connection is closed
-        perror("Error the connection with the client is closed");
-        //exit(1);
-        return "8";
+void receiveNumber(int clientSock) {
+    //create value object.
+    auto *values = new Values(clientSock);
+    DefaultIO *dio = new SocketIO(clientSock);
+    CLI *cli = new CLI(clientSock, values, dio);
+    while (true) {
+        cli->start();
+        //make buffer
+        char buffer[4096];
+        // make the array to zero.
+        memset(buffer, 0, sizeof(buffer));
+        int expected_data_len = sizeof(buffer);
+        // read from the client
+        long int read_bytes = recv(clientSock, buffer, expected_data_len, 0);
+        if (read_bytes == 0) {
+            // connection is closed
+            perror("Error the connection with the client is closed");
+            //exit(1);
+            delete cli;
+            delete dio;
+            delete values;
+            return;
+        }
+        else if (read_bytes < 0) {
+            perror("Error with reading the data from the client");
+            //exit(1);
+            delete cli;
+            delete dio;
+            delete values;
+            return;
+        }
+        string number(buffer);
+        // the user want to activate option 1
+        if (number == "1"){
+            // execute UploadCommand
+            cli->executeCommand("1");
+        }
+            // the user want to activate option 2
+        else if (number == "2") {
+            // execute SettingsCommand
+            cli->executeCommand("2");
+        }
+            // the user want to activate option 3
+        else if (number == "3") {
+            // execute ClassifyCommand
+            cli->executeCommand("3");
+        }
+            // the user want to activate option 4
+        else if (number == "4") {
+            // execute DisplayCommand
+            cli->executeCommand("4");
+        }
+            // the user want to activate option 5
+        else if (number == "5") {
+            // execute DownloadCommand
+            cli->executeCommand("5");
+        }
+            // the user want to activate option 8
+        else if (number == "8") {
+            // execute ExitCommand
+            cli->executeCommand("8");
+            delete cli;
+            delete dio;
+            delete values;
+            return;
+        }
+            // the user didn't inset valid value
+        else {
+            dio->writeInput("invalid input\n");
+        }
     }
-    else if (read_bytes < 0) {
-        perror("Error with reading the data from the client");
-        //exit(1);
-        return "8";
-    }
-
-    string number(buffer);
-    // the user want to activate option 1
-    if (number == "1"){
-        // execute UploadCommand
-        c->executeCommand("1");
-    }
-    // the user want to activate option 2
-    else if (number == "2") {
-        // execute SettingsCommand
-        c->executeCommand("2");
-    }
-    // the user want to activate option 3
-    else if (number == "3") {
-        // execute ClassifyCommand
-        c->executeCommand("3");
-    }
-    // the user want to activate option 4
-    else if (number == "4") {
-        // execute DisplayCommand
-        c->executeCommand("4");
-    }
-    // the user want to activate option 5
-    else if (number == "5") {
-        // execute DownloadCommand
-        c->executeCommand("5");
-    }
-    // the user want to activate option 8
-    else if (number == "8") {
-        // execute ExitCommand
-        c->executeCommand("8");
-    }
-    // the user didn't inset valid value
-    else {
-        stdio->writeInput("invalid input");
-    }
-    return number;
 }
 
 /**
@@ -109,6 +125,7 @@ string receiveNumber(int clientSock, CLI *c, DefaultIO *stdio) {
  * @return 0 if everything okay and 1 if there is errors
  */
 int main(int argc, char *argv[]) {
+    // main for multi threading
     //  create the server socket
     int master_socket = createSocket();
     struct sockaddr_in serverAddr = {};
@@ -138,30 +155,79 @@ int main(int argc, char *argv[]) {
         perror("Error while trying to listen");
         return 1;
     }
-    string number;
-    while (true) {
+
+    while (TRUE) {
         // create a socket for the client
-        int client_socket;
-        struct sockaddr_in client_sin = {};
+        struct sockaddr_in client_sin;
         unsigned int addr_len = sizeof(client_sin);
-        // accept connection
-        if ((client_socket = accept(master_socket, (struct sockaddr *) &client_sin, &addr_len)) < 0) {
-            perror("Error while trying to accept the new client");
-            return 1;
+        // accept a client connection
+        int client_socket = accept(master_socket, (struct sockaddr *) &client_sin, &addr_len);
+        if (client_socket < 0) {
+            perror("Error while trying to accept a new client connection");
+            exit(1);
         }
-        //create value object.
-        Values *values = new Values(client_socket);
-        DefaultIO *dio = new SocketIO(client_socket);
-        CLI *cli = new CLI(client_socket, values, dio);
-        // create a function that receives the number of the function from the client
-        while (number != "8") {
-            this_thread::sleep_for(chrono::milliseconds(10));
-            cli->start();
-            number = receiveNumber(client_socket, cli, dio);
-        }
-        delete(values);
-        delete(cli);
-        close(client_socket);
-        number.clear();
+        thread t(receiveNumber, client_socket);
+        t.detach();
     }
+
+
+    return 0;
+    //---------------------------------------
+    //the main without multi threading
+    //  create the server socket
+//    int master_socket = createSocket();
+//    struct sockaddr_in serverAddr = {};
+//    //type of socket created
+//    memset(&serverAddr, 0, sizeof(serverAddr));
+//    serverAddr.sin_family = AF_INET;
+//    serverAddr.sin_addr.s_addr = INADDR_ANY;
+//    // check if port number is a number
+//    try {
+//        // port number is okay
+//        int port_no = stoi(argv[1]);
+//        serverAddr.sin_port = htons(port_no);
+//    }
+//        // port number is not a number
+//    catch (const invalid_argument &) {
+//        perror("Invalid port number");
+//        return 1;
+//    }
+//    // bind the server
+//    int b = ::bind(master_socket, (sockaddr *) &serverAddr, sizeof(serverAddr));
+//    if (b < 0) {
+//        perror("Error while trying to bind");
+//        return 1;
+//    }
+//    //try to specify maximum of 5 pending connections for the master socket
+//    if (listen(master_socket, 5) < 0) {
+//        perror("Error while trying to listen");
+//        return 1;
+//    }
+//    string number;
+//    while (true) {
+//        // create a socket for the client
+//        int client_socket;
+//        struct sockaddr_in client_sin = {};
+//        unsigned int addr_len = sizeof(client_sin);
+//        // accept connection
+//        if ((client_socket = accept(master_socket, (struct sockaddr *) &client_sin, &addr_len)) < 0) {
+//            perror("Error while trying to accept the new client");
+//            return 1;
+//        }
+//        //create value object.
+//        Values *values = new Values(client_socket);
+//        DefaultIO *dio = new SocketIO(client_socket);
+//        CLI *cli = new CLI(client_socket, values, dio);
+//        // create a function that receives the number of the function from the client
+//        while (number != "8") {
+//            this_thread::sleep_for(chrono::milliseconds(10));
+//            cli->start();
+//            number = receiveNumber(client_socket, cli, dio);
+//        }
+//        delete(values);
+//        delete(cli);
+//        close(client_socket);
+//        number.clear();
+//    }
 }
+

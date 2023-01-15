@@ -56,7 +56,7 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     // could not open the file
     if (!inputFileOne)
     {
-        sdio->writeInput("invalid input");
+        sdio->writeInput("invalid input\n");
         return;
     }
 
@@ -84,7 +84,7 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     // could not open the file
     if (!inputFileTwo)
     {
-        sdio->writeInput("invalid input");
+        sdio->writeInput("invalid input\n");
         return;
     }
 
@@ -102,7 +102,9 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     // let the server now we are done
     stdio->writeInput("done");
     // print the request from the server to the user
-    sdio->writeInput(stdio->readInput());
+    string uploadComplete = stdio->readInput();
+    sdio->writeInput(uploadComplete);
+    stdio ->writeInput(uploadComplete);
 }
 
 /**
@@ -125,6 +127,7 @@ void function2(DefaultIO* sdio, DefaultIO* stdio) {
             // print the information from the server
             sdio->writeInput(answer);
         }
+        stdio->writeInput(answer);
     }
     // the user don't want to update the parameters
     else {
@@ -143,10 +146,12 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
     // print the classification to the user from the server until there are no more
     while (true) {
         s = stdio->readInput();
+        // let the server know we are done reading
+        stdio->writeInput("finish read");
         // print the information from the server
         sdio->writeInput(s);
         // there are no more classification or the user need to make some other function before this one
-        if (s == "Done." || s == "please upload data" || s == "please classify the data") {
+        if (s == "Done.\n" || s == "please upload data\n" || s == "please classify the data\n") {
             break;
         }
     }
@@ -160,6 +165,13 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
 void function5(DefaultIO* sdio, DefaultIO* stdio) {
     // get a path to a file which we will write the results to
     string writeFilePath = sdio->readInput();
+    ofstream writeToFile;
+    writeToFile.open(writeFilePath);
+    if (!writeToFile)
+    {
+        sdio->writeInput("invalid input\n");
+        return;
+    }
     string s;
     // print the classification to the user from the server until there are no more
     while (true) {
@@ -177,8 +189,10 @@ void function5(DefaultIO* sdio, DefaultIO* stdio) {
         // the string from the server is a classification of a vector
         else {
             // write the result to the file
+            writeToFile << s;
         }
     }
+    writeToFile.close();
 }
 
 
@@ -212,6 +226,7 @@ int main(int argc, char *argv[]) {
     while(true) {
         // print the menu to the user
         string menu = stdio->readInput();
+        //cout << "this is:" << menu << endl;
         sdio->writeInput(menu);
         // get number from the user
         string input = sdio->readInput();
@@ -232,6 +247,8 @@ int main(int argc, char *argv[]) {
         else if (input == "3") {
             // print the information from the server
             sdio->writeInput(stdio->readInput());
+            // let the server now we are done
+            stdio->writeInput("done");
         }
         // the user want to activate option 4
         else if (input == "4") {
