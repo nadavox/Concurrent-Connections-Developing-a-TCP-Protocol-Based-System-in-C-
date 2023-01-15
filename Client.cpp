@@ -162,7 +162,7 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
 }
 
 
-void writeClassified(string writeFilePath, int sock) {
+void writeClassified(string const writeFilePath, int sock) {
     // create StandardIO object
     DefaultIO *sdio = new StandardIO;
     // create SocketIO object

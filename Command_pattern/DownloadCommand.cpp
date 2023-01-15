@@ -1,7 +1,34 @@
 #include <iostream>
+#include <netinet/in.h>
+#include <thread>
 #include "DownloadCommand.h"
+#include "../IOClass/SocketIO.h"
 
 using namespace std;
+
+
+void writeToFile(int thread_socket, Values *values) {
+    int sizeOfClassified = values->getAfterClassifingList()->size();
+    string s;
+    //create value object.
+    DefaultIO *dio = new SocketIO(thread_socket);
+    // send the classification of every vector
+    dio->writeInput("please upload a path to a file we could write to\n");
+    // wait until the client done with reading
+    dio->readInput();
+    for (int i = 0; i < sizeOfClassified; ++i) {
+        cout << "end"<< endl;
+        s = to_string((i + 1)) + "\t" + values->getAfterClassifingList()->at(i).second + "\n";
+        // send the classification of every vector
+        dio->writeInput(s);
+        // wait until the client done with reading
+        dio->readInput();
+    }
+    // send to the server we are done
+    dio->writeInput("Done.\n");
+    // wait until the client done with reading
+    dio->readInput();
+}
 
 /**
  * this function will send to the client the classified results.
@@ -24,22 +51,36 @@ void DownloadCommand::execute()
         this->dio->readInput();
         return;
     }
-    string s;
-    // send the classification of every vector
-    this->dio->writeInput("please upload a path to a file we could write to\n");
-    // wait until the client done with reading
-    this->dio->readInput();
-    for (int i = 0; i < sizeOfClassified; ++i) {
-        s = to_string((i + 1)) + "\t" + values->getAfterClassifingList()->at(i).second + "\n";
-        // send the classification of every vector
-        this->dio->writeInput(s);
-        // wait until the client done with reading
-        this->dio->readInput();
+    ///-------------------------------------------------------------------------
+    // create a socket for the client
+    struct sockaddr_in client_sin{};
+    unsigned int addr_len = sizeof(client_sin);
+    // accept a client connection
+    int thread_socket = accept(values->getSocket(), (struct sockaddr *) &client_sin, &addr_len);
+    if (thread_socket < 0) {
+        perror("Error while trying to accept a new client connection");
+        exit(1);
     }
-    // send to the server we are done
-    this->dio->writeInput("Done.\n");
-    // wait until the client done with reading
-    this->dio->readInput();
+    thread t(writeToFile, thread_socket, values);
+    t.detach();
+    ///--------------------------------------------------------------------------------
+//    string s;
+//    // send the classification of every vector
+//    this->dio->writeInput("please upload a path to a file we could write to\n");
+//    // wait until the client done with reading
+//    this->dio->readInput();
+//    for (int i = 0; i < sizeOfClassified; ++i) {
+//        cout << "end"<< endl;
+//        s = to_string((i + 1)) + "\t" + values->getAfterClassifingList()->at(i).second + "\n";
+//        // send the classification of every vector
+//        this->dio->writeInput(s);
+//        // wait until the client done with reading
+//        this->dio->readInput();
+//    }
+//    // send to the server we are done
+//    this->dio->writeInput("Done.\n");
+//    // wait until the client done with reading
+//    this->dio->readInput();
 }
 
 /**
