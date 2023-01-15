@@ -167,6 +167,7 @@ void writeClassified(string writeFilePath, int sock) {
     DefaultIO *sdio = new StandardIO;
     // create SocketIO object
     DefaultIO *stdio = new SocketIO(sock);
+
     ofstream writeToFile;
     writeToFile.open(writeFilePath);
     if (!writeToFile)
@@ -174,6 +175,7 @@ void writeClassified(string writeFilePath, int sock) {
         sdio->writeInput("invalid input\n");
         return;
     }
+
     string s;
     // print the classification to the user from the server until there are no more
     while (true) {
@@ -184,13 +186,7 @@ void writeClassified(string writeFilePath, int sock) {
         if (s == "Done.\n") {
             break;
         }
-            // the user need to make some other function before this one
-        else if (s == "please upload data\n" || s == "please classify the data\n") {
-            // print the information from the server
-            sdio->writeInput(s);
-            break;
-        }
-            // the string from the server is a classification of a vector
+        // the string from the server is a classification of a vector
         else {
             // write the result to the file
             writeToFile << s;
@@ -210,11 +206,14 @@ void function5(DefaultIO* sdio, DefaultIO* stdio, int sock) {
     stdio->writeInput("finish read");
     // print the information from the server
     sdio->writeInput(s);
-    // get a path to a file which we will write the results to
-    string writeFilePath = sdio->readInput();
-    thread t(writeClassified, writeFilePath, sock);
-    t.detach();
-    //writeClassified(writeFilePath, sdio, stdio);
+    // the user don't need to make some other function before this one
+    if (s != "please upload data\n" && s != "please classify the data\n") {
+        // get a path to a file which we will write the results to
+        string writeFilePath = sdio->readInput();
+        thread t(writeClassified, writeFilePath, sock);
+        t.detach();
+        //writeClassified(writeFilePath, sdio, stdio);
+    }
 }
 
 
