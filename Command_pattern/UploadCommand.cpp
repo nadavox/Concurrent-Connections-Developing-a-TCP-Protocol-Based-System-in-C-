@@ -223,6 +223,7 @@ void UploadCommand::execute() {
 
     // send the upload complete string to the client
     this->dio->writeInput(uploadComplete2String);
+    this->dio->readInput();
 }
 
 /**

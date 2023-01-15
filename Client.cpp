@@ -102,7 +102,9 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     // let the server now we are done
     stdio->writeInput("done");
     // print the request from the server to the user
-    sdio->writeInput(stdio->readInput());
+    string uploadComplete = stdio->readInput();
+    sdio->writeInput(uploadComplete);
+    stdio ->writeInput(uploadComplete);
 }
 
 /**
@@ -125,6 +127,7 @@ void function2(DefaultIO* sdio, DefaultIO* stdio) {
             // print the information from the server
             sdio->writeInput(answer);
         }
+        stdio->writeInput(answer);
     }
     // the user don't want to update the parameters
     else {
@@ -221,6 +224,7 @@ int main(int argc, char *argv[]) {
     while(true) {
         // print the menu to the user
         string menu = stdio->readInput();
+        cout << "this is:" << menu << endl;
         sdio->writeInput(menu);
         // get number from the user
         string input = sdio->readInput();

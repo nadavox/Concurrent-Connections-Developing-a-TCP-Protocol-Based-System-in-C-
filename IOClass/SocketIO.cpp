@@ -24,7 +24,9 @@ string SocketIO::readInput() {
     else if (read_bytes < 0) {
         perror("Error with reading the data from the server");
     }
-    string input(buffer, read_bytes);
+    string input;
+    input.assign(buffer);
+    //string input(buffer, read_bytes);
     return input;
 }
 
