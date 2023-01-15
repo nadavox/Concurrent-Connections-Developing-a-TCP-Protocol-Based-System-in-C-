@@ -113,8 +113,10 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
  * @param stdio - the SocketIO object
  */
 void function2(DefaultIO* sdio, DefaultIO* stdio) {
+    //read the information from the server
+    string information = stdio->readInput();
     // print the information from the server
-    sdio->writeInput(stdio->readInput());
+    sdio->writeInput(information);
     // get the user response
     string userUpdate = sdio->readInput();
     // the user want to update the parameters
@@ -124,10 +126,11 @@ void function2(DefaultIO* sdio, DefaultIO* stdio) {
         string answer = stdio->readInput();
         // one of the parameters the user have inserted is not valid
         if (answer != "input is valid") {
-            // print the information from the server
+            // print in the terminal the information from the server
             sdio->writeInput(answer);
+            // send message that the user ready for the next message
+            stdio->writeInput(answer);
         }
-        stdio->writeInput(answer);
     }
     // the user don't want to update the parameters
     else {
@@ -224,7 +227,7 @@ int main(int argc, char *argv[]) {
     while(true) {
         // print the menu to the user
         string menu = stdio->readInput();
-        cout << "this is:" << menu << endl;
+        //cout << "this is:" << menu << endl;
         sdio->writeInput(menu);
         // get number from the user
         string input = sdio->readInput();

@@ -44,12 +44,16 @@ void SettingsCommand::execute()
                     // send message that k and the metric is not valid to the client
                     string kAndMetricNotValidString = "invalid value for K\ninvalid value for metric\n";
                     this->dio->writeInput(kAndMetricNotValidString);
+                    // read message that the user get the message
+                    this->dio->readInput();
                 }
                 // only k is not valid
                 else {
                     // send message that k is not valid to the client
                     string kNotValidString = "invalid value for K\n";
                     this->dio->writeInput(kNotValidString);
+                    // read message that the user get the message
+                    this->dio->readInput();
                 }
             }
             // k is a positive integer
@@ -59,6 +63,8 @@ void SettingsCommand::execute()
                     // send message that the distance metric is not valid to the client
                     string metricNotValidString = "invalid value for metric\n";
                     this->dio->writeInput(metricNotValidString);
+                    // read message that the user get the message
+                    this->dio->readInput();
                 }
                 // update distance metric
                 else {
@@ -69,7 +75,6 @@ void SettingsCommand::execute()
                     // send message that everything okay
                     string valid = "input is valid";
                     this->dio->writeInput(valid);
-                    this_thread::sleep_for(chrono::milliseconds(50));
                 }
             }
         }
@@ -80,12 +85,16 @@ void SettingsCommand::execute()
                 // send message that k and the metric is not valid to the client
                 string kAndMetricNotValidString = "invalid value for K\ninvalid value for metric\n";
                 this->dio->writeInput(kAndMetricNotValidString);
+                // read message that the user get the message
+                this->dio->readInput();
             }
             // the distance metric is valid
             else {
                 // send message that k is not valid to the client
                 string kNotValidString = "invalid value for K\n";
                 this->dio->writeInput(kNotValidString);
+                // read message that the user get the message
+                this->dio->readInput();
             }
         }
     }
