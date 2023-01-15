@@ -43,9 +43,9 @@ int createSocket() {
  * the function gets data from the client and check if the number is valid
  * @param clientSock - the client socket number
  */
-void receiveNumber(int clientSock) {
+void receiveNumber(int clientSock, int masterSocket) {
     //create value object.
-    auto *values = new Values(clientSock);
+    auto *values = new Values(clientSock, masterSocket);
     DefaultIO *dio = new SocketIO(clientSock);
     CLI *cli = new CLI(clientSock, values, dio);
     while (true) {
@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
             perror("Error while trying to accept a new client connection");
             exit(1);
         }
-        thread t(receiveNumber, client_socket);
+        thread t(receiveNumber, client_socket, master_socket);
         t.detach();
     }
 }

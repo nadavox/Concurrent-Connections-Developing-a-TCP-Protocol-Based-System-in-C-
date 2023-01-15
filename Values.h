@@ -13,10 +13,11 @@ private:
     vector<pair< vector<double>, string > > *classifiedVectorList;
     vector<vector<double> > *notClassifiedVectorList;
     vector<pair< vector<double>, string > > *afterClassifing;
-    int socket;
+    int clientSocket;
+    int masterSocket;
 public:
     //constructor
-    Values(int socket_val);
+    Values(int clientSocket, int masterSocket);
 
     //deconstruction
     ~Values();
@@ -24,7 +25,8 @@ public:
     // Getters
     int getK() const;
     string getDistanceMetric() const;
-    int getSocket() const;
+    int getClientSocket() const;
+    int getMasterSocket() const;
     vector<pair< vector<double>, string > > *getClassifiedVectorList();
     vector<vector<double> > *getNotClassifiedVectorList();
     vector<pair< vector<double>, string > > *getAfterClassifingList();
@@ -32,7 +34,8 @@ public:
     // Setters
     void setK(int val);
     void setDistanceMetric(string val);
-    void setSocket(int val);
+    void setClientSocket(int val);
+    void setMasterSocket(int val);
     void setClassifiedVectorList(pair<vector<double>, string> *v);
     void setNotClassifiedVectorList(vector<double> *v);
     void setAfterClassifing(pair<vector<double>, string> *v);

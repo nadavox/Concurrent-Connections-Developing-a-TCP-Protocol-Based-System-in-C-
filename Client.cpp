@@ -10,7 +10,6 @@
 #include "IOClass/StandardIO.h"
 #include "IOClass/SocketIO.h"
 #include "fstream"
-#include <thread>
 
 using namespace std;
 
@@ -193,14 +192,11 @@ void writeClassified(string const writeFilePath, int sock) {
         }
     }
     writeToFile.close();
+    close(sock);
 }
 
-/**
- * this function writes the classification of the vectors to a file
- * @param sdio - the StandardIO object
- * @param stdio - the SocketIO object
- */
-void function5(DefaultIO* sdio, DefaultIO* stdio, int sock) {
+
+void function5(DefaultIO* sdio, DefaultIO* stdio, int portNumber, char* ipAddress) {
     string s = stdio->readInput();
     // let the server know we are done reading
     stdio->writeInput("finish read");
@@ -208,11 +204,11 @@ void function5(DefaultIO* sdio, DefaultIO* stdio, int sock) {
     sdio->writeInput(s);
     // the user don't need to make some other function before this one
     if (s != "please upload data\n" && s != "please classify the data\n") {
+        int newSock = createSocket(portNumber, ipAddress);
         // get a path to a file which we will write the results to
         string writeFilePath = sdio->readInput();
-        thread t(writeClassified, writeFilePath, sock);
+        thread t(writeClassified, writeFilePath, newSock);
         t.detach();
-        //writeClassified(writeFilePath, sdio, stdio);
     }
 }
 
@@ -278,7 +274,7 @@ int main(int argc, char *argv[]) {
         // the user want to activate option 5
         else if (input == "5") {
             // call function5
-            function5(sdio, stdio, sock);
+            function5(sdio, stdio, port_no, ip_address);
         }
         // the user want to activate option 8
         else if (input == "8") {
