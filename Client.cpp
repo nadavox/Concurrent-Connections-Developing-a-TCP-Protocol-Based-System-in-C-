@@ -224,7 +224,7 @@ int main(int argc, char *argv[]) {
     while(true) {
         // print the menu to the user
         string menu = stdio->readInput();
-        cout << "this is:" << menu << endl;
+        //cout << "this is:" << menu << endl;
         sdio->writeInput(menu);
         // get number from the user
         string input = sdio->readInput();
@@ -245,6 +245,8 @@ int main(int argc, char *argv[]) {
         else if (input == "3") {
             // print the information from the server
             sdio->writeInput(stdio->readInput());
+            // let the server now we are done
+            stdio->writeInput("done");
         }
         // the user want to activate option 4
         else if (input == "4") {
