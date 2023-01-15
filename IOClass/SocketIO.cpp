@@ -1,5 +1,4 @@
 #include "SocketIO.h"
-#include <unistd.h>
 #include <string.h>
 
 /**
@@ -26,7 +25,6 @@ string SocketIO::readInput() {
     }
     string input;
     input.assign(buffer);
-    //string input(buffer, read_bytes);
     return input;
 }
 

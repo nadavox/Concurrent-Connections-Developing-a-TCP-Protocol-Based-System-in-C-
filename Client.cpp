@@ -229,7 +229,6 @@ int main(int argc, char *argv[]) {
     while(true) {
         // print the menu to the user
         string menu = stdio->readInput();
-        //cout << "this is:" << menu << endl;
         sdio->writeInput(menu);
         // get number from the user
         string input = sdio->readInput();
