@@ -13,11 +13,15 @@ void DisplayCommand::execute()
     if (values->getNotClassifiedVectorList()->empty()) {
         // send to the server that the user haven't uploaded the files yet
         this->dio->writeInput("please upload data\n");
+        // wait until the client done with reading
+        this->dio->readInput();
         return;
     }
     if (sizeOfClassified == 0) {
         // send to the server that the user haven't classified the vectors yet
         this->dio->writeInput("please classify the data\n");
+        // wait until the client done with reading
+        this->dio->readInput();
         return;
     }
     string s;
@@ -25,9 +29,13 @@ void DisplayCommand::execute()
         s = to_string((i + 1)) + "\t" + values->getAfterClassifingList()->at(i).second + "\n";
         // send the classification of every vector
         this->dio->writeInput(s);
+        // wait until the client done with reading
+        this->dio->readInput();
     }
     // send to the server we are done
     this->dio->writeInput("Done.\n");
+    // wait until the client done with reading
+    this->dio->readInput();
 }
 
 /**

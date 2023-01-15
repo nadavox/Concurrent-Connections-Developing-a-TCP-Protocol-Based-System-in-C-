@@ -146,10 +146,12 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
     // print the classification to the user from the server until there are no more
     while (true) {
         s = stdio->readInput();
+        // let the server know we are done reading
+        stdio->writeInput("finish read");
         // print the information from the server
         sdio->writeInput(s);
         // there are no more classification or the user need to make some other function before this one
-        if (s == "Done." || s == "please upload data" || s == "please classify the data") {
+        if (s == "Done.\n" || s == "please upload data\n" || s == "please classify the data\n") {
             break;
         }
     }
