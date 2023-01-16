@@ -42,6 +42,7 @@ int createSocket() {
 /**
  * the function gets data from the client and check if the number is valid
  * @param clientSock - the client socket number
+ * @param masterSocket - the socket of the server
  */
 void receiveNumber(int clientSock, int masterSocket) {
     //create value object.
@@ -80,12 +81,12 @@ void receiveNumber(int clientSock, int masterSocket) {
                 // execute UploadCommand
                 cli->executeCommand("1");
             }
-                // the user want to activate option 2
+            // the user want to activate option 2
             else if (number == 2) {
                 // execute SettingsCommand
                 cli->executeCommand("2");
             }
-                // the user want to activate option 3
+            // the user want to activate option 3
             else if (number == 3) {
                 // execute ClassifyCommand
                 cli->executeCommand("3");
@@ -95,12 +96,12 @@ void receiveNumber(int clientSock, int masterSocket) {
                 // execute DisplayCommand
                 cli->executeCommand("4");
             }
-                // the user want to activate option 5
+            // the user want to activate option 5
             else if (number == 5) {
                 // execute DownloadCommand
                 cli->executeCommand("5");
             }
-                // the user want to activate option 8
+            // the user want to activate option 8
             else if (number == 8) {
                 // execute ExitCommand
                 cli->executeCommand("8");

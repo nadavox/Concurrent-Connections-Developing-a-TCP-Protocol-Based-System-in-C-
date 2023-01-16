@@ -96,6 +96,7 @@ void reading_from_file(ifstream& inputFileOne, DefaultIO* stdio) {
     // let the server now we are done
     stdio->writeInput("done");
 }
+
 /**
  * the function gets messages from the server and sends the lines from the files to the server
  * @param sdio - the StandardIO object
