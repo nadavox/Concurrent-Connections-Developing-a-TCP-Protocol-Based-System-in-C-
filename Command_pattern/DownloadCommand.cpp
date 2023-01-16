@@ -1,31 +1,21 @@
-#include <iostream>
-#include <netinet/in.h>
 #include <thread>
 #include "DownloadCommand.h"
-#include "../IOClass/SocketIO.h"
-#include <sys/socket.h>
-#include <unistd.h>
-
+#include "mutex"
+#include "../ThreadSync.h"
 using namespace std;
 
 
-void DownloadCommand::writeToFile(int sock) {
-    int sizeOfClassified = values->getAfterClassifingList()->size();
-    string s;
-    //create value object.
-    DefaultIO *dio = new SocketIO(sock);
-    for (int i = 0; i < sizeOfClassified; ++i) {
-        cout << "end"<< endl;
-        s = to_string((i + 1)) + "\t" + values->getAfterClassifingList()->at(i).second + "\n";
-        // send the classification of every vector
-        dio->writeInput(s);
-        // wait until the client done with reading
-        dio->readInput();
-    }
-    // send to the server we are done
-    dio->writeInput("Done.\n");
+void writeToFile(int sock, Values *values, DefaultIO *dio, string s) {
+    std::unique_lock<std::mutex> lock(ThreadSync::mtx);
+    // send the classification of every vector
+    dio->writeInput(s);
     // wait until the client done with reading
     dio->readInput();
+    //tell the main keep runing.
+    lock.unlock();
+    ThreadSync::thread_created = true;
+    ThreadSync::cv.notify_one();
+    cout << "line 17 in DOwnload commend: ThreadSync::thread_created: " <<  ThreadSync::thread_created<< endl;
 }
 
 /**
@@ -53,21 +43,17 @@ void DownloadCommand::execute()
     this->dio->writeInput("please upload a path to a file we could write to\n");
     // wait until the client done with reading
     this->dio->readInput();
-
-    thread t([this](){
-        // create a socket for the client
-        struct sockaddr_in client_sin;
-        unsigned int addr_len = sizeof(client_sin);
-        // accept a client connection
-        int client_socket = accept(values->getMasterSocket(), (struct sockaddr *) &client_sin, &addr_len);
-        if (client_socket < 0) {
-            perror("Error while trying to accept a new client connection");
-            exit(1);
-        }
-        this->writeToFile(client_socket);
-        close(client_socket);
-    });
+    string s;
+    // sends the classifications to the server
+    for (int i = 0; i < sizeOfClassified; ++i) {
+        s += to_string((i + 1)) + "\t" + values->getAfterClassifingList()->at(i).second + "\n";
+    }
+    // create a new thread that will send the classification to the client
+    thread t(writeToFile, this->sock, values, this->dio, s);
     t.detach();
+    ThreadSync::thread_created = false;
+    ThreadSync::cv.notify_one();
+    cout << "line 54" << endl;
 }
 
 /**
@@ -88,4 +74,5 @@ DownloadCommand::DownloadCommand(int socket, Values *value, DefaultIO *dio) {
     values = value;
     value->setClientSocket(socket);
     this->dio = dio;
+    this->sock = socket;
 }

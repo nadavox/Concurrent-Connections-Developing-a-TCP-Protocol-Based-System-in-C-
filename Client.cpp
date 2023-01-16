@@ -10,9 +10,14 @@
 #include "IOClass/StandardIO.h"
 #include "IOClass/SocketIO.h"
 #include "fstream"
+#include <mutex>
+#include <condition_variable>
 
 using namespace std;
 
+std::mutex mtx;
+std::condition_variable cv;
+bool thread_created = true;
 /**
  * the function create a TCP client socket
  * @param portNumber - the port number that the server socket listens to.
@@ -202,43 +207,28 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
     }
 }
 
-
-void writeClassified(string const writeFilePath, int sock) {
-    // create StandardIO object
-    DefaultIO *sdio = new StandardIO;
-    // create SocketIO object
-    DefaultIO *stdio = new SocketIO(sock);
-
+void writeClassified(string const writeFilePath,  int sock, DefaultIO *sdio1, DefaultIO *stdio1) {
+    std::unique_lock<std::mutex> lock(mtx);
+    //the lock
+    string s = stdio1->readInput(); // print the classification to the user from the server until there are no more
+    stdio1->writeInput("finish read"); // let the server know we are done reading
+    // to unlock
+    lock.unlock();
+    //tell the main keep runing.
+    thread_created = true;
+    cout << "line 177: thread_created: " <<  thread_created<< endl;
     ofstream writeToFile;
     writeToFile.open(writeFilePath);
     if (!writeToFile)
     {
-        sdio->writeInput("invalid input\n");
+        sdio1->writeInput("invalid input\n");
         return;
     }
-
-    string s;
-    // print the classification to the user from the server until there are no more
-    while (true) {
-        s = stdio->readInput();
-        // let the server know we are done reading
-        stdio->writeInput("finish read");
-        // there are no more classification
-        if (s == "Done.\n") {
-            break;
-        }
-        // the string from the server is a classification of a vector
-        else {
-            // write the result to the file
-            writeToFile << s;
-        }
-    }
+    writeToFile << s;
     writeToFile.close();
-    close(sock);
 }
 
-
-void function5(DefaultIO* sdio, DefaultIO* stdio, int portNumber, char* ipAddress) {
+void function5(DefaultIO* sdio, DefaultIO* stdio, int sock) {
     string s = stdio->readInput();
     // let the server know we are done reading
     stdio->writeInput("finish read");
@@ -246,14 +236,16 @@ void function5(DefaultIO* sdio, DefaultIO* stdio, int portNumber, char* ipAddres
     sdio->writeInput(s);
     // the user don't need to make some other function before this one
     if (s != "please upload data\n" && s != "please classify the data\n") {
-        int newSock = createSocket(portNumber, ipAddress);
         // get a path to a file which we will write the results to
         string writeFilePath = sdio->readInput();
-        thread t(writeClassified, writeFilePath, newSock);
+        // crate a new thread that will write the classification to the file
+        thread t(writeClassified, writeFilePath, sock, sdio, stdio);
         t.detach();
+        thread_created = false;
+        cv.notify_one();
+
     }
 }
-
 
 /**
  * the function that handles the client
@@ -282,8 +274,14 @@ int main(int argc, char *argv[]) {
     // create SocketIO object
     DefaultIO *stdio = new SocketIO(sock);
     // get the program to run until the user press 8
-    while(true) {
-        // print the menu to the user
+    while(true) {// print the menu to the user
+        cout << "line 236: thread_created: " <<  thread_created<< endl;
+        //create mutex for the main
+        std::unique_lock<std::mutex> lock(mtx);
+        // create condition_variable on the main.
+        // it will stop when we create the thread only for reading from the server.
+        cv.wait(lock, []{return thread_created;});
+        cout << "line 242: thread_created: " <<  thread_created<< endl;
         string menu = stdio->readInput();
         sdio->writeInput(menu);
         // get number from the user
@@ -342,6 +340,7 @@ int main(int argc, char *argv[]) {
             string invalid_input = stdio->readInput();
             sdio->writeInput(invalid_input);
             stdio->writeInput("done reading");
+
         }
     }
     return 0;
