@@ -8,11 +8,13 @@
 #include <thread>
 #include "IOClass/DefaultIO.h"
 #include "IOClass/SocketIO.h"
-
+#include "ThreadSync.h"
 #define TRUE 1
 #define MAX_CLIENTS 30 //max client for the server
 
 using namespace std;
+
+
 
 /**
  * the function creates the master socket
@@ -49,6 +51,13 @@ void receiveNumber(int clientSock, int masterSocket) {
     DefaultIO *dio = new SocketIO(clientSock);
     CLI *cli = new CLI(clientSock, values, dio);
     while (true) {
+        cout << "line 54: ThreadSync::thread_created: " <<  ThreadSync::thread_created<< endl;
+        //create mutex for the main
+        std::unique_lock<std::mutex> lock(ThreadSync::mtx);
+        // create condition_variable on the main.
+        // it will stop when we create the thread only for reading from the server.
+        ThreadSync::cv.wait(lock, []{return ThreadSync::thread_created;});
+        cout << "line 60: ThreadSync::thread_created: " <<  ThreadSync::thread_created<< endl;
         cli->start();
         //make buffer
         char buffer[4096];
@@ -97,6 +106,7 @@ void receiveNumber(int clientSock, int masterSocket) {
         else if (number == "5") {
             // execute DownloadCommand
             cli->executeCommand("5");
+            cout << "you can do it" << endl;
         }
             // the user want to activate option 8
         else if (number == "8") {
@@ -121,6 +131,8 @@ void receiveNumber(int clientSock, int masterSocket) {
  * @return 0 if everything okay and 1 if there is errors
  */
 int main(int argc, char *argv[]) {
+    //the main will run. init to true
+    ThreadSync::thread_created = true;
     // main for multi threading
     //  create the server socket
     int master_socket = createSocket();
