@@ -51,14 +51,21 @@ string SocketIO::readInput() {
  * @param s - the string
  */
 void SocketIO::writeInput(string s) {
-    unsigned int data_len = s.length();
-    char data_addr[data_len + 1];
-    const char* str = s.c_str();
-    // copy the data of the string
-    strcpy(data_addr, str);
-    long int n;
-    n = send(sockNumber, data_addr, data_len, 0);
-    if (n < 0) {
-        perror("Error sending the data to the socket");
+    if (s.empty()) {
+        char data_addr[1] = {'\n'};
+        long int n = send(sockNumber, data_addr, 1, 0);
+        if (n < 0) {
+            perror("Error sending the data to the socket");
+        }
+    } else {
+        unsigned int data_len = s.length();
+        char data_addr[data_len + 1];
+        const char* str = s.c_str();
+        // copy the data of the string
+        strcpy(data_addr, str);
+        long int n = send(sockNumber, data_addr, data_len, 0);
+        if (n < 0) {
+            perror("Error sending the data to the socket");
+        }
     }
 }
