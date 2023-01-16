@@ -160,7 +160,6 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
     }
 }
 
-
 void writeClassified(string const writeFilePath, int sock) {
     // create StandardIO object
     DefaultIO *sdio = new StandardIO;
@@ -192,11 +191,9 @@ void writeClassified(string const writeFilePath, int sock) {
         }
     }
     writeToFile.close();
-    close(sock);
 }
 
-
-void function5(DefaultIO* sdio, DefaultIO* stdio, int portNumber, char* ipAddress) {
+void function5(DefaultIO* sdio, DefaultIO* stdio, int sock, int portNumber, char* ipAddress) {
     string s = stdio->readInput();
     // let the server know we are done reading
     stdio->writeInput("finish read");
@@ -204,14 +201,22 @@ void function5(DefaultIO* sdio, DefaultIO* stdio, int portNumber, char* ipAddres
     sdio->writeInput(s);
     // the user don't need to make some other function before this one
     if (s != "please upload data\n" && s != "please classify the data\n") {
-        int newSock = createSocket(portNumber, ipAddress);
         // get a path to a file which we will write the results to
         string writeFilePath = sdio->readInput();
+        // get the port of the new socket
+        string portString = stdio->readInput();
+        int port = stoi(portString);
+        // let the server know we are done reading
+        stdio->writeInput("finish read");
+        // create a new socket that will connect to the new socket from the server
+        int newSock = createSocket(port, ipAddress);
+        // crate a new thread that will write the classification to the file
         thread t(writeClassified, writeFilePath, newSock);
         t.detach();
+        // close the new socket
+        close(newSock);
     }
 }
-
 
 /**
  * the function that handles the client
@@ -274,7 +279,7 @@ int main(int argc, char *argv[]) {
         // the user want to activate option 5
         else if (input == "5") {
             // call function5
-            function5(sdio, stdio, port_no, ip_address);
+            function5(sdio, stdio, sock, port_no, ip_address);
         }
         // the user want to activate option 8
         else if (input == "8") {

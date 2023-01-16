@@ -9,7 +9,7 @@ public:
     explicit DownloadCommand(int socket, Values *value, DefaultIO *dio);
     string description();
     void execute();
-    void writeToFile(int sock);
+    void writeToFile(DefaultIO *dio);
 };
 
 #endif //ADVANCEDPROGRAMINGPART3_DOWNLOADCOMMAND_H
