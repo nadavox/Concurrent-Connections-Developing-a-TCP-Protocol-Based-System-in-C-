@@ -181,6 +181,10 @@ void UploadCommand::execute() {
     while (true) {
         // getting the input from the client
         input = this->dio->readInput();
+        // exit the function. the client lost connection
+        if (input == "Error") {
+            return;
+        }
         strcpy(buffer, input.c_str());
         if (check_done(buffer, input.size())) {
             // clean the buffer
@@ -204,6 +208,10 @@ void UploadCommand::execute() {
     while (true) {
         // getting the input from the client
         input = this->dio->readInput();
+        // exit the function. the client lost connection
+        if (input == "Error") {
+            return;
+        }
         strcpy(buffer, input.c_str());
         if (check_done(buffer, input.size())) {
             // clean the buffer
@@ -224,6 +232,10 @@ void UploadCommand::execute() {
     // send the upload complete string to the client
     this->dio->writeInput(uploadComplete2String);
     this->dio->readInput();
+    // exit the function. the client lost connection
+    if (input == "Error") {
+        return;
+    }
 }
 
 /**

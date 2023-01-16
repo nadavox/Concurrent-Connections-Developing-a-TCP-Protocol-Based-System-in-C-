@@ -45,8 +45,9 @@ int createSocket(int portNumber, char* ipAddress) {
  * @param stdio - the SocketIO object
  */
 void function1(DefaultIO* sdio, DefaultIO* stdio) {
+    string messageFromServer = stdio->readInput();
     // print the request from the server to the user
-    sdio->writeInput(stdio->readInput());
+    sdio->writeInput(messageFromServer);
     // get the path to the classified file from the user
     string readClassifiedFilePath = sdio->readInput();
     ifstream inputFileOne;
@@ -56,6 +57,8 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     // could not open the file
     if (!inputFileOne)
     {
+        // sending to the server that exit the function and get back to the main menu.
+        stdio->writeInput("Error");
         sdio->writeInput("invalid input\n");
         return;
     }
@@ -84,6 +87,8 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     // could not open the file
     if (!inputFileTwo)
     {
+        // sending to the server that exit the function and get back to the main menu.
+        stdio->writeInput("Error");
         sdio->writeInput("invalid input\n");
         return;
     }
@@ -287,7 +292,9 @@ int main(int argc, char *argv[]) {
         }
         // the user didn't inset valid value
         else {
-            break;
+            // print the invalid input to the user
+            string invalid_input = stdio->readInput();
+            sdio->writeInput(invalid_input);
         }
     }
     return 0;

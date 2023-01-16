@@ -13,18 +13,21 @@ SocketIO::SocketIO(int sockNumber) {
  * this function reads from the socket
  */
 string SocketIO::readInput() {
+    string input;
     char buffer[1024];
     memset(buffer, 0, 1024);
     long int read_bytes = recv(sockNumber, buffer, sizeof(buffer), 0);
     if (read_bytes == 0) {
         // connection is closed
         perror("Error the connection with the server is closed");
+        input = "Error";
     }
     else if (read_bytes < 0) {
         perror("Error with reading the data from the server");
+        input = "Error";
+    } else {
+        input.assign(buffer);
     }
-    string input;
-    input.assign(buffer);
     return input;
 }
 
