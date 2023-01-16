@@ -44,27 +44,48 @@ int createSocket(int portNumber, char* ipAddress) {
     return sock;
 }
 
+
 /**
- * the function gets messages from the server and sends the lines from the files to the server
+ * the function gets messages string and check if valid or not
+ * @param output - the string we check
  * @param sdio - the StandardIO object
  * @param stdio - the SocketIO object
  */
-void function1(DefaultIO* sdio, DefaultIO* stdio) {
-    // print the request from the server to the user
-    sdio->writeInput(stdio->readInput());
-    // get the path to the classified file from the user
-    string readClassifiedFilePath = sdio->readInput();
-    ifstream inputFileOne;
-    // open the file, doesn't matter if it relative or not.
-    inputFileOne.open(readClassifiedFilePath);
-    string line = "";
-    // could not open the file
+bool check_valid(const string& output, DefaultIO *sdio,DefaultIO *stdio) {
+    if (output == "invalid input")
+    {
+        // sending to the server that exit the function and get back to the main menu.
+        sdio->writeInput("invalid input\n");
+        stdio->writeInput("Error");
+        return false;
+    }
+    return true;
+}
+
+
+/**
+ * the function check if we can open file or not
+ * @param inputFileOne - the file we check
+ * @param sdio - the StandardIO object
+ * @param stdio - the SocketIO object
+ */
+bool check_file(ifstream& inputFileOne, DefaultIO *sdio,DefaultIO *stdio) {
     if (!inputFileOne)
     {
+        // sending to the server that exit the function and get back to the main menu.
+        stdio->writeInput("Error");
         sdio->writeInput("invalid input\n");
-        return;
+        return false;
     }
+    return true;
+}
 
+/**
+ * the function read the context from the file
+ * @param inputFileOne - the file string we check
+ * @param stdio - the SocketIO object
+ */
+void reading_from_file(ifstream& inputFileOne, DefaultIO* stdio) {
     char buffer[1024];
     // clean the buffer
     memset(buffer, 0, 1024);
@@ -79,37 +100,58 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     }
     // let the server now we are done
     stdio->writeInput("done");
-    // print the message from the server to the user
-    sdio->writeInput(stdio->readInput());
-    // get the path to the un classified file from the user
-    string readUnClassifiedFilePath = sdio->readInput();
-    ifstream inputFileTwo;
+}
+
+/**
+ * the function gets messages from the server and sends the lines from the files to the server
+ * @param sdio - the StandardIO object
+ * @param stdio - the SocketIO object
+ */
+void function1(DefaultIO* sdio, DefaultIO* stdio) {
+    // get the message from the server
+    string messageFromServer = stdio->readInput();
+    // print the request from the server to the user
+    sdio->writeInput(messageFromServer);
+    // get the path to the classified file from the user
+    string readClassifiedFilePath = sdio->readInput();
+    // create fstream object to read from it.
+    ifstream inputFile;
     // open the file, doesn't matter if it relative or not.
-    inputFileTwo.open(readUnClassifiedFilePath);
-    // could not open the file
-    if (!inputFileTwo)
-    {
-        sdio->writeInput("invalid input\n");
+    inputFile.open(readClassifiedFilePath);
+    // check if we can open the file
+    if (!check_file(inputFile, sdio, stdio)) {
         return;
     }
-
-    // clean the buffer
-    memset(buffer, 0, 1024);
-    // reading chunks of data from the file
-    while(inputFileTwo.read(buffer, 1024) || inputFileTwo.gcount() > 0) {
-        // converting char array to string
-        string input(buffer, sizeof(buffer) / sizeof(buffer[0]));
-        // sending the string to the server
-        stdio->writeInput(input);
-        // clean the buffer
-        memset(buffer, 0, 1024);
+    // reading the input from the file into the server.
+    reading_from_file(inputFile, stdio);
+    // print the message from the server to the user
+    string output = stdio->readInput();
+    // check if the ouptput is valid or not
+    if (!check_valid(output, sdio, stdio)) {
+        return;
     }
-    // let the server now we are done
-    stdio->writeInput("done");
+    // write the message from the server
+    sdio->writeInput(output);
+    // get the path to the un classified file from the user
+    string readUnClassifiedFilePath = sdio->readInput();
+    //open the new file and close the old one
+    inputFile.close();
+    inputFile.open(readUnClassifiedFilePath);
+    // check if we can open the file
+    if (!check_file(inputFile, sdio, stdio)) {
+        return;
+    }
+    // reading the input from the file into the server.
+    reading_from_file(inputFile, stdio);
     // print the request from the server to the user
-    string uploadComplete = stdio->readInput();
-    sdio->writeInput(uploadComplete);
-    stdio ->writeInput(uploadComplete);
+    output = stdio->readInput();
+    if (!check_valid(output, sdio, stdio)) {
+        return;
+    }
+    //print the output complete from the server.
+    sdio->writeInput(output);
+    // tell the server client finish print the message ready for the next one.
+    stdio ->writeInput(output);
 }
 
 /**
@@ -134,7 +176,7 @@ void function2(DefaultIO* sdio, DefaultIO* stdio) {
             // print in the terminal the information from the server
             sdio->writeInput(answer);
             // send message that the user ready for the next message
-            stdio->writeInput(answer);
+            stdio->writeInput("continue");
         }
     }
     // the user don't want to update the parameters
@@ -247,45 +289,58 @@ int main(int argc, char *argv[]) {
         // send the number to the server
         stdio->writeInput(input);
 
-        // the user want to activate option 1
-        if (input == "1"){
-            // call function1
-            function1(sdio, stdio);
+        try {
+            int number = stoi(input);
+            // the user want to activate option 1
+            if (number == 1){
+                // call function1
+                function1(sdio, stdio);
+            }
+            // the user want to activate option 2
+            else if (number == 2) {
+                // call function2
+                function2(sdio, stdio);
+            }
+            // the user want to activate option 3
+            else if (number == 3) {
+                // print the information from the server
+                sdio->writeInput(stdio->readInput());
+                // let the server now we are done
+                stdio->writeInput("done");
+            }
+            // the user want to activate option 4
+            else if (number == 4) {
+                // call function4
+                function4(sdio, stdio);
+            }
+            // the user want to activate option 5
+            else if (number == 5) {
+                // call function5
+                function5(sdio, stdio, port_no, ip_address);
+            }
+            // the user want to activate option 8
+            else if (number == 8) {
+                // delete the allocation of sdio
+                delete sdio;
+                delete stdio;
+                // close the client socket
+                close(sock);
+                break;
+            }
+            // the user insert invalid number
+            else {
+                // print the invalid input to the user
+                string invalid_input = stdio->readInput();
+                sdio->writeInput(invalid_input);
+                stdio->writeInput("done reading");
+            }
         }
-        // the user want to activate option 2
-        else if (input == "2") {
-            // call function2
-            function2(sdio, stdio);
-        }
-        // the user want to activate option 3
-        else if (input == "3") {
-            // print the information from the server
-            sdio->writeInput(stdio->readInput());
-            // let the server now we are done
-            stdio->writeInput("done");
-        }
-        // the user want to activate option 4
-        else if (input == "4") {
-            // call function4
-            function4(sdio, stdio);
-        }
-        // the user want to activate option 5
-        else if (input == "5") {
-            // call function5
-            function5(sdio, stdio, sock);
-        }
-        // the user want to activate option 8
-        else if (input == "8") {
-            // delete the allocation of sdio
-            delete sdio;
-            delete stdio;
-            // close the client socket
-            close(sock);
-            break;
-        }
-        // the user didn't inset valid value
-        else {
-            break;
+        catch (invalid_argument) {
+            // print the invalid input to the user
+            string invalid_input = stdio->readInput();
+            sdio->writeInput(invalid_input);
+            stdio->writeInput("done reading");
+
         }
     }
     return 0;

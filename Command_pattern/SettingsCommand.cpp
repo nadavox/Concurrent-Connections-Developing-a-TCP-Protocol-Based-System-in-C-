@@ -20,8 +20,14 @@ void SettingsCommand::execute()
 
     this->dio->writeInput(currentParametersString);
 
+
     string input;
+    //read what the client response
     input = this->dio->readInput();
+    // exit the function. the client lost connection
+    if (input == "Error") {
+        return;
+    }
     strcpy(buffer, input.c_str());
 
     string s(buffer);
@@ -33,6 +39,19 @@ void SettingsCommand::execute()
         iss >> s1;
         // the distance metric
         iss >> s2;
+        // the user entered k, metric and more input
+        if (!iss.eof()) {
+            string invalidInput = "invalid input\n";
+            // send message that the user gave invalid input
+            this->dio->writeInput(invalidInput);
+            // read message that the user get the message
+            input = this->dio->readInput();
+            // exit the function. the client lost connection
+            if (input == "Error") {
+                return;
+            }
+            return;
+        }
         // check if s1 is valid int
         try {
             // s1 is an integer number
@@ -45,7 +64,11 @@ void SettingsCommand::execute()
                     string kAndMetricNotValidString = "invalid value for K\ninvalid value for metric\n";
                     this->dio->writeInput(kAndMetricNotValidString);
                     // read message that the user get the message
-                    this->dio->readInput();
+                    input = this->dio->readInput();
+                    // exit the function. the client lost connection
+                    if (input == "Error") {
+                        return;
+                    }
                 }
                 // only k is not valid
                 else {
@@ -53,7 +76,11 @@ void SettingsCommand::execute()
                     string kNotValidString = "invalid value for K\n";
                     this->dio->writeInput(kNotValidString);
                     // read message that the user get the message
-                    this->dio->readInput();
+                    input = this->dio->readInput();
+                    // exit the function. the client lost connection
+                    if (input == "Error") {
+                        return;
+                    }
                 }
             }
             // k is a positive integer
@@ -64,7 +91,11 @@ void SettingsCommand::execute()
                     string metricNotValidString = "invalid value for metric\n";
                     this->dio->writeInput(metricNotValidString);
                     // read message that the user get the message
-                    this->dio->readInput();
+                    input = this->dio->readInput();
+                    // exit the function. the client lost connection
+                    if (input == "Error") {
+                        return;
+                    }
                 }
                 // update distance metric
                 else {
@@ -86,7 +117,11 @@ void SettingsCommand::execute()
                 string kAndMetricNotValidString = "invalid value for K\ninvalid value for metric\n";
                 this->dio->writeInput(kAndMetricNotValidString);
                 // read message that the user get the message
-                this->dio->readInput();
+                input = this->dio->readInput();
+                // exit the function. the client lost connection
+                if (input == "Error") {
+                    return;
+                }
             }
             // the distance metric is valid
             else {
@@ -94,7 +129,11 @@ void SettingsCommand::execute()
                 string kNotValidString = "invalid value for K\n";
                 this->dio->writeInput(kNotValidString);
                 // read message that the user get the message
-                this->dio->readInput();
+                input = this->dio->readInput();
+                // exit the function. the client lost connection
+                if (input == "Error") {
+                    return;
+                }
             }
         }
     }
