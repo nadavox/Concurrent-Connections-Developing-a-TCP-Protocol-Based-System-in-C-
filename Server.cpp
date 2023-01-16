@@ -5,15 +5,16 @@
 #include "Algorithms/Knn.h"
 #include "Command_pattern/CLI.h"
 #include "Command_pattern/Command.h"
-#include <unistd.h>
 #include <thread>
 #include "IOClass/DefaultIO.h"
 #include "IOClass/SocketIO.h"
-
+#include "ThreadSync.h"
 #define TRUE 1
 #define MAX_CLIENTS 30 //max client for the server
 
 using namespace std;
+
+
 
 /**
  * the function creates the master socket
@@ -43,14 +44,20 @@ int createSocket() {
 /**
  * the function gets data from the client and check if the number is valid
  * @param clientSock - the client socket number
- * @param stdio - pointer to DefaultIO
  */
-void receiveNumber(int clientSock) {
+void receiveNumber(int clientSock, int masterSocket) {
     //create value object.
-    auto *values = new Values(clientSock);
+    auto *values = new Values(clientSock, masterSocket);
     DefaultIO *dio = new SocketIO(clientSock);
     CLI *cli = new CLI(clientSock, values, dio);
     while (true) {
+        cout << "line 54: ThreadSync::thread_created: " <<  ThreadSync::thread_created<< endl;
+        //create mutex for the main
+        std::unique_lock<std::mutex> lock(ThreadSync::mtx);
+        // create condition_variable on the main.
+        // it will stop when we create the thread only for reading from the server.
+        ThreadSync::cv.wait(lock, []{return ThreadSync::thread_created;});
+        cout << "line 60: ThreadSync::thread_created: " <<  ThreadSync::thread_created<< endl;
         cli->start();
         //make buffer
         char buffer[4096];
@@ -99,6 +106,7 @@ void receiveNumber(int clientSock) {
         else if (number == "5") {
             // execute DownloadCommand
             cli->executeCommand("5");
+            cout << "you can do it" << endl;
         }
             // the user want to activate option 8
         else if (number == "8") {
@@ -123,6 +131,8 @@ void receiveNumber(int clientSock) {
  * @return 0 if everything okay and 1 if there is errors
  */
 int main(int argc, char *argv[]) {
+    //the main will run. init to true
+    ThreadSync::thread_created = true;
     // main for multi threading
     //  create the server socket
     int master_socket = createSocket();
@@ -164,7 +174,7 @@ int main(int argc, char *argv[]) {
             perror("Error while trying to accept a new client connection");
             exit(1);
         }
-        thread t(receiveNumber, client_socket);
+        thread t(receiveNumber, client_socket, master_socket);
         t.detach();
     }
 }

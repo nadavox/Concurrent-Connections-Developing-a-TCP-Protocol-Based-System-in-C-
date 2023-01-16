@@ -6,8 +6,7 @@ using namespace std;
 /**
  * this function will end the connection between the client and the server
  */
-void ExitCommand::execute()
-{
+void ExitCommand::execute(){
     cout << "Exiting the program..." << endl;
 }
 
@@ -27,6 +26,6 @@ string ExitCommand::description() {
  */
 ExitCommand::ExitCommand(int socket, Values *value, DefaultIO *dio) {
     values = value;
-    value->setSocket(socket);
+    value->setClientSocket(socket);
     this->dio = dio;
 }

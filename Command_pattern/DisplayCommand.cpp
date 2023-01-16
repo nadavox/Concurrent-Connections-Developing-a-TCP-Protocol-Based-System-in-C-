@@ -54,6 +54,6 @@ string DisplayCommand::description() {
  */
 DisplayCommand::DisplayCommand(int socket, Values *value, DefaultIO *dio) {
     values = value;
-    value->setSocket(socket);
+    value->setClientSocket(socket);
     this->dio = dio;
 }

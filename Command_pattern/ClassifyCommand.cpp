@@ -105,7 +105,7 @@ string ClassifyCommand::description() {
  */
 ClassifyCommand::ClassifyCommand(int socket, Values *valuesCopy, DefaultIO *dio) {
     values = valuesCopy;
-    valuesCopy->setSocket(socket);
+    valuesCopy->setClientSocket(socket);
     this->dio = dio;
 }
 

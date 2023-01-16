@@ -242,6 +242,6 @@ string UploadCommand::description() {
  */
 UploadCommand::UploadCommand(int socket, Values *valuesCopy, DefaultIO *dio) {
     values = valuesCopy;
-    valuesCopy->setSocket(socket);
+    valuesCopy->setClientSocket(socket);
     this->dio = dio;
 }

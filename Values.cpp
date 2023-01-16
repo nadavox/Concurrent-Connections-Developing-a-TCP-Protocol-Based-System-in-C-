@@ -4,13 +4,14 @@
  * the constructor of values
  * @param socket_val
  */
-Values::Values(int socket_val) {
+Values::Values(int clientSocket, int masterSocket) {
     k = 5;
     distance_metric = "AUC";
     classifiedVectorList = new vector<pair< vector<double>, string > >;
     notClassifiedVectorList = new vector<vector<double> >;
     afterClassifing = new vector<pair< vector<double>, string > >;
-    socket = socket_val;
+    this->clientSocket = clientSocket;
+    this->masterSocket = masterSocket;
 }
 
 /**
@@ -28,8 +29,11 @@ int Values::getK() const {
 string Values::getDistanceMetric() const {
     return distance_metric;
 }
-int Values::getSocket() const {
-    return socket;
+int Values::getClientSocket() const {
+    return clientSocket;
+}
+int Values::getMasterSocket() const {
+    return masterSocket;
 }
 vector<pair< vector<double>, string > > *Values::getClassifiedVectorList() {
     return classifiedVectorList;
@@ -48,8 +52,11 @@ void Values::setK(int val) {
 void Values::setDistanceMetric(string val) {
     distance_metric = val;
 }
-void Values::setSocket(int val) {
-    socket = val;
+void Values::setClientSocket(int val) {
+    clientSocket = val;
+}
+void Values::setMasterSocket(int val) {
+    masterSocket = val;
 }
 void Values::setClassifiedVectorList(pair<vector<double>, string> *v) {
     this->classifiedVectorList->push_back(*v);
