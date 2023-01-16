@@ -216,7 +216,7 @@ void writeClassified(string const writeFilePath,  int sock, DefaultIO *sdio1, De
     lock.unlock();
     //tell the main keep runing.
     thread_created = true;
-    cout << "line 177: thread_created: " <<  thread_created<< endl;
+    cout << "line 219: thread_created: " <<  thread_created<< endl;
     ofstream writeToFile;
     writeToFile.open(writeFilePath);
     if (!writeToFile)
@@ -275,13 +275,13 @@ int main(int argc, char *argv[]) {
     DefaultIO *stdio = new SocketIO(sock);
     // get the program to run until the user press 8
     while(true) {// print the menu to the user
-        cout << "line 236: thread_created: " <<  thread_created<< endl;
+        cout << "line 278: thread_created: " <<  thread_created<< endl;
         //create mutex for the main
         std::unique_lock<std::mutex> lock(mtx);
         // create condition_variable on the main.
         // it will stop when we create the thread only for reading from the server.
         cv.wait(lock, []{return thread_created;});
-        cout << "line 242: thread_created: " <<  thread_created<< endl;
+        cout << "line 284: thread_created: " <<  thread_created<< endl;
         string menu = stdio->readInput();
         sdio->writeInput(menu);
         // get number from the user
@@ -316,7 +316,7 @@ int main(int argc, char *argv[]) {
             // the user want to activate option 5
             else if (number == 5) {
                 // call function5
-                function5(sdio, stdio, port_no, ip_address);
+                function5(sdio, stdio, sock);
             }
             // the user want to activate option 8
             else if (number == 8) {

@@ -7,15 +7,15 @@ using namespace std;
 
 void writeToFile(int sock, Values *values, DefaultIO *dio, string s) {
     std::unique_lock<std::mutex> lock(ThreadSync::mtx);
+    cout << "-----------------------------\n"<< s << "-----------------------------\n"<< endl;
     // send the classification of every vector
     dio->writeInput(s);
     // wait until the client done with reading
-    dio->readInput();
+    string done = dio->readInput();
     //tell the main keep runing.
-    lock.unlock();
     ThreadSync::thread_created = true;
     ThreadSync::cv.notify_one();
-    cout << "line 17 in DOwnload commend: ThreadSync::thread_created: " <<  ThreadSync::thread_created<< endl;
+    lock.unlock();
 }
 
 /**
