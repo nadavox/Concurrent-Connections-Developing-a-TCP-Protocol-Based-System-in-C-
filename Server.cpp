@@ -110,6 +110,7 @@ void receiveNumber(int clientSock, int masterSocket) {
             // the user didn't inset valid value
         else {
             dio->writeInput("invalid input\n");
+            dio->readInput();
         }
     }
 }

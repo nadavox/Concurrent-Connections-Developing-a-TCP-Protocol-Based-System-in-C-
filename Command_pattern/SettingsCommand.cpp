@@ -39,6 +39,19 @@ void SettingsCommand::execute()
         iss >> s1;
         // the distance metric
         iss >> s2;
+        // the user entered k, metric and more input
+        if (!iss.eof()) {
+            string invalidInput = "invalid input\n";
+            // send message that the user gave invalid input
+            this->dio->writeInput(invalidInput);
+            // read message that the user get the message
+            input = this->dio->readInput();
+            // exit the function. the client lost connection
+            if (input == "Error") {
+                return;
+            }
+            return;
+        }
         // check if s1 is valid int
         try {
             // s1 is an integer number

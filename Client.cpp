@@ -331,6 +331,7 @@ int main(int argc, char *argv[]) {
             // print the invalid input to the user
             string invalid_input = stdio->readInput();
             sdio->writeInput(invalid_input);
+            stdio->writeInput("done reading");
         }
     }
     return 0;
