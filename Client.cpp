@@ -10,6 +10,7 @@
 #include "IOClass/StandardIO.h"
 #include "IOClass/SocketIO.h"
 #include "fstream"
+#include <mutex>
 
 using namespace std;
 
@@ -160,7 +161,10 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
     }
 }
 
-void writeClassified(string const writeFilePath, int sock) {
+void writeClassified(string const writeFilePath, int sock, DefaultIO *sdio1, DefaultIO *stdio1) {
+    mutex mx;
+
+    mx.lock();
     // create StandardIO object
     DefaultIO *sdio = new StandardIO;
     // create SocketIO object
@@ -191,9 +195,10 @@ void writeClassified(string const writeFilePath, int sock) {
         }
     }
     writeToFile.close();
+    mx.unlock();
 }
 
-void function5(DefaultIO* sdio, DefaultIO* stdio, int sock, int portNumber, char* ipAddress) {
+void function5(DefaultIO* sdio, DefaultIO* stdio, int sock) {
     string s = stdio->readInput();
     // let the server know we are done reading
     stdio->writeInput("finish read");
@@ -203,18 +208,9 @@ void function5(DefaultIO* sdio, DefaultIO* stdio, int sock, int portNumber, char
     if (s != "please upload data\n" && s != "please classify the data\n") {
         // get a path to a file which we will write the results to
         string writeFilePath = sdio->readInput();
-        // get the port of the new socket
-        string portString = stdio->readInput();
-        int port = stoi(portString);
-        // let the server know we are done reading
-        stdio->writeInput("finish read");
-        // create a new socket that will connect to the new socket from the server
-        int newSock = createSocket(port, ipAddress);
         // crate a new thread that will write the classification to the file
-        thread t(writeClassified, writeFilePath, newSock);
+        thread t(writeClassified, writeFilePath, sock, sdio, stdio);
         t.detach();
-        // close the new socket
-        close(newSock);
     }
 }
 
@@ -279,7 +275,7 @@ int main(int argc, char *argv[]) {
         // the user want to activate option 5
         else if (input == "5") {
             // call function5
-            function5(sdio, stdio, sock, port_no, ip_address);
+            function5(sdio, stdio, sock);
         }
         // the user want to activate option 8
         else if (input == "8") {
