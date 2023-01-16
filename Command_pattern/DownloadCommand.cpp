@@ -8,8 +8,9 @@
 
 using namespace std;
 
+mutex mx;
+
 void DownloadCommand::writeToFile() {
-    mutex mx;
 
     mx.lock();
     int sizeOfClassified = values->getAfterClassifingList()->size();

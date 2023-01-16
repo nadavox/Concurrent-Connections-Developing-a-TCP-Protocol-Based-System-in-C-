@@ -14,6 +14,8 @@
 
 using namespace std;
 
+mutex mx;
+
 /**
  * the function create a TCP client socket
  * @param portNumber - the port number that the server socket listens to.
@@ -162,7 +164,6 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
 }
 
 void writeClassified(string const writeFilePath, int sock, DefaultIO *sdio1, DefaultIO *stdio1) {
-    mutex mx;
 
     mx.lock();
     // create StandardIO object
