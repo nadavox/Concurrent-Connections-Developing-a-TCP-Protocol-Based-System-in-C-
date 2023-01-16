@@ -290,44 +290,53 @@ int main(int argc, char *argv[]) {
         // send the number to the server
         stdio->writeInput(input);
 
-        // the user want to activate option 1
-        if (input == "1"){
-            // call function1
-            function1(sdio, stdio);
+        try {
+            int number = stoi(input);
+            // the user want to activate option 1
+            if (number == 1){
+                // call function1
+                function1(sdio, stdio);
+            }
+            // the user want to activate option 2
+            else if (number == 2) {
+                // call function2
+                function2(sdio, stdio);
+            }
+            // the user want to activate option 3
+            else if (number == 3) {
+                // print the information from the server
+                sdio->writeInput(stdio->readInput());
+                // let the server now we are done
+                stdio->writeInput("done");
+            }
+            // the user want to activate option 4
+            else if (number == 4) {
+                // call function4
+                function4(sdio, stdio);
+            }
+            // the user want to activate option 5
+            else if (number == 5) {
+                // call function5
+                function5(sdio, stdio, port_no, ip_address);
+            }
+            // the user want to activate option 8
+            else if (number == 8) {
+                // delete the allocation of sdio
+                delete sdio;
+                delete stdio;
+                // close the client socket
+                close(sock);
+                break;
+            }
+            // the user insert invalid number
+            else {
+                // print the invalid input to the user
+                string invalid_input = stdio->readInput();
+                sdio->writeInput(invalid_input);
+                stdio->writeInput("done reading");
+            }
         }
-        // the user want to activate option 2
-        else if (input == "2") {
-            // call function2
-            function2(sdio, stdio);
-        }
-        // the user want to activate option 3
-        else if (input == "3") {
-            // print the information from the server
-            sdio->writeInput(stdio->readInput());
-            // let the server now we are done
-            stdio->writeInput("done");
-        }
-        // the user want to activate option 4
-        else if (input == "4") {
-            // call function4
-            function4(sdio, stdio);
-        }
-        // the user want to activate option 5
-        else if (input == "5") {
-            // call function5
-            function5(sdio, stdio, port_no, ip_address);
-        }
-        // the user want to activate option 8
-        else if (input == "8") {
-            // delete the allocation of sdio
-            delete sdio;
-            delete stdio;
-            // close the client socket
-            close(sock);
-            break;
-        }
-        // the user didn't inset valid value
-        else {
+        catch (invalid_argument) {
             // print the invalid input to the user
             string invalid_input = stdio->readInput();
             sdio->writeInput(invalid_input);
