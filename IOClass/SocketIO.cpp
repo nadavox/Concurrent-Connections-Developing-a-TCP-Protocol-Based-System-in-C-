@@ -9,6 +9,20 @@ SocketIO::SocketIO(int sockNumber) {
     this->sockNumber = sockNumber;
 }
 
+
+// converts character array
+// to string and returns it
+string convertToString(char* a, int size)
+{
+    int i;
+    string s = "";
+    for (i = 0; i < size; i++) {
+        s = s + a[i];
+    }
+    return s;
+}
+
+
 /**
  * this function reads from the socket
  */
@@ -26,7 +40,7 @@ string SocketIO::readInput() {
         perror("Error with reading the data from the server");
         input = "Error";
     } else {
-        input.assign(buffer);
+        input = convertToString(buffer, read_bytes);
     }
     return input;
 }
