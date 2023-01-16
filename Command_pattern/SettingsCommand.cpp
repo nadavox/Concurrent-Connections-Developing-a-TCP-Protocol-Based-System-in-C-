@@ -22,6 +22,7 @@ void SettingsCommand::execute()
 
 
     string input;
+    //read what the client response
     input = this->dio->readInput();
     // exit the function. the client lost connection
     if (input == "Error") {

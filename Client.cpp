@@ -170,7 +170,7 @@ void function2(DefaultIO* sdio, DefaultIO* stdio) {
             // print in the terminal the information from the server
             sdio->writeInput(answer);
             // send message that the user ready for the next message
-            stdio->writeInput(answer);
+            stdio->writeInput("continue");
         }
     }
     // the user don't want to update the parameters
