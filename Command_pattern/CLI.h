@@ -10,7 +10,6 @@
 #include "ClassifyCommand.h"
 #include "DisplayCommand.h"
 #include "DownloadCommand.h"
-#include "ExitCommand.h"
 #include "../Values.h"
 
 class CLI
@@ -18,6 +17,7 @@ class CLI
 private:
     map<string, Command*> commands;
     int socketNumber;
+    DefaultIO *dio;
 public:
     CLI(int socketNumber, Values *v, DefaultIO *dio);
     void start();

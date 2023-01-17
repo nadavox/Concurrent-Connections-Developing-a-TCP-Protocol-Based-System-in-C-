@@ -92,7 +92,7 @@ void receiveNumber(int clientSock, int masterSocket) {
                 // execute ClassifyCommand
                 cli->executeCommand("3");
             }
-                // the user want to activate option 4
+            // the user want to activate option 4
             else if (number == 4) {
                 // execute DisplayCommand
                 cli->executeCommand("4");
@@ -104,8 +104,7 @@ void receiveNumber(int clientSock, int masterSocket) {
             }
             // the user want to activate option 8
             else if (number == 8) {
-                // execute ExitCommand
-                cli->executeCommand("8");
+                // free the objects that was created on the heap
                 delete cli;
                 delete dio;
                 delete values;

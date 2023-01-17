@@ -25,8 +25,6 @@ public:
     // Getters
     int getK() const;
     string getDistanceMetric() const;
-    int getClientSocket() const;
-    int getMasterSocket() const;
     vector<pair< vector<double>, string > > *getClassifiedVectorList();
     vector<vector<double> > *getNotClassifiedVectorList();
     vector<pair< vector<double>, string > > *getAfterClassifingList();
@@ -35,7 +33,6 @@ public:
     void setK(int val);
     void setDistanceMetric(string val);
     void setClientSocket(int val);
-    void setMasterSocket(int val);
     void setClassifiedVectorList(pair<vector<double>, string> *v);
     void setNotClassifiedVectorList(vector<double> *v);
     void setAfterClassifing(pair<vector<double>, string> *v);

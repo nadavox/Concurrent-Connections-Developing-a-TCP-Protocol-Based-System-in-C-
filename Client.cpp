@@ -10,7 +10,6 @@
 #include "IOClass/SocketIO.h"
 #include "fstream"
 #include <mutex>
-#include <condition_variable>
 
 using namespace std;
 
@@ -199,6 +198,11 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
     }
 }
 
+/**
+ * this function writes in classification of the vectors to the given file
+ * @param s - the classification
+ * @param path - the path to the file
+ */
 void writeClassified(string s, string path) {
     ofstream writeToFile;
     writeToFile.open(path);
@@ -206,6 +210,11 @@ void writeClassified(string s, string path) {
     writeToFile.close();
 }
 
+/**
+ * this function writes to a file the classification of the vectors
+ * @param sdio - the StandardIO object
+ * @param stdio - the SocketIO object
+ */
 void function5(DefaultIO* sdio, DefaultIO* stdio) {
     ofstream outfile; //outfile is the file we write
     string s = stdio->readInput();
@@ -337,7 +346,6 @@ int main(int argc, char *argv[]) {
             string invalid_input = stdio->readInput();
             sdio->writeInput(invalid_input);
             stdio->writeInput("done reading");
-
         }
     }
     return 0;
