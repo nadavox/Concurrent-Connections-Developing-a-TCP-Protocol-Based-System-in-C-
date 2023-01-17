@@ -8,7 +8,6 @@
 #include <thread>
 #include "IOClass/DefaultIO.h"
 #include "IOClass/SocketIO.h"
-#include "ThreadSync.h"
 
 #define TRUE 1
 #define MAX_CLIENTS 30 //max client for the server
@@ -131,8 +130,6 @@ void receiveNumber(int clientSock, int masterSocket) {
  * @return 0 if everything okay and 1 if there is errors
  */
 int main(int argc, char *argv[]) {
-    //the main will run. init to true
-    ThreadSync::thread_created = true;
     // main for multi threading
     //  create the server socket
     int master_socket = createSocket();

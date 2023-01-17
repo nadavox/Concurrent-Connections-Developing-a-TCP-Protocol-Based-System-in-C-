@@ -1,7 +1,6 @@
 #include <thread>
 #include "DownloadCommand.h"
 #include "mutex"
-#include "../ThreadSync.h"
 using namespace std;
 
 
