@@ -207,23 +207,40 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
     }
 }
 
-void writeClassified(string const writeFilePath,  int sock, DefaultIO *sdio1, DefaultIO *stdio1) {
+void writeClassified(string const writeFilePath,  int sock, DefaultIO *sdio, DefaultIO *stdio) {
     std::unique_lock<std::mutex> lock(mtx);
     //the lock
-    string s = stdio1->readInput(); // print the classification to the user from the server until there are no more
-    stdio1->writeInput("finish read"); // let the server know we are done reading
-    // to unlock
-    lock.unlock();
-    //tell the main keep runing.
-    thread_created = true;
-    cout << "line 219: thread_created: " <<  thread_created<< endl;
+    string s, temps;
     ofstream writeToFile;
     writeToFile.open(writeFilePath);
     if (!writeToFile)
     {
-        sdio1->writeInput("invalid input\n");
+        sdio->writeInput("invalid input\n");
+        // to unlock
+        lock.unlock();
+        //tell the main keep runing.
+        thread_created = true;
         return;
     }
+    // print the classification to the user from the server until there are no more
+    while (true) {
+        temps = stdio->readInput();
+        if (temps != "Done.\n") {
+            s += temps;
+            // let the server know we are done reading
+            stdio->writeInput("finish read");
+
+        } else {
+            // let the server know we are done reading
+            stdio->writeInput("finish read");
+            break;
+        }
+    }
+    //tell the main keep runing.
+    thread_created = true;
+    cv.notify_one();
+    // to unlock
+    lock.unlock();
     writeToFile << s;
     writeToFile.close();
 }
@@ -238,6 +255,7 @@ void function5(DefaultIO* sdio, DefaultIO* stdio, int sock) {
     if (s != "please upload data\n" && s != "please classify the data\n") {
         // get a path to a file which we will write the results to
         string writeFilePath = sdio->readInput();
+        stdio->writeInput(writeFilePath);
         // crate a new thread that will write the classification to the file
         thread t(writeClassified, writeFilePath, sock, sdio, stdio);
         t.detach();
@@ -275,13 +293,11 @@ int main(int argc, char *argv[]) {
     DefaultIO *stdio = new SocketIO(sock);
     // get the program to run until the user press 8
     while(true) {// print the menu to the user
-        cout << "line 278: thread_created: " <<  thread_created<< endl;
         //create mutex for the main
         std::unique_lock<std::mutex> lock(mtx);
         // create condition_variable on the main.
         // it will stop when we create the thread only for reading from the server.
         cv.wait(lock, []{return thread_created;});
-        cout << "line 284: thread_created: " <<  thread_created<< endl;
         string menu = stdio->readInput();
         sdio->writeInput(menu);
         // get number from the user

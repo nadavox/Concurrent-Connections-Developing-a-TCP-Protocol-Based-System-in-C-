@@ -5,11 +5,20 @@
 using namespace std;
 
 
-void writeToFile(int sock, Values *values, DefaultIO *dio, string s) {
+void writeToFile(int sock, Values *values, DefaultIO *dio) {
+    int sizeOfClassified = values->getAfterClassifingList()->size();
     std::unique_lock<std::mutex> lock(ThreadSync::mtx);
-    cout << "-----------------------------\n"<< s << "-----------------------------\n"<< endl;
+    string s;
+    // sends the classifications to the server
+    for (int i = 0; i < sizeOfClassified; ++i) {
+        s = to_string((i + 1)) + "\t" + values->getAfterClassifingList()->at(i).second + "\n";
+        // send the classification of every vector
+        dio->writeInput(s);
+        // wait until the client done with reading
+        string done = dio->readInput();
+    }
     // send the classification of every vector
-    dio->writeInput(s);
+    dio->writeInput("Done.\n");
     // wait until the client done with reading
     string done = dio->readInput();
     //tell the main keep runing.
@@ -43,17 +52,13 @@ void DownloadCommand::execute()
     this->dio->writeInput("please upload a path to a file we could write to\n");
     // wait until the client done with reading
     this->dio->readInput();
-    string s;
-    // sends the classifications to the server
-    for (int i = 0; i < sizeOfClassified; ++i) {
-        s += to_string((i + 1)) + "\t" + values->getAfterClassifingList()->at(i).second + "\n";
-    }
+    //check the client enter file path
+    this->dio->readInput();
     // create a new thread that will send the classification to the client
-    thread t(writeToFile, this->sock, values, this->dio, s);
+    thread t(writeToFile, this->sock, values, this->dio);
     t.detach();
     ThreadSync::thread_created = false;
     ThreadSync::cv.notify_one();
-    cout << "line 54" << endl;
 }
 
 /**
