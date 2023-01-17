@@ -32,17 +32,28 @@ void DownloadCommand::execute()
     this->dio->readInput();
     //check the client enter file path
     string output = this->dio->readInput();
+    // save all the file to string
     if (output != "Error") {
         string s;
-        // sends the classifications to the server
-        for (int i = 0; i < sizeOfClassified; ++i) {
-            s = to_string((i + 1)) + "\t" + values->getAfterClassifingList()->at(i).second + "\n";
+        int i = 0;
+        while (i < sizeOfClassified) {
+            unsigned long chunk =0;
+            // sends the classifications to the server
+            for (; i < sizeOfClassified; ++i) {
+                if (chunk < 750) {
+                    s += to_string((i + 1)) + "\t" + values->getAfterClassifingList()->at(i).second + "\n";
+                    chunk += s.size();
+                } else {
+                    break;
+                }
+            }
             // send the classification of every vector
             dio->writeInput(s);
             // wait until the client done with reading
-            string done = dio->readInput();
+            dio->readInput();
+            s.clear();
         }
-        // send the classification of every vector
+        // send done
         dio->writeInput("Done.\n");
         // wait until the client done with reading
         string done = dio->readInput();
