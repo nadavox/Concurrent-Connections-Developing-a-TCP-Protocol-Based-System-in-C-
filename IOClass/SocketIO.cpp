@@ -9,19 +9,37 @@ SocketIO::SocketIO(int sockNumber) {
     this->sockNumber = sockNumber;
 }
 
-
-// converts character array
-// to string and returns it
+/**
+ * this function converts character array to string
+ * @param a - the character array
+ * @param size - the size of the array
+ * @return the string
+ */
 string convertToString(char* a, int size)
 {
     int i;
     string s = "";
+    bool seenFirstWord = false;
+    // ignore unnecessary spaces
     for (i = 0; i < size; i++) {
-        s = s + a[i];
+        if (!seenFirstWord && s[i] == ' ') {
+            continue;
+        }
+        if ((i == size - 1) && s[i] == ' ') {
+            continue;
+        }
+        if (seenFirstWord && s[i] == ' ') {
+            if (s[i + 1] == ' ') {
+                continue;
+            } else {
+                s += a[i];
+            }
+        }
+        seenFirstWord = true;
+        s += a[i];
     }
     return s;
 }
-
 
 /**
  * this function reads from the socket
