@@ -84,7 +84,7 @@ void reading_from_file(ifstream& inputFileOne, DefaultIO* stdio) {
     // clean the buffer
     memset(buffer, 0, 1024);
     // reading chunks of data from the file
-    while(inputFileOne.read(buffer, 1024) || inputFileOne.gcount() > 0) {
+    while(inputFileOne.read(buffer, 1023) || inputFileOne.gcount() > 0) {
         // converting char array to string
         string input(buffer, sizeof(buffer) / sizeof(buffer[0]));
         // sending the string to the server

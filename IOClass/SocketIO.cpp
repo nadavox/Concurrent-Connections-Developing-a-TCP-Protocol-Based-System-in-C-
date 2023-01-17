@@ -1,6 +1,20 @@
 #include "SocketIO.h"
 #include <string.h>
 
+
+void printStringWithSpecialChars(string s) {
+    for (int i = 0; i < s.length(); i++) {
+        if (s[i] == '\0') {
+            cout << "\\0";
+        } else if (s[i] == '\n') {
+            cout << "\\n";
+        } else {
+            cout << s[i];
+        }
+    }
+    cout << endl;
+}
+
 /**
  * the constructor of SocketIO
  * @param sockNumber - the socket number of whom we want connection
@@ -22,18 +36,17 @@ string convertToString(char* a, int size)
     bool seenFirstWord = false;
     // ignore unnecessary spaces
     for (i = 0; i < size; i++) {
-        if (!seenFirstWord && s[i] == ' ') {
+        if (a[i] == '\0') {
             continue;
         }
-        if ((i == size - 1) && s[i] == ' ') {
+        if (!isascii(a[i])) {
             continue;
         }
-        if (seenFirstWord && s[i] == ' ') {
-            if (s[i + 1] == ' ') {
-                continue;
-            } else {
-                s += a[i];
-            }
+        if (!seenFirstWord && a[i] == ' ') {
+            continue;
+        }
+        if ((i == size - 1) && a[i] == ' ') {
+            continue;
         }
         seenFirstWord = true;
         s += a[i];
@@ -48,7 +61,8 @@ string SocketIO::readInput() {
     string input;
     char buffer[1024];
     memset(buffer, 0, 1024);
-    long int read_bytes = recv(sockNumber, buffer, sizeof(buffer), 0);
+    long int read_bytes = recv(sockNumber, buffer, 1024, 0);
+    //cout << read_bytes << endl;
     if (read_bytes == 0) {
         // connection is closed
         perror("Error the connection with the server is closed");
@@ -76,11 +90,13 @@ void SocketIO::writeInput(string s) {
             perror("Error sending the data to the socket");
         }
     } else {
-        unsigned int data_len = s.length();
+        unsigned int data_len = s.size();
         char data_addr[data_len + 1];
+        memset(data_addr, 0, sizeof(data_addr));
         const char* str = s.c_str();
         // copy the data of the string
         strcpy(data_addr, str);
+        cout << "data_addr: " << data_addr << endl;
         long int n = send(sockNumber, data_addr, data_len, 0);
         if (n < 0) {
             perror("Error sending the data to the socket");
