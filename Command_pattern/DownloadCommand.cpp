@@ -57,7 +57,6 @@ void DownloadCommand::execute()
         // wait until the client done with reading
         string done = dio->readInput();
     }
-
 }
 
 /**

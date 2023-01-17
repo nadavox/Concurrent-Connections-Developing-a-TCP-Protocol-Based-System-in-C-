@@ -1,15 +1,14 @@
 #include <sys/socket.h>
-#include <stdio.h>
+#include <cstdio>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <string.h>
+#include <cstring>
 #include <thread>
 #include "IOClass/DefaultIO.h"
 #include "IOClass/StandardIO.h"
 #include "IOClass/SocketIO.h"
 #include "fstream"
-#include <mutex>
 
 using namespace std;
 
