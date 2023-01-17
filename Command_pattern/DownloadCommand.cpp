@@ -1,6 +1,4 @@
-#include <thread>
 #include "DownloadCommand.h"
-#include "mutex"
 using namespace std;
 
 
