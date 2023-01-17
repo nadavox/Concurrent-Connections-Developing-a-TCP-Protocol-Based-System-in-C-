@@ -5,28 +5,6 @@
 using namespace std;
 
 
-void writeToFile(int sock, Values *values, DefaultIO *dio) {
-    int sizeOfClassified = values->getAfterClassifingList()->size();
-    std::unique_lock<std::mutex> lock(ThreadSync::mtx);
-    string s;
-    // sends the classifications to the server
-    for (int i = 0; i < sizeOfClassified; ++i) {
-        s = to_string((i + 1)) + "\t" + values->getAfterClassifingList()->at(i).second + "\n";
-        // send the classification of every vector
-        dio->writeInput(s);
-        // wait until the client done with reading
-        string done = dio->readInput();
-    }
-    // send the classification of every vector
-    dio->writeInput("Done.\n");
-    // wait until the client done with reading
-    string done = dio->readInput();
-    //tell the main keep runing.
-    ThreadSync::thread_created = true;
-    ThreadSync::cv.notify_one();
-    lock.unlock();
-}
-
 /**
  * this function will send to the client the classified results.
  * if there are no files, or the vectors has not been classified, will send following message.
@@ -53,12 +31,23 @@ void DownloadCommand::execute()
     // wait until the client done with reading
     this->dio->readInput();
     //check the client enter file path
-    this->dio->readInput();
-    // create a new thread that will send the classification to the client
-    thread t(writeToFile, this->sock, values, this->dio);
-    t.detach();
-    ThreadSync::thread_created = false;
-    ThreadSync::cv.notify_one();
+    string output = this->dio->readInput();
+    if (output != "Error") {
+        string s;
+        // sends the classifications to the server
+        for (int i = 0; i < sizeOfClassified; ++i) {
+            s = to_string((i + 1)) + "\t" + values->getAfterClassifingList()->at(i).second + "\n";
+            // send the classification of every vector
+            dio->writeInput(s);
+            // wait until the client done with reading
+            string done = dio->readInput();
+        }
+        // send the classification of every vector
+        dio->writeInput("Done.\n");
+        // wait until the client done with reading
+        string done = dio->readInput();
+    }
+
 }
 
 /**

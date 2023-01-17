@@ -51,11 +51,6 @@ void receiveNumber(int clientSock, int masterSocket) {
     DefaultIO *dio = new SocketIO(clientSock);
     CLI *cli = new CLI(clientSock, values, dio);
     while (true) {
-        //create mutex for the main
-        std::unique_lock<std::mutex> lock(ThreadSync::mtx);
-        // create condition_variable on the main.
-        // it will stop when we create the thread only for reading from the server.
-        ThreadSync::cv.wait(lock, []{return ThreadSync::thread_created;});
         cli->start();
         //make buffer
         char buffer[4096];
