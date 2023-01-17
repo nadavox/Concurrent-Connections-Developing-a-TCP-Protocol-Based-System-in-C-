@@ -160,7 +160,10 @@ void function2(DefaultIO* sdio, DefaultIO* stdio) {
     if (!userUpdate.empty()) {
         // send the server the input from the user
         stdio->writeInput(userUpdate);
+        // the anser from the server
         string answer = stdio->readInput();
+        // send message to the server that finished read the message
+        stdio->writeInput("finish");
         // one of the parameters the user have inserted is not valid
         if (answer != "input is valid\n") {
             // print in the terminal the information from the server

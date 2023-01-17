@@ -75,6 +75,7 @@ void receiveNumber(int clientSock, int masterSocket) {
         }
         try {
             string numberString(buffer);
+            cout << "line 78: "<< numberString << endl;
             int number = stoi(numberString);
             // the user want to activate option 1
             if (number == 1){
