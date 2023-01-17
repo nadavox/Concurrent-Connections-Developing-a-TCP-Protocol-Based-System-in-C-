@@ -9,12 +9,11 @@
 #include "IOClass/DefaultIO.h"
 #include "IOClass/SocketIO.h"
 #include "ThreadSync.h"
+
 #define TRUE 1
 #define MAX_CLIENTS 30 //max client for the server
 
 using namespace std;
-
-
 
 /**
  * the function creates the master socket
