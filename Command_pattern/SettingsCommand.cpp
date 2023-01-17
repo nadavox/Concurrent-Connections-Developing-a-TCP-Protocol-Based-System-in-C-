@@ -20,7 +20,6 @@ void SettingsCommand::execute()
 
     this->dio->writeInput(currentParametersString);
 
-
     string input;
     //read what the client response
     input = this->dio->readInput();
