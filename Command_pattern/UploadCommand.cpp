@@ -224,7 +224,7 @@ string UploadCommand::notClassifiedVector(const vector<char>& dataVector) {
 
 /**
  * this function reset all the vectors.
- * @param values - the vector obkect to reset the vectors
+ * @param values - the vector object to reset the vectors
  */
 void reset_vectors(Values *values) {
     values->getClassifiedVectorList()->clear();
@@ -248,6 +248,7 @@ bool UploadCommand::check_input_is_invalid(const string& output, Values *values)
     }
     return true;
 }
+
 /**
  * this function sends and receives message from the client.
  * every vector we get, we save.

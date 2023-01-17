@@ -10,16 +10,9 @@ void CLI::start() {
     for (const auto& value : this->commands) {
         menu += value.second->description();
     }
-    unsigned int data_len = menu.length();
-    char data_addr[data_len + 1];
-    const char* str = menu.c_str();
-    // copy the data of the vector, distance function name and k to char array
-    strcpy(data_addr, str);
-    // send the full sentence to the server
-    int sent_bytes = send(socketNumber, data_addr, data_len, 0);
-    if (sent_bytes < 0) {
-        perror("Error sending the data to the server");
-    }
+    menu += "8. exit\n";
+    // sends the menu to the client
+    this->dio->writeInput(menu);
 }
 
 /**
@@ -34,14 +27,13 @@ CLI::CLI(int socketNumber, Values *v, DefaultIO *dio) {
     Command *cc = new ClassifyCommand(socketNumber, v, dio);
     Command *dyc = new DisplayCommand(socketNumber, v, dio);
     Command *ddc = new DownloadCommand(socketNumber, v, dio);
-    Command *ec = new ExitCommand(socketNumber, v, dio);
     this->commands.insert(make_pair("1", uc));
     this->commands.insert(make_pair("2", sc));
     this->commands.insert(make_pair("3", cc));
     this->commands.insert(make_pair("4", dyc));
     this->commands.insert(make_pair("5", ddc));
-    this->commands.insert(make_pair("8", ec));
     this->socketNumber = socketNumber;
+    this->dio = dio;
 }
 
 /**

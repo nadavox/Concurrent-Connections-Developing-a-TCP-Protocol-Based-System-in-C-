@@ -29,12 +29,6 @@ int Values::getK() const {
 string Values::getDistanceMetric() const {
     return distance_metric;
 }
-int Values::getClientSocket() const {
-    return clientSocket;
-}
-int Values::getMasterSocket() const {
-    return masterSocket;
-}
 vector<pair< vector<double>, string > > *Values::getClassifiedVectorList() {
     return classifiedVectorList;
 }
@@ -54,9 +48,6 @@ void Values::setDistanceMetric(string val) {
 }
 void Values::setClientSocket(int val) {
     clientSocket = val;
-}
-void Values::setMasterSocket(int val) {
-    masterSocket = val;
 }
 void Values::setClassifiedVectorList(pair<vector<double>, string> *v) {
     this->classifiedVectorList->push_back(*v);

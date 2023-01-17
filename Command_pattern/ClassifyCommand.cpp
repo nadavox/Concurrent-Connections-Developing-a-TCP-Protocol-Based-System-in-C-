@@ -64,10 +64,6 @@ void ClassifyCommand::execute()
         // get from client that we are done
         this->dio->readInput();
     }
-    // the vectors in the classified file are not in the same size as the vectors in the un classified file
-    else if (values->getNotClassifiedVectorList()->at(0).size() != values->getClassifiedVectorList()->at(0).first.size()){
-        // error
-    }
     // we can classify
     else {
         string kindDistance = values->getDistanceMetric(), output;
@@ -108,4 +104,3 @@ ClassifyCommand::ClassifyCommand(int socket, Values *valuesCopy, DefaultIO *dio)
     valuesCopy->setClientSocket(socket);
     this->dio = dio;
 }
-

@@ -20,5 +20,4 @@ public:
     virtual ~Command();
 };
 
-
 #endif //ADVANCEDPROGRAMINGPART3_COMMAND_H

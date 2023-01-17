@@ -13,13 +13,14 @@ using namespace std;
 void SettingsCommand::execute()
 {
     char buffer[256];
+    bool isData = false;
+    int maxK = 0;
     // clean the buffer
     memset(buffer, 0, sizeof(buffer));
     string currentParametersString = "The current KNN parameters are: K = " + to_string(values->getK()) +
             ", distance metric = " + values->getDistanceMetric() + "\n";
 
     this->dio->writeInput(currentParametersString);
-
 
     string input;
     //read what the client response
@@ -29,6 +30,11 @@ void SettingsCommand::execute()
         return;
     }
     strcpy(buffer, input.c_str());
+
+    if (!values->getClassifiedVectorList()->empty()) {
+        isData = true;
+        maxK = values->getClassifiedVectorList()->size();
+    }
 
     string s(buffer);
     string s1, s2;
@@ -56,8 +62,8 @@ void SettingsCommand::execute()
         try {
             // s1 is an integer number
             int k = stoi(s1);
-            // k is negative integer
-            if (k <= 0) {
+            // k is negative integer or bigger than the number of classified vectors
+            if ((k <= 0) || (isData && k > maxK)) {
                 // check if s2 is valid
                 if (s2 != "AUC" && s2 != "MAN" && s2 != "CHB" && s2 != "CAN" && s2 != "MIN") {
                     // send message that k and the metric is not valid to the client
@@ -104,7 +110,7 @@ void SettingsCommand::execute()
                     // update the distance metric
                     values->setDistanceMetric(s2);
                     // send message that everything okay
-                    string valid = "input is valid";
+                    string valid = "input is valid\n";
                     this->dio->writeInput(valid);
                 }
             }

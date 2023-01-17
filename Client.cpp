@@ -1,4 +1,3 @@
-#include <iostream>
 #include <sys/socket.h>
 #include <stdio.h>
 #include <netinet/in.h>
@@ -11,13 +10,9 @@
 #include "IOClass/SocketIO.h"
 #include "fstream"
 #include <mutex>
-#include <condition_variable>
 
 using namespace std;
 
-std::mutex mtx;
-std::condition_variable cv;
-bool thread_created = true;
 /**
  * the function create a TCP client socket
  * @param portNumber - the port number that the server socket listens to.
@@ -44,7 +39,6 @@ int createSocket(int portNumber, char* ipAddress) {
     return sock;
 }
 
-
 /**
  * the function gets messages string and check if valid or not
  * @param output - the string we check
@@ -62,14 +56,15 @@ bool check_valid(const string& output, DefaultIO *sdio,DefaultIO *stdio) {
     return true;
 }
 
-
 /**
  * the function check if we can open file or not
  * @param inputFileOne - the file we check
  * @param sdio - the StandardIO object
  * @param stdio - the SocketIO object
  */
-bool check_file(ifstream& inputFileOne, DefaultIO *sdio,DefaultIO *stdio) {
+bool check_file(ifstream& inputFileOne, DefaultIO *sdio,DefaultIO *stdio, string path) {
+    // open the file, doesn't matter if it relative or not.
+    inputFileOne.open(path);
     if (!inputFileOne)
     {
         // sending to the server that exit the function and get back to the main menu.
@@ -116,10 +111,8 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     string readClassifiedFilePath = sdio->readInput();
     // create fstream object to read from it.
     ifstream inputFile;
-    // open the file, doesn't matter if it relative or not.
-    inputFile.open(readClassifiedFilePath);
     // check if we can open the file
-    if (!check_file(inputFile, sdio, stdio)) {
+    if (!check_file(inputFile, sdio, stdio, readClassifiedFilePath)) {
         return;
     }
     // reading the input from the file into the server.
@@ -136,9 +129,7 @@ void function1(DefaultIO* sdio, DefaultIO* stdio) {
     string readUnClassifiedFilePath = sdio->readInput();
     //open the new file and close the old one
     inputFile.close();
-    inputFile.open(readUnClassifiedFilePath);
-    // check if we can open the file
-    if (!check_file(inputFile, sdio, stdio)) {
+    if (!check_file(inputFile, sdio, stdio, readUnClassifiedFilePath)) {
         return;
     }
     // reading the input from the file into the server.
@@ -172,7 +163,7 @@ void function2(DefaultIO* sdio, DefaultIO* stdio) {
         stdio->writeInput(userUpdate);
         string answer = stdio->readInput();
         // one of the parameters the user have inserted is not valid
-        if (answer != "input is valid") {
+        if (answer != "input is valid\n") {
             // print in the terminal the information from the server
             sdio->writeInput(answer);
             // send message that the user ready for the next message
@@ -207,45 +198,25 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
     }
 }
 
-void writeClassified(string const writeFilePath,  int sock, DefaultIO *sdio, DefaultIO *stdio) {
-    std::unique_lock<std::mutex> lock(mtx);
-    //the lock
-    string s, temps;
+/**
+ * this function writes in classification of the vectors to the given file
+ * @param s - the classification
+ * @param path - the path to the file
+ */
+void writeClassified(string s, string path) {
     ofstream writeToFile;
-    writeToFile.open(writeFilePath);
-    if (!writeToFile)
-    {
-        sdio->writeInput("invalid input\n");
-        // to unlock
-        lock.unlock();
-        //tell the main keep runing.
-        thread_created = true;
-        return;
-    }
-    // print the classification to the user from the server until there are no more
-    while (true) {
-        temps = stdio->readInput();
-        if (temps != "Done.\n") {
-            s += temps;
-            // let the server know we are done reading
-            stdio->writeInput("finish read");
-
-        } else {
-            // let the server know we are done reading
-            stdio->writeInput("finish read");
-            break;
-        }
-    }
-    //tell the main keep runing.
-    thread_created = true;
-    cv.notify_one();
-    // to unlock
-    lock.unlock();
+    writeToFile.open(path);
     writeToFile << s;
     writeToFile.close();
 }
 
-void function5(DefaultIO* sdio, DefaultIO* stdio, int sock) {
+/**
+ * this function writes to a file the classification of the vectors
+ * @param sdio - the StandardIO object
+ * @param stdio - the SocketIO object
+ */
+void function5(DefaultIO* sdio, DefaultIO* stdio) {
+    ofstream outfile; //outfile is the file we write
     string s = stdio->readInput();
     // let the server know we are done reading
     stdio->writeInput("finish read");
@@ -255,13 +226,38 @@ void function5(DefaultIO* sdio, DefaultIO* stdio, int sock) {
     if (s != "please upload data\n" && s != "please classify the data\n") {
         // get a path to a file which we will write the results to
         string writeFilePath = sdio->readInput();
+        // check if the string is valid to open the file
+        outfile.open(writeFilePath);
+        if (!outfile.is_open()) {
+            writeFilePath = "Error";
+            sdio->writeInput("invalid input\n");
+            stdio->writeInput(writeFilePath);
+            return;
+        } else {
+            outfile.close();
+        }
+        //send the server if the file is good to open or not
         stdio->writeInput(writeFilePath);
-        // crate a new thread that will write the classification to the file
-        thread t(writeClassified, writeFilePath, sock, sdio, stdio);
-        t.detach();
-        thread_created = false;
-        cv.notify_one();
+        string message;
+        //receive all the file from the server
+        string temp; // temp string to hold the rows.
+        // print the classification to the user from the server until there are no more
+        while (true) {
+            temp = stdio->readInput();
+            if (temp != "Done.\n") {
+                message += temp;
+                // let the server know we are done reading
+                stdio->writeInput("finish read");
 
+            } else {
+                // let the server know we are done reading
+                stdio->writeInput("finish read");
+                break;
+            }
+        }
+        // crate a new thread that will write the classification to the file
+        thread t(writeClassified, message, writeFilePath);
+        t.detach();
     }
 }
 
@@ -293,18 +289,12 @@ int main(int argc, char *argv[]) {
     DefaultIO *stdio = new SocketIO(sock);
     // get the program to run until the user press 8
     while(true) {// print the menu to the user
-        //create mutex for the main
-        std::unique_lock<std::mutex> lock(mtx);
-        // create condition_variable on the main.
-        // it will stop when we create the thread only for reading from the server.
-        cv.wait(lock, []{return thread_created;});
         string menu = stdio->readInput();
         sdio->writeInput(menu);
         // get number from the user
         string input = sdio->readInput();
         // send the number to the server
         stdio->writeInput(input);
-
         try {
             int number = stoi(input);
             // the user want to activate option 1
@@ -332,7 +322,7 @@ int main(int argc, char *argv[]) {
             // the user want to activate option 5
             else if (number == 5) {
                 // call function5
-                function5(sdio, stdio, sock);
+                function5(sdio, stdio);
             }
             // the user want to activate option 8
             else if (number == 8) {
@@ -356,7 +346,6 @@ int main(int argc, char *argv[]) {
             string invalid_input = stdio->readInput();
             sdio->writeInput(invalid_input);
             stdio->writeInput("done reading");
-
         }
     }
     return 0;

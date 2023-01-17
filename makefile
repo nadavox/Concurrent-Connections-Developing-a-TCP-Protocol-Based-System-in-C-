@@ -9,11 +9,11 @@ client: Client.o IOClass/DefaultIO.o IOClass/SocketIO.o IOClass/StandardIO.o
 server: Server.o Algorithms/Distance.o Algorithms/CanberraDistance.o Algorithms/ChebyshevDistance.o Algorithms/EuclideanDistance.o \
          IOClass/DefaultIO.o IOClass/SocketIO.o IOClass/StandardIO.o Algorithms/Knn.o Algorithms/MinkowskiDistance.o Algorithms/TaxicabGeometry.o Command_pattern/Command.o \
          Command_pattern/UploadCommand.o Command_pattern/SettingsCommand.o Command_pattern/ClassifyCommand.o Command_pattern/DisplayCommand.o \
-         Command_pattern/DownloadCommand.o Command_pattern/ExitCommand.o Command_pattern/CLI.o Values.o
+         Command_pattern/DownloadCommand.o Command_pattern/CLI.o Values.o
 	g++ Server.o Distance.o CanberraDistance.o ChebyshevDistance.o EuclideanDistance.o \
          DefaultIO.o SocketIO.o StandardIO.o Knn.o MinkowskiDistance.o TaxicabGeometry.o Command.o \
          UploadCommand.o SettingsCommand.o ClassifyCommand.o DisplayCommand.o \
-         DownloadCommand.o ExitCommand.o CLI.o Values.o -o server.out $(CXXFLAGS)
+         DownloadCommand.o CLI.o Values.o -o server.out $(CXXFLAGS)
 
 Client.o: Client.cpp
 	g++ -c Client.cpp $(CXXFLAGS)
@@ -68,9 +68,6 @@ Command_pattern/DisplayCommand.o: Command_pattern/DisplayCommand.cpp
 
 Command_pattern/DownloadCommand.o: Command_pattern/DownloadCommand.cpp
 	g++ -c Command_pattern/DownloadCommand.cpp $(CXXFLAGS)
-
-Command_pattern/ExitCommand.o: Command_pattern/ExitCommand.cpp
-	g++ -c Command_pattern/ExitCommand.cpp $(CXXFLAGS)
 
 Command_pattern/CLI.o: Command_pattern/CLI.cpp
 	g++ -c Command_pattern/CLI.cpp $(CXXFLAGS)
