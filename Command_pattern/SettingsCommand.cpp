@@ -104,7 +104,7 @@ void SettingsCommand::execute()
                     // update the distance metric
                     values->setDistanceMetric(s2);
                     // send message that everything okay
-                    string valid = "input is valid";
+                    string valid = "input is valid\n";
                     this->dio->writeInput(valid);
                 }
             }

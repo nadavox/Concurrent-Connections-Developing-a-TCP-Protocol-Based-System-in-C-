@@ -1,4 +1,3 @@
-#include <iostream>
 #include <sys/socket.h>
 #include <stdio.h>
 #include <netinet/in.h>
@@ -18,6 +17,7 @@ using namespace std;
 std::mutex mtx;
 std::condition_variable cv;
 bool thread_created = true;
+
 /**
  * the function create a TCP client socket
  * @param portNumber - the port number that the server socket listens to.
@@ -44,7 +44,6 @@ int createSocket(int portNumber, char* ipAddress) {
     return sock;
 }
 
-
 /**
  * the function gets messages string and check if valid or not
  * @param output - the string we check
@@ -61,7 +60,6 @@ bool check_valid(const string& output, DefaultIO *sdio,DefaultIO *stdio) {
     }
     return true;
 }
-
 
 /**
  * the function check if we can open file or not
@@ -172,7 +170,7 @@ void function2(DefaultIO* sdio, DefaultIO* stdio) {
         stdio->writeInput(userUpdate);
         string answer = stdio->readInput();
         // one of the parameters the user have inserted is not valid
-        if (answer != "input is valid") {
+        if (answer != "input is valid\n") {
             // print in the terminal the information from the server
             sdio->writeInput(answer);
             // send message that the user ready for the next message
@@ -207,7 +205,7 @@ void function4(DefaultIO* sdio, DefaultIO* stdio) {
     }
 }
 
-void writeClassified(string const writeFilePath,  int sock, DefaultIO *sdio, DefaultIO *stdio) {
+void writeClassified(string const writeFilePath, DefaultIO *sdio, DefaultIO *stdio) {
     std::unique_lock<std::mutex> lock(mtx);
     //the lock
     string s, temps;
@@ -218,7 +216,7 @@ void writeClassified(string const writeFilePath,  int sock, DefaultIO *sdio, Def
         sdio->writeInput("invalid input\n");
         // to unlock
         lock.unlock();
-        //tell the main keep runing.
+        //tell the main keep running.
         thread_created = true;
         return;
     }
@@ -236,7 +234,7 @@ void writeClassified(string const writeFilePath,  int sock, DefaultIO *sdio, Def
             break;
         }
     }
-    //tell the main keep runing.
+    //tell the main keep running.
     thread_created = true;
     cv.notify_one();
     // to unlock
@@ -245,7 +243,7 @@ void writeClassified(string const writeFilePath,  int sock, DefaultIO *sdio, Def
     writeToFile.close();
 }
 
-void function5(DefaultIO* sdio, DefaultIO* stdio, int sock) {
+void function5(DefaultIO* sdio, DefaultIO* stdio) {
     string s = stdio->readInput();
     // let the server know we are done reading
     stdio->writeInput("finish read");
@@ -257,11 +255,10 @@ void function5(DefaultIO* sdio, DefaultIO* stdio, int sock) {
         string writeFilePath = sdio->readInput();
         stdio->writeInput(writeFilePath);
         // crate a new thread that will write the classification to the file
-        thread t(writeClassified, writeFilePath, sock, sdio, stdio);
+        thread t(writeClassified, writeFilePath, sdio, stdio);
         t.detach();
         thread_created = false;
         cv.notify_one();
-
     }
 }
 
@@ -304,7 +301,6 @@ int main(int argc, char *argv[]) {
         string input = sdio->readInput();
         // send the number to the server
         stdio->writeInput(input);
-
         try {
             int number = stoi(input);
             // the user want to activate option 1
@@ -332,7 +328,7 @@ int main(int argc, char *argv[]) {
             // the user want to activate option 5
             else if (number == 5) {
                 // call function5
-                function5(sdio, stdio, sock);
+                function5(sdio, stdio);
             }
             // the user want to activate option 8
             else if (number == 8) {
