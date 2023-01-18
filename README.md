@@ -9,11 +9,11 @@ How to start the program:
 4. write make.
    1. In order to run the server, write the following steps in the terminal: ./server.out port
       1. port - the number that the server need to listen to.
-      * for example: ./server.out 12345
+   * for example: ./server.out 12345
    2. In order to run the client, write the following steps in the terminal: /.client.out ip port
       1. ip - the ip address of the sevrer
       2. port -  the number that the server listen to.
-      * for example: ./client.out 127.0.0.1 12345
+   * for example: ./client.out 127.0.0.1 12345
       
 The program:
 
@@ -26,19 +26,19 @@ When the client program will start and a menu will show up like this:
    5. download results
    8. exit
    
-if you will press:
+The options:
 1. You will be asked to insert a path to a trained file which contains the classified vectors, and after that you will be asked to insert a path to a    test file which contains the un classified vectors.
 2. The program will show tou the current k and disatance metric.
 if you want to keep this values - press ENTER.
 if you want to change the values - enter the new k and distance metric as you like.
 3. The program will classify the vectors of the un classified vectors you gave in option 1.
-if you haven't gave the files yet (didn't finish option 1), you will get a message that asks you to upload the data first.
+* if you haven't gave the files yet (didn't finish option 1), you will get a message that asks you to upload the data first.
 4. The program will display for you the results of the classification of the data, it will show you the row number in which the vector showed in the un classified file you gave and it's classification.
-if you haven't gave the files yet (didn't finish option 1), you will get a message that asks you to upload the data first.
-if you haven't classify the data yet (didn't finish option 3), you will get a message that asks you to classify the data first.
+* if you haven't gave the files yet (didn't finish option 1), you will get a message that asks you to upload the data first.
+* if you haven't classify the data yet (didn't finish option 3), you will get a message that asks you to classify the data first.
 5. You will be asked to insert a path to a file that you want the classification of the vectors to be saved in, after you will insert the path, the program will write the classification of the data to this file, it will write the row number in which the vector showed in the un classified file you gave and it's classification.
-if you haven't gave the files yet (didn't finish option 1), you will get a message that asks you to upload the data first.
-if you haven't classify the data yet (didn't finish option 3), you will get a message that asks you to classify the data first.
+* if you haven't gave the files yet (didn't finish option 1), you will get a message that asks you to upload the data first.
+* if you haven't classify the data yet (didn't finish option 3), you will get a message that asks you to classify the data first.
 8. You will exit the program.
 
 Invalid errors:
