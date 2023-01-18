@@ -28,7 +28,7 @@ When the client program will start and a menu will show up like this:
    
 The options:
 1. You will be asked to insert a path to a trained file which contains the classified vectors, and after that you will be asked to insert a path to a    test file which contains the un classified vectors.
-2. The program will show tou the current k and disatance metric.
+2. The program will show tou the current k and disatance metric. the default k is 5 and distance metric is AUC.
 * if you want to keep this values - press ENTER.
 * if you want to change the values - enter the new k and distance metric as you like.
 3. The program will classify the vectors of the un classified vectors you gave in option 1.
@@ -40,6 +40,7 @@ The options:
 * if you haven't gave the files yet (didn't finish option 1), you will get a message that asks you to upload the data first.
 * if you haven't classify the data yet (didn't finish option 3), you will get a message that asks you to classify the data first.
 8. You will exit the program.
+* the menu will repeat itself every time the option you wanted finished, until you will press 8.
 
 Invalid errors:
 
