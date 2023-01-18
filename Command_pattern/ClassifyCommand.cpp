@@ -55,6 +55,16 @@ string ClassifyCommand::getKnnOutput(const string& kindDistance, int k, vector<d
 void ClassifyCommand::execute()
 {
     values->getAfterClassifingList()->clear();
+    int k = values->getK(), sizeOfClassifiedVectors = values->getClassifiedVectorList()->size();
+    // k is bigger that the number of classified vectors
+    if (k > sizeOfClassifiedVectors) {
+        string noData = "invalid value for k\n";
+        // send the no data string to the client
+        this->dio->writeInput(noData);
+        // get from client that we are done
+        this->dio->readInput();
+        return;
+    }
 
     // the user have uploaded the vectors yet
     if (values->getNotClassifiedVectorList()->empty()) {
@@ -67,7 +77,7 @@ void ClassifyCommand::execute()
     // we can classify
     else {
         string kindDistance = values->getDistanceMetric(), output;
-        int k = values->getK(), sizeOfUnClassifiedVectors = values->getNotClassifiedVectorList()->size();
+        int sizeOfUnClassifiedVectors = values->getNotClassifiedVectorList()->size();
         for (int i = 0; i < sizeOfUnClassifiedVectors; ++i) {
             // get the classification of the vector
             output = getKnnOutput(kindDistance, k, values->getNotClassifiedVectorList()->at(i), values->getClassifiedVectorList());
