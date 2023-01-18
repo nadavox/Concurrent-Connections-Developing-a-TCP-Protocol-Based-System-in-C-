@@ -2,18 +2,6 @@
 #include <string.h>
 
 
-void printStringWithSpecialChars(string s) {
-    for (int i = 0; i < s.length(); i++) {
-        if (s[i] == '\0') {
-            cout << "\\0";
-        } else if (s[i] == '\n') {
-            cout << "\\n";
-        } else {
-            cout << s[i];
-        }
-    }
-    cout << endl;
-}
 
 /**
  * the constructor of SocketIO
@@ -31,6 +19,33 @@ SocketIO::SocketIO(int sockNumber) {
  */
 string convertToString(char* a, int size)
 {
+//    int i;
+//    string s = "";
+//    bool seenFirstWord = false;
+//    // ignore unnecessary spaces
+//    for (i = 0; i < size - 1; i++) {
+//        if (a[i] == '\0') {
+//            continue;
+//        }
+//        if (!isascii(a[i])) {
+//            continue;
+//        }
+//        //for the start
+//        if (!seenFirstWord && a[i] == ' ') {
+//        if (!seenFirstWord && a[i] == ' ') {
+//            continue;
+//        }
+//        //middle
+//        if (a[i] == a[i+1] && a[i+1]== ' ') {
+//            continue;
+//        }
+//        seenFirstWord = true;
+//        s += a[i];
+//    }
+//    if (a[size -1] == '\n') {
+//        s += '\n';
+//    }
+//    return s;
     int i;
     string s = "";
     bool seenFirstWord = false;
@@ -62,7 +77,6 @@ string SocketIO::readInput() {
     char buffer[1024];
     memset(buffer, 0, 1024);
     long int read_bytes = recv(sockNumber, buffer, 1024, 0);
-    //cout << read_bytes << endl;
     if (read_bytes == 0) {
         // connection is closed
         perror("Error the connection with the server is closed");
@@ -96,7 +110,6 @@ void SocketIO::writeInput(string s) {
         const char* str = s.c_str();
         // copy the data of the string
         strcpy(data_addr, str);
-        cout << "data_addr: " << data_addr << endl;
         long int n = send(sockNumber, data_addr, data_len, 0);
         if (n < 0) {
             perror("Error sending the data to the socket");
