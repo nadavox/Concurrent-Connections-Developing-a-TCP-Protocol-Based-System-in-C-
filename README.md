@@ -52,7 +52,8 @@ Invalid errors:
 6. the k you have inserted is not an integer number or negative number.
 7. there is not a disatnce function with the name you gave.
 8. you gave more than just k and distance metric, or you gave only k or only distance metric in option 2.
-9. the path to the file you gave in option 5 is not valid.
+9. you gave k and distance metric in option 2 before inserting the data, and the k is bigger that the classified data, you will get invalid value for k in option 3.
+10. the path to the file you gave in option 5 is not valid.
 * in case of system errors, we print what caused the error and exit the program.
 
 The implementation of the program:
