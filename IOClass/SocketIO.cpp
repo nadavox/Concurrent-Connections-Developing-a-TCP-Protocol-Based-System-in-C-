@@ -60,9 +60,6 @@ string convertToString(char* a, int size)
         if (!seenFirstWord && a[i] == ' ') {
             continue;
         }
-        if ((i == size - 1) && a[i] == ' ') {
-            continue;
-        }
         seenFirstWord = true;
         s += a[i];
     }
