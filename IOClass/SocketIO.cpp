@@ -19,33 +19,6 @@ SocketIO::SocketIO(int sockNumber) {
  */
 string convertToString(char* a, int size)
 {
-//    int i;
-//    string s = "";
-//    bool seenFirstWord = false;
-//    // ignore unnecessary spaces
-//    for (i = 0; i < size - 1; i++) {
-//        if (a[i] == '\0') {
-//            continue;
-//        }
-//        if (!isascii(a[i])) {
-//            continue;
-//        }
-//        //for the start
-//        if (!seenFirstWord && a[i] == ' ') {
-//        if (!seenFirstWord && a[i] == ' ') {
-//            continue;
-//        }
-//        //middle
-//        if (a[i] == a[i+1] && a[i+1]== ' ') {
-//            continue;
-//        }
-//        seenFirstWord = true;
-//        s += a[i];
-//    }
-//    if (a[size -1] == '\n') {
-//        s += '\n';
-//    }
-//    return s;
     int i;
     string s = "";
     bool seenFirstWord = false;
@@ -58,6 +31,9 @@ string convertToString(char* a, int size)
             continue;
         }
         if (!seenFirstWord && a[i] == ' ') {
+            continue;
+        }
+        if (i != size - 1 && a[i] == a[i +1] && a[i +1] == ' ') {
             continue;
         }
         seenFirstWord = true;
