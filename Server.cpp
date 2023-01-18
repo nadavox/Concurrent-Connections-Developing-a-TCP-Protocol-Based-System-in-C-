@@ -73,51 +73,42 @@ void receiveNumber(int clientSock, int masterSocket) {
             delete values;
             return;
         }
-        try {
-            string numberString(buffer);
-            cout << "line 78: "<< numberString << endl;
-            int number = stoi(numberString);
-            // the user want to activate option 1
-            if (number == 1){
-                // execute UploadCommand
-                cli->executeCommand("1");
-            }
-            // the user want to activate option 2
-            else if (number == 2) {
-                // execute SettingsCommand
-                cli->executeCommand("2");
-            }
-            // the user want to activate option 3
-            else if (number == 3) {
-                // execute ClassifyCommand
-                cli->executeCommand("3");
-            }
-            // the user want to activate option 4
-            else if (number == 4) {
-                // execute DisplayCommand
-                cli->executeCommand("4");
-            }
-            // the user want to activate option 5
-            else if (number == 5) {
-                // execute DownloadCommand
-                cli->executeCommand("5");
-            }
-            // the user want to activate option 8
-            else if (number == 8) {
-                // free the objects that was created on the heap
-                delete cli;
-                delete dio;
-                delete values;
-                return;
-            }
-            // the user insert invalid number
-            else {
-                dio->writeInput("invalid input\n");
-                dio->readInput();
-            }
+        string number(buffer);
+        // the user want to activate option 1
+        if (number == "1"){
+            // execute UploadCommand
+            cli->executeCommand("1");
         }
-        catch (invalid_argument) {
-            // the user didn't inset valid value
+        // the user want to activate option 2
+        else if (number == "2") {
+            // execute SettingsCommand
+            cli->executeCommand("2");
+        }
+        // the user want to activate option 3
+        else if (number == "3") {
+            // execute ClassifyCommand
+            cli->executeCommand("3");
+        }
+        // the user want to activate option 4
+        else if (number == "4") {
+            // execute DisplayCommand
+            cli->executeCommand("4");
+        }
+        // the user want to activate option 5
+        else if (number == "5") {
+            // execute DownloadCommand
+            cli->executeCommand("5");
+        }
+        // the user want to activate option 8
+        else if (number == "8") {
+            // free the objects that was created on the heap
+            delete cli;
+            delete dio;
+            delete values;
+            return;
+        }
+        // the user insert invalid number
+        else {
             dio->writeInput("invalid input\n");
             dio->readInput();
         }

@@ -1,8 +1,6 @@
 #include "SocketIO.h"
 #include <string.h>
 
-
-
 /**
  * the constructor of SocketIO
  * @param sockNumber - the socket number of whom we want connection

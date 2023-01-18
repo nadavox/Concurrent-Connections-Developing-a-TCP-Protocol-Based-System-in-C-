@@ -6,6 +6,22 @@
 using namespace std;
 
 /**
+ * this function checks if k is a positive integer
+ * @param k - the k
+ * @return true if positive integer, otherwise false
+ */
+bool isKOkay(string k) {
+    bool isOkay = true;
+    // check if every char in the string is digit
+    for(int i = 0; i < k.length(); i++) {
+        if (!isdigit(k[i])) {
+            isOkay = false;
+        }
+    }
+    return isOkay;
+}
+
+/**
  * this function will send the client to current values of k and the distance function name, and will update
  * this values according to the user.
  * if the new values are not valid - will send following message to the client.
@@ -60,13 +76,13 @@ void SettingsCommand::execute()
             }
             return;
         }
-        // check if s1 is valid int
-        try {
-            // s1 is an integer number
+        bool isOKay = isKOkay(s1);
+        // k is a positive integer
+        if (isOKay) {
             int k = stoi(s1);
-            // k is negative integer or bigger than the number of classified vectors
-            if ((k <= 0) || (isData && k > maxK)) {
-                // check if s2 is valid
+            // k is bigger that the number of classified vectors
+            if (isData && k > maxK) {
+                // the distance metric is not valid
                 if (s2 != "AUC" && s2 != "MAN" && s2 != "CHB" && s2 != "CAN" && s2 != "MIN") {
                     // send message that k and the metric is not valid to the client
                     string kAndMetricNotValidString = "invalid value for K\ninvalid value for metric\n";
@@ -95,9 +111,9 @@ void SettingsCommand::execute()
                     }
                 }
             }
-            // k is a positive integer
+            // k is valid
             else {
-                // check if s2 is valid
+                // the distance metric is not valid
                 if (s2 != "AUC" && s2 != "MAN" && s2 != "CHB" && s2 != "CAN" && s2 != "MIN") {
                     // send message that the distance metric is not valid to the client
                     string metricNotValidString = "invalid value for metric\n";
@@ -111,7 +127,7 @@ void SettingsCommand::execute()
                         return;
                     }
                 }
-                // update distance metric
+                // k and the distance metric is valid
                 else {
                     // update k
                     values->setK(k);
@@ -120,14 +136,14 @@ void SettingsCommand::execute()
                     // send message that everything okay
                     string valid = "input is valid\n";
                     this->dio->writeInput(valid);
-                    //wait for the client to read the message
+                    // wait for the client to read the message
                     this->dio->readInput();
                 }
             }
         }
-        // s1 is not valid k
-        catch (invalid_argument) {
-            // check if s2 is valid
+        // k is not a positive integer
+        else {
+            // the distance metric is not valid
             if (s2 != "AUC" && s2 != "MAN" && s2 != "CHB" && s2 != "CAN" && s2 != "MIN") {
                 // send message that k and the metric is not valid to the client
                 string kAndMetricNotValidString = "invalid value for K\ninvalid value for metric\n";
@@ -141,7 +157,7 @@ void SettingsCommand::execute()
                     return;
                 }
             }
-            // the distance metric is valid
+            // only k is not valid
             else {
                 // send message that k is not valid to the client
                 string kNotValidString = "invalid value for K\n";

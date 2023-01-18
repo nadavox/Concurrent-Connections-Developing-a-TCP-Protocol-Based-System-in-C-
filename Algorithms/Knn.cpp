@@ -24,9 +24,6 @@ string Knn::CalculateKNN(vector<double> userVector, vector<pair<vector<double>, 
     // insert to the vector the distance between the vectors
     for (int i = 0; i < vectorsList.size(); i++) {
         distanceFromVector.push_back(make_pair(this->distanceAlgo->distance(vectorsList.at(i).first, userVector), vectorsList.at(i).second));
-//        if (distanceFromVector.at(i).second.size() > 30) {
-//            cout <<"knn line 36: " << distanceFromVector.at(i).second << endl;
-//        }
     }
     // sorts the distance values
     sort(distanceFromVector.begin(), distanceFromVector.end());
