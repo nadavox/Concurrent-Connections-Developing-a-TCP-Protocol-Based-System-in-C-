@@ -39,6 +39,7 @@ The options:
 5. You will be asked to insert a path to a file that you want the classification of the vectors to be saved in, after you will insert the path, the program will write the classification of the data to this file, it will write the row number in which the vector showed in the un classified file you gave and it's classification.
 * if you haven't gave the files yet (didn't finish option 1), you will get a message that asks you to upload the data first.
 * if you haven't classify the data yet (didn't finish option 3), you will get a message that asks you to classify the data first.
+* you need to insert a specific path to a file that you want the classification of the vectors to be saved in, that is you need to give the file name and it's ending, for example: result.txt.
 8. You will exit the program.
 * the menu will repeat itself every time the option you wanted finished, until you will press 8.
 
